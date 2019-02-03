@@ -59,9 +59,7 @@ module.exports = {
         // TODO Background and Foreground Notifications are handled here.
       });
 
-    const onTokenRefreshListener = firebase
-      .messaging()
-      .onTokenRefresh(token => console.log(token));
+    const onTokenRefreshListener = firebase.messaging().onTokenRefresh(token => console.log(token));
 
     return function() {
       notificationListener.remove();

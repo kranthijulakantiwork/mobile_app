@@ -11,12 +11,12 @@ import EDButton from 'app/components/EDButton';
 import EDTextInput from 'app/components/EDTextInput';
 import Images from 'app/config/Images';
 
-const {height, width} = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 
 class SignIn extends Component {
   constructor(props) {
     super(props);
-    this.state= {
+    this.state = {
       mobile: '',
       otp: '',
       isOTPReceived: false,
@@ -29,23 +29,31 @@ class SignIn extends Component {
     const { isOTPReceived } = this.state;
     setSpinner(this);
     // TODO API and navigation based on signin or signup and submitting OTP.
-    alert('TODO')
+    alert('TODO');
     removeSpinner(this);
   }
 
   onChangeText(stateKey, text) {
-    this.setState({[stateKey]: text});
+    this.setState({ [stateKey]: text });
   }
 
-  renderTextInputField({title, placeholder=title, stateKey, keyboardType = 'default', secureTextEntry = false}) {
+  renderTextInputField({
+    title,
+    placeholder = title,
+    stateKey,
+    keyboardType = 'default',
+    secureTextEntry = false
+  }) {
     return (
       <View>
-        <EDTextInput title={title}
-                      placeholder={placeholder}
-                      value={this.state[stateKey]}
-                      onChangeText={(text) => this.onChangeText(stateKey, text)}
-                      secureTextEntry={secureTextEntry}
-                      keyboardType={keyboardType}/>
+        <EDTextInput
+          title={title}
+          placeholder={placeholder}
+          value={this.state[stateKey]}
+          onChangeText={text => this.onChangeText(stateKey, text)}
+          secureTextEntry={secureTextEntry}
+          keyboardType={keyboardType}
+        />
       </View>
     );
   }
@@ -53,7 +61,11 @@ class SignIn extends Component {
   renderOTPInput() {
     const { isOTPReceived } = this.state;
     if (isOTPReceived) {
-      return this.renderTextInputField({ title: 'OTP', stateKey: 'otp', keyboardType: 'number-pad' })
+      return this.renderTextInputField({
+        title: 'OTP',
+        stateKey: 'otp',
+        keyboardType: 'number-pad'
+      });
     }
     return null;
   }
@@ -68,15 +80,41 @@ class SignIn extends Component {
     return (
       <View style={{ flex: 1 }}>
         <KeyboardAwareScrollView style={{ flex: 1, backgroundColor: COLORS.WHITE }}>
-          <View style={{ flex:1, minHeight: height / 3, justifyContent: 'center', alignItems: 'center' }}>
-            <Image source={Images.logo} style={{width: width - 40, marginHorizontal: 20, marginTop: 20}} resizeMode={'contain'}/>
+          <View
+            style={{
+              flex: 1,
+              minHeight: height / 3,
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            <Image
+              source={Images.logo}
+              style={{ width: width - 40, marginHorizontal: 20, marginTop: 20 }}
+              resizeMode={'contain'}
+            />
           </View>
-          <View style={{ flex:1, minHeight: height / 3, justifyContent: 'center', alignItems: 'center' }}>
-            {this.renderTextInputField({ title: 'Mobile', stateKey: 'mobile', keyboardType: 'number-pad' })}
+          <View
+            style={{
+              flex: 1,
+              minHeight: height / 3,
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            {this.renderTextInputField({
+              title: 'Mobile',
+              stateKey: 'mobile',
+              keyboardType: 'number-pad'
+            })}
             {this.renderOTPInput()}
           </View>
-          <View style={{ flex:1, minHeight: height / 3, alignItems: 'center' }}>
-            <EDButton title={title} onClick={() => this.onSubmit()} buttonStyle={ {width: 2*width/3}}/>
+          <View style={{ flex: 1, minHeight: height / 3, alignItems: 'center' }}>
+            <EDButton
+              title={title}
+              onClick={() => this.onSubmit()}
+              buttonStyle={{ width: (2 * width) / 3 }}
+            />
           </View>
         </KeyboardAwareScrollView>
         {spinner && <Spinner />}
@@ -86,12 +124,11 @@ class SignIn extends Component {
 }
 
 function mapStateToProps(state) {
-  return {
-  };
+  return {};
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({  }, dispatch);
+  return bindActionCreators({}, dispatch);
 }
 
 export default connect(

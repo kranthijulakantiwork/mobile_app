@@ -1,0 +1,67 @@
+{
+    "extends": ["airbnb", "prettier"],
+    "plugins": ["prettier"],
+    "rules": {
+      "prettier/prettier": ["error"],
+      "react/jsx-filename-extension": [
+        1,
+        {
+          "extensions": [".js", ".jsx"]
+        }
+      ],
+      "spaced-comment": [2, "always"],
+      "vars-on-top": 2,
+      "no-undef": 2,
+      "no-undefined": 2,
+      "comma-dangle": [2, "never"],
+      "quotes": [2, "single"],
+      "semi": [2, "always"],
+      "max-len": [
+        1,
+        120,
+        2,
+        {
+          "ignoreComments": true
+        }
+      ],
+      "prop-types": [2],
+      "import/no-unresolved": "off",
+      "prefer-destructuring": "off",
+      "camelcase": [
+        "error",
+        {
+          "properties": "never",
+          "ignoreDestructuring": true
+        }
+      ],
+      "react/prefer-stateless-function": [
+        2,
+        {
+          "ignorePureComponents": true
+        }
+      ],
+      "react/forbid-prop-types": [
+        0,
+        {
+          "forbid": []
+        }
+      ],
+      "import/extensions": [
+        1,
+        "never",
+        {
+          "svg": "always"
+        }
+      ],
+      "react/require-default-props": [0],
+      "import/no-extraneous-dependencies": [
+        "error",
+        {
+          "devDependencies": true,
+          "optionalDependencies": false,
+          "peerDependencies": false
+        }
+      ]
+    }
+  }
+  

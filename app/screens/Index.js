@@ -39,7 +39,7 @@ class AppWithNavigationState extends React.Component {
     this.unregisterNotification();
     BackHandler.removeEventListener('hardwareBackPress', this.onBackPress);
   }
-  
+
   onBackPress = () => {
     const { dispatch, nav } = this.props;
     dispatch(NavigationActions.back());
@@ -52,7 +52,7 @@ class AppWithNavigationState extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  nav: state.nav,
+  nav: state.nav
 });
 
 const AppNavigation = connect(mapStateToProps)(AppWithNavigationState);

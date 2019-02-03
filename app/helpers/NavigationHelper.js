@@ -1,7 +1,6 @@
 /* @flow */
 
-import React from 'react';
-import { Animated, Dimensions, Image, Easing } from 'react-native';
+import { Animated, Dimensions, Easing } from 'react-native';
 import {
   createDrawerNavigator,
   createStackNavigator,
@@ -62,40 +61,40 @@ const DrawerNavigator = createDrawerNavigator(
 const AppNavigator = createStackNavigator(
   {
     SignIn: { screen: SignIn },
-    DrawerNavigator: { screen: DrawerNavigator },
+    DrawerNavigator: { screen: DrawerNavigator }
   },
   navigationOptions
 );
 
 const resetAndGoToScreen = (routeName, key, params, dispatch) => {
-  let resetAction = StackActions.reset({
+  const resetAction = StackActions.reset({
     index: 0,
     key: null,
     actions: [
       NavigationActions.navigate({
-        routeName: routeName,
-        params: params,
-        key: key
+        routeName,
+        params,
+        key
       })
     ]
   });
   return dispatch(resetAction);
 };
 
-const replaceScreen = (routeName, current_screen_key, params, dispatch) => {
-  let replaceAction = StackActions.replace({
-    key: current_screen_key,
-    routeName: routeName,
-    params: params
+const replaceScreen = (routeName, currentScreenKey, params, dispatch) => {
+  const replaceAction = StackActions.replace({
+    key: currentScreenKey,
+    routeName,
+    params
   });
   return dispatch(replaceAction);
 };
 
 const navigateToScreen = (routeName, key, params, dispatch) => {
   const navigateAction = NavigationActions.navigate({
-    routeName: routeName,
-    params: params,
-    key: key
+    routeName,
+    params,
+    key
   });
   dispatch(navigateAction);
   dispatch(DrawerActions.closeDrawer());

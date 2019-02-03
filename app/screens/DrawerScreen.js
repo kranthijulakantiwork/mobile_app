@@ -36,7 +36,7 @@ class DrawerScreen extends Component {
   }
 
   async onLogout() {
-      alert('todo')
+    alert('todo');
   }
 
   OnClick(title, actionName) {
@@ -58,10 +58,9 @@ class DrawerScreen extends Component {
 
   renderDrawerItem(title, actionName) {
     const { selected } = this.state;
-    const color = selected === title ? COLORS.APP_THEME_PURPLE: COLORS.WHITE;
+    const color = selected === title ? COLORS.APP_THEME_PURPLE : COLORS.WHITE;
     const imageSource = selected === title ? Images[title + '_selected'] : Images[title];
-    const backgroundColor =
-      selected === title ? COLORS.APP_THEME_BLUE : COLORS.APP_THEME_PURPLE;
+    const backgroundColor = selected === title ? COLORS.APP_THEME_BLUE : COLORS.APP_THEME_PURPLE;
     return (
       <TouchableOpacity
         onPress={() => this.OnClick(title, actionName)}
@@ -69,9 +68,7 @@ class DrawerScreen extends Component {
       >
         <View style={{ ...styles.drawerItem, backgroundColor }}>
           <Image source={imageSource} />
-          <EDText style={{ color, fontSize: FONT_SIZES.H3, marginLeft: 15 }}>
-            {actionName}
-          </EDText>
+          <EDText style={{ color, fontSize: FONT_SIZES.H3, marginLeft: 15 }}>{actionName}</EDText>
         </View>
       </TouchableOpacity>
     );
@@ -94,12 +91,11 @@ DrawerScreen.propTypes = {
 };
 
 function mapStateToProps(state) {
-  return {
-  };
+  return {};
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({  }, dispatch);
+  return bindActionCreators({}, dispatch);
 }
 
 export default connect(

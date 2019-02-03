@@ -26,19 +26,16 @@ class Splash extends Component {
   }
 
   render() {
-    return (
-        <View style={{ flex: 1, backgroundColor: COLORS.APP_THEME_BLUE }} />
-    );
+    return <View style={{ flex: 1, backgroundColor: COLORS.APP_THEME_BLUE }} />;
   }
 }
 
 function mapStateToProps(state) {
-  return {
-  };
+  return {};
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({  }, dispatch);
+  return bindActionCreators({}, dispatch);
 }
 
 export default connect(
