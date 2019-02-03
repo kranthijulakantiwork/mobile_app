@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.APP_THEME_BLEUE,
+    backgroundColor: COLORS.APP_THEME_PURPLE,
     paddingTop: 30
   },
   menuItem: {
@@ -58,10 +58,10 @@ class DrawerScreen extends Component {
 
   renderDrawerItem(title, actionName) {
     const { selected } = this.state;
-    const color = selected === title ? COLORS.GREEN : COLORS.WHITE;
+    const color = selected === title ? COLORS.APP_THEME_PURPLE: COLORS.WHITE;
     const imageSource = selected === title ? Images[title + '_selected'] : Images[title];
     const backgroundColor =
-      selected === title ? COLORS.GRAY : COLORS.APP_THEME_BLEUE;
+      selected === title ? COLORS.APP_THEME_BLUE : COLORS.APP_THEME_PURPLE;
     return (
       <TouchableOpacity
         onPress={() => this.OnClick(title, actionName)}

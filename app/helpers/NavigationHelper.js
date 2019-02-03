@@ -11,6 +11,7 @@ import {
 } from 'react-navigation';
 import DrawerScreen from 'app/screens/DrawerScreen';
 import Splash from 'app/screens/Splash';
+import SignIn from 'app/screens/SignIn';
 
 const { width } = Dimensions.get('window');
 
@@ -60,6 +61,7 @@ const DrawerNavigator = createDrawerNavigator(
 
 const AppNavigator = createStackNavigator(
   {
+    SignIn: { screen: SignIn },
     DrawerNavigator: { screen: DrawerNavigator },
   },
   navigationOptions

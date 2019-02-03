@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import { ActivityIndicator, View, Platform, ImageBackground } from 'react-native';
 import { bindActionCreators } from 'redux';
+import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import firebase from 'react-native-firebase';
 
@@ -26,7 +27,7 @@ class Splash extends Component {
 
   render() {
     return (
-        <View style={{ flex: 1, backgroundColor: 'green' }} />
+        <View style={{ flex: 1, backgroundColor: COLORS.APP_THEME_BLUE }} />
     );
   }
 }
