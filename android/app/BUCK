@@ -45,12 +45,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "com.mobile_app",
+    package = "com.lostking.docsam",
 )
 
 android_resource(
     name = "res",
-    package = "com.mobile_app",
+    package = "com.lostking.docsam",
     res = "src/main/res",
 )
 

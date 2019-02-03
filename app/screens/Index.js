@@ -9,6 +9,8 @@ import {
   createReactNavigationReduxMiddleware
 } from 'react-navigation-redux-helpers';
 import { NavigationActions, StackActions } from 'react-navigation';
+import Notifications from 'app/helpers/Notifications';
+
 const middleware = createReactNavigationReduxMiddleware('mobile_app', state => state.nav);
 
 const reduxApp = reduxifyNavigator(AppNavigator, 'mobile_app');
@@ -29,10 +31,12 @@ class AppWithNavigationState extends React.Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
+    this.unregisterNotification = Notifications.init(dispatch);
     BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
   }
 
   componentWillUnmount() {
+    this.unregisterNotification();
     BackHandler.removeEventListener('hardwareBackPress', this.onBackPress);
   }
   

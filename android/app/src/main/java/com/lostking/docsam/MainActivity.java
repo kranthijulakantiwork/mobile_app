@@ -1,4 +1,4 @@
-package com.mobile_app;
+package com.lostking.docsam;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

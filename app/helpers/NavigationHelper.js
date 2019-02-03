@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { Animated, Dimensions, Image, Easing } from 'react-native';
-// import { COLORS } from 'app/styles/Colors';
 import {
   createDrawerNavigator,
   createStackNavigator,
@@ -61,7 +60,7 @@ const DrawerNavigator = createDrawerNavigator(
 
 const AppNavigator = createStackNavigator(
   {
-    Splash: { screen: DrawerNavigator },
+    DrawerNavigator: { screen: DrawerNavigator },
   },
   navigationOptions
 );

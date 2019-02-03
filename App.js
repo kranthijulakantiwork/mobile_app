@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import store from 'app/helpers/Store';
 import { AppNavigation } from 'app/screens/Index';
 import React from 'react';
-// import { COLORS } from 'app/styles/Colors';
 
 export default class App extends React.Component {
 
