@@ -9,6 +9,7 @@ import {
   LayoutAnimation,
   SafeAreaView,
   StatusBar,
+  StyleSheet,
   TouchableOpacity,
   View
 } from 'react-native';
@@ -32,7 +33,22 @@ import SignIn from 'app/screens/SignIn';
 import Splash from 'app/screens/Splash';
 
 const { width } = Dimensions.get('window');
-
+const styles = StyleSheet.create({
+  addButton: { position: 'absolute', bottom: 20, right: 30 },
+  addButtonTextContainer: {
+    backgroundColor: COLORS.APP_THEME_BLUE,
+    height: 60,
+    width: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  addButtonText: {
+    color: COLORS.WHITE,
+    fontSize: 40,
+    includeFontPadding: false
+  }
+});
 const transitionConfig = () => ({
   transitionSpec: {
     duration: 300,
@@ -156,14 +172,10 @@ class CustomTabs extends React.Component<Props> {
     const { routes, index } = navigation.state;
     const activeRoute = routes[index];
     let bottom = (
-      <TouchableOpacity
-        onPress={() => navigation.navigate('Payment')}
-        style={{ position: 'absolute', bottom: 20, right: 30 }}
-      >
-        <Image
-          source={{ uri: 'https://homepages.cae.wisc.edu/~ece533/images/airplane.png' }}
-          style={{ height: 60, width: 60, borderRadius: 30 }}
-        />
+      <TouchableOpacity onPress={() => navigation.navigate('Payment')} style={styles.addButton}>
+        <View style={styles.addButtonTextContainer}>
+          <EDText style={styles.addButtonText}>+</EDText>
+        </View>
       </TouchableOpacity>
     );
     return (

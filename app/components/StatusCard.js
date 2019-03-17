@@ -14,17 +14,28 @@ import PropTypes from 'prop-types';
 const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: { paddingVertical: 10 },
-  statusContainer: { flexDirection: 'row', alignItems: 'center' },
-  avatar: { height: 30, width: 30, borderRadius: 15, marginHorizontal: 10 },
-  detailsContainer: { width: width - 60, marginLeft: 50, marginRight: 10 },
+  statusContainer: { flexDirection: 'row' },
+  avatarContainer: {
+    height: 30,
+    width: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 15,
+    marginHorizontal: 10,
+    backgroundColor: COLORS.APP_THEME_PURPLE
+  },
+  avatarText: { color: COLORS.WHITE, fontSize: FONT_SIZES.H3 },
+  detailsContainer: { width: width - 160 },
   name: {
+    textAlignVertical: 'top',
+    includeFontPadding: false,
     color: COLORS.TEXT_BLACK,
     fontWeight: '200',
     fontSize: FONT_SIZES.H2,
     width: width - 160
   },
-  details: { width: width - 60, color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H4 },
-  balanceContainer: { width: 100, justifyContent: 'center', alignItems: 'center' },
+  details: { width: width - 160, color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H4 },
+  balanceContainer: { width: 100 },
   balanceText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H4, textAlign: 'center' },
   balanceValue: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H2, textAlign: 'center' }
 });
@@ -121,16 +132,20 @@ export default class StatusCard extends Component {
 
   renderName() {
     const { name } = this.props;
-    return <EDText style={styles.name}>{name}</EDText>;
+    return (
+      <View style={{ width: width - 160 }}>
+        <EDText style={styles.name}>{name}</EDText>
+        {this.renderDetails()}
+      </View>
+    );
   }
 
   renderAvatar() {
-    const { avatar } = this.props;
+    const { name } = this.props;
     return (
-      <Image
-        source={{ uri: avatar || 'https://homepages.cae.wisc.edu/~ece533/images/airplane.png' }}
-        style={styles.avatar}
-      />
+      <View style={styles.avatarContainer}>
+        <EDText style={styles.avatarText}>{name[0]}</EDText>
+      </View>
     );
   }
 
@@ -144,7 +159,6 @@ export default class StatusCard extends Component {
             {this.renderName()}
             {this.renderBalance()}
           </View>
-          {this.renderDetails()}
         </View>
       </TouchableHighlight>
     );
