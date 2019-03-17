@@ -60,8 +60,8 @@ const DrawerNavigator = createDrawerNavigator(
 
 const AppNavigator = createStackNavigator(
   {
-    SignIn: { screen: SignIn },
-    DrawerNavigator: { screen: DrawerNavigator }
+    DrawerNavigator: { screen: DrawerNavigator },
+    SignIn: { screen: SignIn }
   },
   navigationOptions
 );
