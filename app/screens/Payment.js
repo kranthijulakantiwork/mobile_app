@@ -17,6 +17,10 @@ import RNUpiPayment from 'react-native-upi-payment';
 const { height, width } = Dimensions.get('window');
 
 export default class Payment extends Component {
+  static navigationOptions = {
+    title: 'Payment'
+    // headerLeft:
+  };
   constructor(props) {
     super(props);
     this.state = {

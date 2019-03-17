@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 import firebase from 'react-native-firebase';
 
 module.exports = {
-  init: function(dispatch) {
+  init(dispatch) {
     firebase
       .messaging()
       .hasPermission()
@@ -62,9 +62,9 @@ module.exports = {
     const onTokenRefreshListener = firebase.messaging().onTokenRefresh(token => console.log(token));
 
     return function() {
-      notificationListener.remove();
-      notificationOpenedListener.remove();
-      onTokenRefreshListener.remove();
+      notificationListener();
+      notificationOpenedListener();
+      onTokenRefreshListener();
     };
   }
 };
