@@ -47,10 +47,9 @@ export default class StatusCard extends Component {
   }
 
   renderSummaryDetails(detail, i) {
-    const { owed } = this.props;
     let oweText = detail.name + ' ' + I18n.t('owes_you') + ' ';
     let color = COLORS.GREEN;
-    if (owed) {
+    if (detail.owed) {
       oweText = I18n.t('you_owe_') + ' ' + detail.name + ' ';
       color = COLORS.ORANGE;
     }
@@ -64,7 +63,7 @@ export default class StatusCard extends Component {
 
   renderSummary() {
     const { details, balance } = this.props;
-    if (!balance) return null;
+    if (!balance || !details || !details.length) return null;
     let count = 0;
     return (
       <View>

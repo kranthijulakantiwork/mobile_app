@@ -1,10 +1,13 @@
 // @flow
 
 const en = {
+  add_more_friends: 'Add More Friends',
   app_name: 'SettleMint',
+  create_group: 'Create Group',
   create: 'Create',
   friends_tab: 'Friends',
   groups_tab: 'Groups',
+  net_settlement_amount_rs: 'Net Settlement Amount Rs. ',
   new_group: 'New Group',
   owes_you: 'owes you',
   plus_other_balances: 'Plus {{count}} other balances',

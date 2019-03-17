@@ -1,14 +1,22 @@
 /* @flow */
 
-import { Animated, Dimensions, Easing } from 'react-native';
+import React, { Component } from 'react';
+import { Animated, Dimensions, Easing, View } from 'react-native';
 import {
   createDrawerNavigator,
+  createMaterialTopTabNavigator,
   createStackNavigator,
-  StackActions,
+  DrawerActions,
   NavigationActions,
-  DrawerActions
+  StackActions
 } from 'react-navigation';
+import { COLORS } from 'app/styles/Colors';
+import { FONT_SIZES } from 'app/config/ENV';
 import DrawerScreen from 'app/screens/DrawerScreen';
+import EDText from 'app/components/EDText';
+import Friends from 'app/screens/Friends';
+import Groups from 'app/screens/Groups';
+import I18n from 'app/config/i18n';
 import Payment from 'app/screens/Payment';
 import SignIn from 'app/screens/SignIn';
 import Splash from 'app/screens/Splash';
@@ -41,9 +49,32 @@ const transitionConfig = () => ({
 });
 
 const navigationOptions = {
+  headerMode: 'float',
   defaultNavigationOptions: {
     gesturesEnabled: false,
-    header: null
+    title: I18n.t('app_name'),
+    headerTitle: ({ style, children }) => {
+      return (
+        <View
+          style={{
+            flex: 1,
+            height: 56,
+            backgroundColor: COLORS.APP_THEME_BLUE,
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <EDText
+            style={{
+              fontSize: FONT_SIZES.H1,
+              color: COLORS.TEXT_BLACK
+            }}
+          >
+            {children}
+          </EDText>
+        </View>
+      );
+    }
   },
   transitionConfig
 };
@@ -59,8 +90,54 @@ const DrawerNavigator = createDrawerNavigator(
   }
 );
 
+const tabbarLabel = (focused, title) => {
+  const color = focused ? COLORS.WHITE : COLORS.WHITE;
+  return (
+    <View style={{}}>
+      <EDText style={{ color, textAlign: 'center', marginBottom: 5, fontSize: FONT_SIZES.H2 }}>
+        {I18n.t(title)}
+      </EDText>
+    </View>
+  );
+};
+
+const tabsNavOptions = title => {
+  return {
+    tabBarLabel: tab => tabbarLabel(tab.focused, title)
+  };
+};
+
+// For customization refer https://reactnavigation.org/docs/en/material-top-tab-navigator.html
+const Tabs = createMaterialTopTabNavigator(
+  {
+    Friends: {
+      screen: Friends,
+      navigationOptions: tabsNavOptions('friends_tab')
+    },
+    Groups: {
+      screen: Groups,
+      navigationOptions: tabsNavOptions('groups_tab')
+    }
+  },
+  {
+    swipeEnabled: true,
+    // tabBarPosition: 'bottom',
+    animationEnabled: true,
+    lazy: false,
+    optimizationsEnabled: true,
+    tabBarOptions: {
+      showIcon: false,
+      activeBackgroundColor: COLORS.APP_THEME_BLUE,
+      inactiveBackgroundColor: COLORS.WHITE,
+      indicatorStyle: { backgroundColor: COLORS.WHITE },
+      style: { height: 40 }
+    }
+  }
+);
+
 const AppNavigator = createStackNavigator(
   {
+    Tabs: { screen: Tabs },
     Payment: { screen: Payment },
     DrawerNavigator: { screen: DrawerNavigator },
     SignIn: { screen: SignIn }
