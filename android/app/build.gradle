@@ -137,6 +137,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-upi-payment')
     implementation project(':react-native-firebase')
     implementation project(':react-native-gesture-handler')
     implementation "com.google.firebase:firebase-core:16.0.4"

@@ -9,8 +9,9 @@ import {
   DrawerActions
 } from 'react-navigation';
 import DrawerScreen from 'app/screens/DrawerScreen';
-import Splash from 'app/screens/Splash';
+import Payment from 'app/screens/Payment';
 import SignIn from 'app/screens/SignIn';
+import Splash from 'app/screens/Splash';
 
 const { width } = Dimensions.get('window');
 
@@ -60,6 +61,7 @@ const DrawerNavigator = createDrawerNavigator(
 
 const AppNavigator = createStackNavigator(
   {
+    Payment: { screen: Payment },
     DrawerNavigator: { screen: DrawerNavigator },
     SignIn: { screen: SignIn }
   },

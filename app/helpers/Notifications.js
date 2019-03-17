@@ -26,7 +26,7 @@ module.exports = {
   createNotificationListeners(dispatch) {
     // Build a channel
     const channel = new firebase.notifications.Android.Channel(
-      'docsam_alert',
+      'settleming_alert',
       'Fan Duniya Alerts',
       firebase.notifications.Android.Importance.Max
     ).setDescription('My apps test channel');

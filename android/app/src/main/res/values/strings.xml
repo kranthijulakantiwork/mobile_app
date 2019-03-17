@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">DocSam</string>
-    <string name="default_notification_channel_id">docsam_alert</string>
+    <string name="app_name">SettleMint</string>
+    <string name="default_notification_channel_id">settleming_alert</string>
 </resources>
