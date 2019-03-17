@@ -6,7 +6,7 @@ import { COLORS } from 'app/styles/Colors';
 import EDText from 'app/components/EDText';
 import PropTypes from 'prop-types';
 
-class EDButton extends Component {
+export default class EDButton extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
     onClick: PropTypes.func.isRequired,
@@ -48,5 +48,3 @@ class EDButton extends Component {
     );
   }
 }
-
-module.exports = EDButton;

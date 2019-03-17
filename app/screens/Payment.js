@@ -7,6 +7,7 @@ import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
+import dismissKeyboard from 'dismissKeyboard';
 import EDButton from 'app/components/EDButton';
 import EDText from 'app/components/EDText';
 import EDTextInput from 'app/components/EDTextInput';
@@ -33,6 +34,7 @@ export default class Payment extends Component {
   }
 
   onSubmit() {
+    dismissKeyboard();
     const { upiId, name, transactionNote, amount } = this.state;
     if (!upiId) return alert('Please enter UPI ID.');
     if (!amount) return alert('Please enter Amount.');

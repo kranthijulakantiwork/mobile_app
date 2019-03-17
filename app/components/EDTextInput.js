@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 const { height, width } = Dimensions.get('window');
 
-class EDTextInput extends Component {
+export default class EDTextInput extends Component {
   static propTypes = {
     onChangeText: PropTypes.func.isRequired,
     placeholder: PropTypes.string.isRequired,
@@ -52,5 +52,3 @@ class EDTextInput extends Component {
     );
   }
 }
-
-module.exports = EDTextInput;
