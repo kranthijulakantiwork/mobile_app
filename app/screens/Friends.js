@@ -163,7 +163,7 @@ export default class Friends extends Component {
           {this.renderFooter()}
           <View style={{ width, height: 100 }} />
         </ScrollView>
-        {this.renderAddButton()}
+        {/* {this.renderAddButton()} */}
         {spinner && <Spinner />}
       </View>
     );

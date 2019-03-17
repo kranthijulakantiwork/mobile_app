@@ -1,7 +1,17 @@
 /* @flow */
 
 import React, { Component } from 'react';
-import { Animated, Dimensions, Easing, View } from 'react-native';
+import {
+  Animated,
+  Dimensions,
+  Easing,
+  Image,
+  LayoutAnimation,
+  SafeAreaView,
+  StatusBar,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import {
   createDrawerNavigator,
   createMaterialTopTabNavigator,
@@ -53,7 +63,8 @@ const navigationOptions = {
   defaultNavigationOptions: {
     gesturesEnabled: false,
     title: I18n.t('app_name'),
-    headerTitle: ({ style, children }) => {
+    headerBackground: <View style={{ flex: 1, backgroundColor: COLORS.APP_THEME_BLUE }} />,
+    headerTitle: ({ children }) => {
       return (
         <View
           style={{
@@ -135,9 +146,41 @@ const Tabs = createMaterialTopTabNavigator(
   }
 );
 
+class CustomTabs extends React.Component<Props> {
+  static router = Tabs.router;
+  componentWillUpdate() {
+    LayoutAnimation.easeInEaseOut();
+  }
+  render() {
+    const { navigation } = this.props;
+    const { routes, index } = navigation.state;
+    const activeRoute = routes[index];
+    let bottom = (
+      <TouchableOpacity
+        onPress={() => navigation.navigate('Payment')}
+        style={{ position: 'absolute', bottom: 20, right: 30 }}
+      >
+        <Image
+          source={{ uri: 'https://homepages.cae.wisc.edu/~ece533/images/airplane.png' }}
+          style={{ height: 60, width: 60, borderRadius: 30 }}
+        />
+      </TouchableOpacity>
+    );
+    return (
+      <View style={{ flex: 1 }}>
+        <StatusBar barStyle="default" />
+        <SafeAreaView style={{ flex: 1 }} forceInset={{ horizontal: 'always', top: 'always' }}>
+          <Tabs navigation={navigation} />
+        </SafeAreaView>
+        {bottom}
+      </View>
+    );
+  }
+}
+
 const AppNavigator = createStackNavigator(
   {
-    Tabs: { screen: Tabs },
+    Tabs: { screen: CustomTabs },
     Payment: { screen: Payment },
     DrawerNavigator: { screen: DrawerNavigator },
     SignIn: { screen: SignIn }
