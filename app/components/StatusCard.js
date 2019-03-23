@@ -48,7 +48,6 @@ export default class StatusCard extends Component {
     balance: PropTypes.string,
     balanceType: PropTypes.string,
     owed: PropTypes.bool,
-    avatar: PropTypes.string,
     mobile: PropTypes.string
   };
 
