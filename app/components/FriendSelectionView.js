@@ -79,7 +79,9 @@ export default class FriendSelectionView extends Component {
     const { name, mobile } = this.props;
     return (
       <View style={{ width: width - 100 }}>
-        <EDText style={styles.name}>{name}</EDText>
+        <EDText style={styles.name} numberOfLines={1}>
+          {name}
+        </EDText>
         <EDText style={styles.mobile}>{mobile}</EDText>
       </View>
     );
