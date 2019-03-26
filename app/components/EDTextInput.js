@@ -24,7 +24,7 @@ export default class EDTextInput extends Component {
         width: width - 40,
         height: 40,
         fontSize: 15,
-        color: COLORS.GRAY,
+        color: COLORS.TEXT_BLACK,
         margin: 0,
         padding: 0,
         paddingLeft: 25,
@@ -34,10 +34,14 @@ export default class EDTextInput extends Component {
       },
       this.props.textInputStyle || {}
     );
+    let containerStyle = Object.assign(
+      { marginVertical: 10, marginHorizontal: 20 },
+      this.props.containerStyle || {}
+    );
     let keyboardType = this.props.keyboardType || 'default';
     let secureTextEntry = this.props.secureTextEntry || false;
     return (
-      <View style={{ marginVertical: 10, marginHorizontal: 20 }}>
+      <View style={containerStyle}>
         <TextInput
           style={textInputStyle}
           onChangeText={text => this.props.onChangeText(text)}

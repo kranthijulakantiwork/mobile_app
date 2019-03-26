@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignSelf: 'center',
     borderRadius: 1,
-    elevation: 2,
+    // elevation: 2,
     backgroundColor: COLORS.APP_THEME_BLUE,
     shadowColor: '#000'
   },

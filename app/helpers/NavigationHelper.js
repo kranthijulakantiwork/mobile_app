@@ -28,6 +28,7 @@ import EDText from 'app/components/EDText';
 import Friends from 'app/screens/Friends';
 import Groups from 'app/screens/Groups';
 import I18n from 'app/config/i18n';
+import NewBill from 'app/screens/NewBill';
 import Payment from 'app/screens/Payment';
 import SelectFriends from 'app/screens/SelectFriends';
 import SignIn from 'app/screens/SignIn';
@@ -193,6 +194,7 @@ class CustomTabs extends React.Component<Props> {
 
 const AppNavigator = createStackNavigator(
   {
+    NewBill: { screen: NewBill },
     SelectFriends: { screen: SelectFriends },
     Tabs: { screen: CustomTabs },
     Payment: { screen: Payment },

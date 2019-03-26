@@ -55,7 +55,8 @@ export default class FriendSelectionView extends Component {
     onPress: PropTypes.func.isRequired,
     name: PropTypes.string.isRequired,
     mobile: PropTypes.string,
-    isSelected: PropTypes.bool.isRequired
+    isSelected: PropTypes.bool,
+    hideCheckBox: PropTypes.bool
   };
 
   constructor(props) {
@@ -64,7 +65,8 @@ export default class FriendSelectionView extends Component {
   }
 
   renderSelectionBox() {
-    const { isSelected } = this.props;
+    const { isSelected, hideCheckBox } = this.props;
+    if (hideCheckBox) return null;
     return (
       <View
         style={{

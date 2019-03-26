@@ -90,59 +90,60 @@ export default class SelectFriends extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      friends: {
-        1: { ...FRIENDS_DETAILS, id: 1 },
-        2: { ...FRIENDS_DETAILS, id: 2 },
-        3: { ...FRIENDS_DETAILS, id: 3 },
-        4: { ...FRIENDS_DETAILS, id: 4 },
-        5: { ...FRIENDS_DETAILS, id: 5 },
-        6: { ...FRIENDS_DETAILS, id: 6 },
-        7: { ...FRIENDS_DETAILS, id: 7 },
-        8: { ...FRIENDS_DETAILS, id: 8 },
-        9: { ...FRIENDS_DETAILS, id: 9 },
-        10: { ...FRIENDS_DETAILS, id: 10 }
-      },
+      friendsList: [
+        { ...FRIENDS_DETAILS, id: 1 },
+        { ...FRIENDS_DETAILS, id: 2 },
+        { ...FRIENDS_DETAILS, id: 3 },
+        { ...FRIENDS_DETAILS, id: 4 },
+        { ...FRIENDS_DETAILS, id: 5 },
+        { ...FRIENDS_DETAILS, id: 6 },
+        { ...FRIENDS_DETAILS, id: 7 },
+        { ...FRIENDS_DETAILS, id: 8 },
+        { ...FRIENDS_DETAILS, id: 9 },
+        { ...FRIENDS_DETAILS, id: 10 }
+      ],
       selectedFriends: ['you'],
       spinner: false
     };
   }
 
-  selectFriend(id) {
-    const { selectedFriends } = this.state;
+  selectFriend(index) {
+    const { friendsList, selectedFriends } = this.state;
     if (selectedFriends.length < 14) {
+      let tempFriends = Object.assign([], friendsList);
+      tempFriends[index].selected = true;
       let tempSelectedFriends = Object.assign([], selectedFriends);
-      tempSelectedFriends.push(id.toString());
-      return this.setState({ selectedFriends: tempSelectedFriends });
+      tempSelectedFriends.push(index);
+      return this.setState({ friends: tempFriends, selectedFriends: tempSelectedFriends });
     }
     return alert(I18n.t('maximum_friends_reached'));
   }
 
-  unSelectFriend(id) {
-    const { selectedFriends } = this.state;
+  unSelectFriend(index) {
+    const { friendsList, selectedFriends } = this.state;
+    let tempFriends = Object.assign([], friendsList);
+    tempFriends[index].selected = false;
     let tempSelectedFriends = Object.assign([], selectedFriends);
-    const index = tempSelectedFriends.indexOf(id.toString());
-    tempSelectedFriends.splice(index, 1);
-    return this.setState({ selectedFriends: tempSelectedFriends });
+    const positionIndex = tempSelectedFriends.indexOf(index);
+    tempSelectedFriends.splice(positionIndex, 1);
+    return this.setState({ friends: tempFriends, selectedFriends: tempSelectedFriends });
   }
 
-  onFriendSelection(friendDetails) {
-    const { id } = friendDetails;
+  onFriendSelection(index) {
     const { selectedFriends } = this.state;
-    if (selectedFriends.includes(id.toString())) {
-      return this.unSelectFriend(id.toString());
+    if (selectedFriends.includes(index)) {
+      return this.unSelectFriend(index);
     } else {
-      return this.selectFriend(id.toString());
+      return this.selectFriend(index);
     }
   }
 
-  renderSingleFriend(id, index) {
-    const { selectedFriends, friends } = this.state;
-    const friendDetails = friends[id];
-    const { name, mobile } = friendDetails;
+  renderSingleFriend(friendDetails, index) {
+    const { name, mobile, selected } = friendDetails;
     return (
       <FriendSelectionView
-        onPress={() => this.onFriendSelection(friendDetails)}
-        isSelected={selectedFriends.includes(id)}
+        onPress={() => this.onFriendSelection(index)}
+        isSelected={selected}
         name={name}
         key={index}
         mobile={mobile}
@@ -151,8 +152,8 @@ export default class SelectFriends extends Component {
   }
 
   renderFriends() {
-    const { friends } = this.state;
-    return Object.keys(friends).map((id, index) => this.renderSingleFriend(id.toString(), index));
+    const { friendsList } = this.state;
+    return friendsList.map((item, index) => this.renderSingleFriend(item, index));
   }
 
   renderCloseImage(id) {
@@ -195,7 +196,6 @@ export default class SelectFriends extends Component {
         <FlatList
           data={selectedFriends}
           horizontal={true}
-          initialNumToRender={50}
           showsHorizontalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => this.renderSelectedFriendAvatar(item)}
