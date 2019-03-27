@@ -3,10 +3,8 @@
 import React, { Component } from 'react';
 import {
   Dimensions,
-  FlatList,
   Image,
   PermissionsAndroid,
-  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View
@@ -18,11 +16,11 @@ import { FONT_SIZES } from 'app/config/ENV';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import EDText from 'app/components/EDText';
 import EDTextInput from 'app/components/EDTextInput';
+import GroupsList from 'app/components/GroupsList';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
+import PropTypes from 'prop-types';
 import ToolBar from 'app/components/ToolBar';
-import AbsoluteView from 'app/components/AbsoluteView';
-import FriendSelectionView from 'app/components/FriendSelectionView';
 
 const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -69,6 +67,10 @@ const FRIENDS = {
 };
 
 export default class NewBill extends Component {
+  static propTypes = {
+    navigation: PropTypes.object.isRequired
+  };
+
   static navigationOptions = {
     header: null
   };
@@ -144,54 +146,15 @@ export default class NewBill extends Component {
     );
   }
 
-  renderSingleGroup(group, index) {
-    return (
-      <FriendSelectionView
-        onPress={() => this.onSelectGroup(group)}
-        hideCheckBox={true}
-        name={group.name ? group.name : I18n.t('not_in_group')}
-        key={index}
-        mobile={''}
-      />
-    );
-  }
-
   renderGroups() {
     const { groups, showGroups } = this.state;
-    if (!showGroups) return null;
     return (
-      <AbsoluteView onDialogClose={() => this.setState({ showGroups: false })}>
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: COLORS.WHITE,
-            marginVertical: 50,
-            marginHorizontal: 20
-          }}
-        >
-          <EDText
-            style={{
-              textAlign: 'center',
-              color: COLORS.TEXT_BLACK,
-              fontSize: FONT_SIZES.H2,
-              paddingVertical: 20,
-              borderColor: COLORS.LIGHT_GRAY,
-              borderWidth: 1
-            }}
-          >
-            {I18n.t('choose_group')}
-          </EDText>
-          <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
-            <FlatList
-              data={groups}
-              initialNumToRender={50}
-              showsVerticalScrollIndicator={false}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }, index) => this.renderSingleGroup(item, index)}
-            />
-          </ScrollView>
-        </View>
-      </AbsoluteView>
+      <GroupsList
+        groups={groups}
+        showGroups={showGroups}
+        onDialogClose={() => this.setState({ showGroups: false })}
+        onSelectGroup={group => this.onSelectGroup(group)}
+      />
     );
   }
 
