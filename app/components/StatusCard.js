@@ -9,33 +9,41 @@ import { FONT_SIZES } from 'app/config/ENV';
 import EDText from 'app/components/EDText';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
+import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 
 const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
-  container: { paddingVertical: 10 },
+  container: {
+    height: 100,
+    padding: 15,
+    marginVertical: 5,
+    marginHorizontal: 10,
+    borderRadius: 5,
+    backgroundColor: COLORS.WHITE
+  },
   statusContainer: { flexDirection: 'row' },
   avatarContainer: {
-    height: 30,
-    width: 30,
+    height: 50,
+    width: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 15,
-    marginHorizontal: 10,
+    borderRadius: 3,
+    // marginRight: 10,
     backgroundColor: COLORS.APP_THEME_PURPLE
   },
-  avatarText: { color: COLORS.WHITE, fontSize: FONT_SIZES.H3 },
-  detailsContainer: { width: width - 160 },
+  avatarText: { color: COLORS.WHITE, fontSize: FONT_SIZES.H2, fontWeight: 'bold' },
+  nameContainer: { flex: 2, paddingTop: 5, paddingHorizontal: 15 },
   name: {
     textAlignVertical: 'top',
     includeFontPadding: false,
     color: COLORS.TEXT_BLACK,
-    fontWeight: '200',
-    fontSize: FONT_SIZES.H2,
-    width: width - 160
+    fontWeight: 'bold',
+    fontSize: FONT_SIZES.H1
   },
-  details: { width: width - 160, color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H4 },
-  balanceContainer: { width: 100 },
+  detailsContainer: {},
+  details: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H5 },
+  balanceContainer: { flex: 1 },
   balanceText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H4, textAlign: 'center' },
   balanceValue: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H2, textAlign: 'center' }
 });
@@ -60,7 +68,7 @@ export default class StatusCard extends Component {
     let oweText = detail.name + ' ' + I18n.t('owes_you') + ' ';
     let color = COLORS.GREEN;
     if (detail.owed) {
-      oweText = I18n.t('you_owe_') + ' ' + detail.name + ' ';
+      oweText = I18n.t('you_owe') + ' ' + detail.name + ' ';
       color = COLORS.ORANGE;
     }
     return (
@@ -123,8 +131,8 @@ export default class StatusCard extends Component {
     }
     return (
       <View style={styles.balanceContainer}>
-        <EDText style={styles.balanceText}>{I18n.t(status)}</EDText>
-        <EDText style={{ ...styles.balanceValue, color }}>{'₹' + balance}</EDText>
+        <EDText style={{ ...styles.balanceValue, color }}>{'₹ ' + balance}</EDText>
+        <EDText style={{ ...styles.balanceText, color }}>{I18n.t(status)}</EDText>
       </View>
     );
   }
@@ -132,8 +140,10 @@ export default class StatusCard extends Component {
   renderName() {
     const { name } = this.props;
     return (
-      <View style={{ width: width - 160 }}>
-        <EDText style={styles.name}>{name}</EDText>
+      <View style={styles.nameContainer}>
+        <EDText style={styles.name} numberOfLines={1}>
+          {name}
+        </EDText>
         {this.renderDetails()}
       </View>
     );
@@ -142,8 +152,18 @@ export default class StatusCard extends Component {
   renderAvatar() {
     const { name } = this.props;
     return (
-      <View style={styles.avatarContainer}>
-        <EDText style={styles.avatarText}>{name[0]}</EDText>
+      <View>
+        <LinearGradient
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          colors={['#91b8f7', '#3b84f9']}
+          style={styles.avatarContainer}
+        >
+          <EDText style={styles.avatarText}>{name[0]}</EDText>
+        </LinearGradient>
+        <EDText style={{ fontSize: FONT_SIZES.H6, paddingTop: 5, color: COLORS.GRAY }}>
+          {'edited Apr 4'}
+        </EDText>
       </View>
     );
   }
@@ -151,13 +171,11 @@ export default class StatusCard extends Component {
   render() {
     const { onPress } = this.props;
     return (
-      <TouchableHighlight onPress={onPress} underlayColor={COLORS.LIGHT_GRAY}>
-        <View style={styles.container}>
-          <View style={styles.statusContainer}>
-            {this.renderAvatar()}
-            {this.renderName()}
-            {this.renderBalance()}
-          </View>
+      <TouchableHighlight onPress={onPress} underlayColor={COLORS.GRAY} style={styles.container}>
+        <View style={styles.statusContainer}>
+          {this.renderAvatar()}
+          {this.renderName()}
+          {this.renderBalance()}
         </View>
       </TouchableHighlight>
     );

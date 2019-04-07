@@ -23,7 +23,7 @@ import StatusCard from 'app/components/StatusCard';
 const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scrollContainer: { flex: 1 },
+  scrollContainer: { flex: 1, backgroundColor: COLORS.LIGHT_GRAY },
   headerContainer: {
     paddingVertical: 15,
     alignItems: 'center',
@@ -48,12 +48,12 @@ const styles = StyleSheet.create({
 });
 
 const GROUPS_DETAILS = {
-  name: 'Kranthi',
+  name: 'KranthiKranthiKranthiKranthiKranthiKranthiKranthi',
   owed: true,
   details: [
     { name: 'Ram', amount: '20', owed: true },
-    { name: 'Ravi', amount: 100, owed: true },
-    { name: 'Ravi', amount: 100, owed: false }
+    { name: 'Ravi', amount: 100, owed: false },
+    { name: 'Ravi', amount: 100, owed: true }
   ],
   balance: '200',
   mobile: '9491267523'
