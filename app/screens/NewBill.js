@@ -19,6 +19,7 @@ import EDTextInput from 'app/components/EDTextInput';
 import GroupsList from 'app/components/GroupsList';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
+import PaidByOptions from 'app/components/PaidByOptions';
 import PropTypes from 'prop-types';
 import ToolBar from 'app/components/ToolBar';
 
@@ -41,7 +42,7 @@ const styles = StyleSheet.create({
   paidByAndSplitButton: {
     color: COLORS.TEXT_BLACK,
     fontSize: FONT_SIZES.H3,
-    maxWidth: width / 2,
+    maxWidth: width / 4,
     marginHorizontal: 10,
     paddingHorizontal: 5,
     borderColor: COLORS.APP_THEME_PURPLE,
@@ -53,18 +54,29 @@ const FRIENDS_DETAILS = {
   name: 'Harshaknkvdkkndnf',
   mobile: '9491267523'
 };
-const FRIENDS = {
-  1: { ...FRIENDS_DETAILS, id: 1 },
-  2: { ...FRIENDS_DETAILS, id: 2 },
-  3: { ...FRIENDS_DETAILS, id: 3 },
-  4: { ...FRIENDS_DETAILS, id: 4 },
-  5: { ...FRIENDS_DETAILS, id: 5 },
-  6: { ...FRIENDS_DETAILS, id: 6 },
-  7: { ...FRIENDS_DETAILS, id: 7 },
-  8: { ...FRIENDS_DETAILS, id: 8 },
-  9: { ...FRIENDS_DETAILS, id: 9 },
-  10: { ...FRIENDS_DETAILS, id: 10 }
-};
+const FRIENDS = [
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS,
+  FRIENDS_DETAILS
+];
 
 export default class NewBill extends Component {
   static propTypes = {
@@ -84,33 +96,10 @@ export default class NewBill extends Component {
       paid_by: null,
       split: null,
       friends: FRIENDS,
-      groups: [
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        { name: '' }
-      ],
+      groups: [...FRIENDS, { name: '' }],
       selectedFriends: ['you'],
       showGroups: false,
-      showPaidBy: false,
+      showPaidByOptions: false,
       showSplit: false,
       spinner: false
     };
@@ -124,25 +113,21 @@ export default class NewBill extends Component {
     this.setState({ group, showGroups: false });
   }
 
-  renderPaidByAndSplitButton(title, stateKey) {
-    return (
-      <TouchableOpacity onPress={() => this.setState({ [stateKey]: true })}>
-        <EDText style={styles.paidByAndSplitButton}>{title}</EDText>
-      </TouchableOpacity>
-    );
+  onSelectPaidByFriend(friend) {
+    const { amount } = this.state;
+    this.setState({ showPaidByOptions: false, paid_by: [{ name: friend.name, amount }] });
   }
 
-  renderPaidByAndSplit() {
-    const { paid_by, split } = this.state;
-    const paidByButtonTitle = paid_by ? paid_by : I18n.t('you');
-    const splitButtonTitle = split ? split : I18n.t('equally');
+  renderPaidByOptions() {
+    const { friends, amount, showPaidByOptions } = this.state;
     return (
-      <View style={{ flexDirection: 'row', marginTop: 15, width: width - 70 }}>
-        <EDText style={styles.paidByAndSplitText}>{I18n.t('paid_by')}</EDText>
-        {this.renderPaidByAndSplitButton(paidByButtonTitle, 'showPaidBy')}
-        <EDText style={styles.paidByAndSplitText}>{I18n.t('and_split')}</EDText>
-        {this.renderPaidByAndSplitButton(splitButtonTitle, 'showSplit')}
-      </View>
+      <PaidByOptions
+        friends={friends}
+        amount={amount}
+        showPaidByOptions={showPaidByOptions}
+        onDialogClose={() => this.setState({ showPaidByOptions: false })}
+        onSelectFriend={friend => this.onSelectPaidByFriend(friend)}
+      />
     );
   }
 
@@ -158,6 +143,38 @@ export default class NewBill extends Component {
     );
   }
 
+  renderPaidByAndSplitButton(title, stateKey) {
+    return (
+      <TouchableOpacity onPress={() => this.setState({ [stateKey]: true })}>
+        <EDText style={styles.paidByAndSplitButton} numberOfLines={1}>
+          {title}
+        </EDText>
+      </TouchableOpacity>
+    );
+  }
+
+  renderPaidByAndSplit() {
+    const { paid_by, split } = this.state;
+    let paidByButtonTitle = I18n.t('you');
+    if (paid_by) {
+      if (paid_by.length === 1) {
+        const words = paid_by[0].name.split(' ');
+        paidByButtonTitle = words.length > 1 ? words[0] + ' ' + words[1] + '.' : words[0];
+      } else {
+        paidByButtonTitle = `2 + ${I18n.t('people')}`;
+      }
+    }
+    const splitButtonTitle = split ? split : I18n.t('equally');
+    return (
+      <View style={{ flexDirection: 'row', marginTop: 15, width: width - 70 }}>
+        <EDText style={styles.paidByAndSplitText}>{I18n.t('paid_by')}</EDText>
+        {this.renderPaidByAndSplitButton(paidByButtonTitle, 'showPaidByOptions')}
+        <EDText style={styles.paidByAndSplitText}>{I18n.t('and_split')}</EDText>
+        {this.renderPaidByAndSplitButton(splitButtonTitle, 'showSplit')}
+      </View>
+    );
+  }
+
   renderSelectedGroup() {
     const { group } = this.state;
     const title = group && group.name ? ` ${group.name}` : ` ${I18n.t('group')}: ${I18n.t('none')}`;
@@ -165,7 +182,9 @@ export default class NewBill extends Component {
       <View style={styles.selectedGroup}>
         <Image source={Images['group']} style={{ height: 30, width: 30 }} />
         <TouchableOpacity onPress={() => this.setState({ showGroups: true })} style={{}}>
-          <EDText style={styles.selectedGroupText}>{title}</EDText>
+          <EDText style={styles.selectedGroupText} numberOfLines={1}>
+            {title}
+          </EDText>
         </TouchableOpacity>
       </View>
     );
@@ -231,6 +250,7 @@ export default class NewBill extends Component {
           </View>
         </View>
         {this.renderGroups()}
+        {this.renderPaidByOptions()}
       </View>
     );
   }

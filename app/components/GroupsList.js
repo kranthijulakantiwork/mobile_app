@@ -20,12 +20,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 20
   },
   headingText: {
-    textAlign: 'center',
+    marginLeft: 10,
     color: COLORS.TEXT_BLACK,
     fontSize: FONT_SIZES.H2,
     paddingVertical: 20,
-    borderColor: COLORS.LIGHT_GRAY,
-    borderWidth: 1
+    fontWeight: 'bold'
   }
 });
 
