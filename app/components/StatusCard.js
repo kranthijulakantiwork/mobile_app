@@ -29,7 +29,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 3,
-    // marginRight: 10,
     backgroundColor: COLORS.APP_THEME_PURPLE
   },
   avatarText: { color: COLORS.WHITE, fontSize: FONT_SIZES.H2, fontWeight: 'bold' },
@@ -44,8 +43,8 @@ const styles = StyleSheet.create({
   detailsContainer: {},
   details: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H5 },
   balanceContainer: { flex: 1 },
-  balanceText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H4, textAlign: 'center' },
-  balanceValue: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H2, textAlign: 'center' }
+  balanceText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H4, textAlign: 'right' },
+  balanceValue: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H2, textAlign: 'right' }
 });
 
 export default class StatusCard extends Component {
@@ -114,6 +113,34 @@ export default class StatusCard extends Component {
     );
   }
 
+  renderMemberCount() {
+    const { balanceType, details } = this.props;
+    if (balanceType === 'groups') {
+      return (
+        <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'flex-end' }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'flex-end'
+            }}
+          >
+            <Image
+              source={Images.group}
+              style={{ height: 20, width: 20 }}
+              tintColor={COLORS.GRAY}
+            />
+            <EDText style={{ fontSize: FONT_SIZES.H5, color: COLORS.GRAY, marginLeft: 5 }}>
+              {details.length}
+            </EDText>
+          </View>
+        </View>
+      );
+    }
+    return null;
+  }
+
+  // TODO Change group icon and customize for only groups
   renderBalance() {
     const { balance, balanceType, owed } = this.props;
     if (!balance) {
@@ -133,6 +160,7 @@ export default class StatusCard extends Component {
       <View style={styles.balanceContainer}>
         <EDText style={{ ...styles.balanceValue, color }}>{'₹ ' + balance}</EDText>
         <EDText style={{ ...styles.balanceText, color }}>{I18n.t(status)}</EDText>
+        {this.renderMemberCount()}
       </View>
     );
   }
