@@ -36,17 +36,19 @@ import Splash from 'app/screens/Splash';
 
 const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
-  addButton: { position: 'absolute', bottom: 20, right: 30 },
+  addButton: { position: 'absolute', bottom: 50, right: 30 },
   addButtonTextContainer: {
-    backgroundColor: COLORS.APP_THEME_BLUE,
+    backgroundColor: COLORS.WHITE,
     height: 60,
     width: 60,
     borderRadius: 30,
+    borderWidth: 1,
+    borderColor: COLORS.TEXT_BLACK,
     alignItems: 'center',
     justifyContent: 'center'
   },
   addButtonText: {
-    color: COLORS.WHITE,
+    color: COLORS.TEXT_BLACK,
     fontSize: 40,
     includeFontPadding: false
   }
@@ -81,21 +83,21 @@ const navigationOptions = {
   defaultNavigationOptions: {
     gesturesEnabled: false,
     title: I18n.t('app_name'),
-    headerBackground: <View style={{ flex: 1, backgroundColor: COLORS.APP_THEME_BLUE }} />,
+    headerBackground: <View style={{ flex: 1, backgroundColor: COLORS.WHITE }} />,
     headerTitle: ({ children }) => {
       return (
         <View
           style={{
             flex: 1,
             height: 56,
-            backgroundColor: COLORS.APP_THEME_BLUE,
-            alignItems: 'center',
-            justifyContent: 'center'
+            backgroundColor: COLORS.WHITE,
+            justifyContent: 'center',
+            alignItems: 'center'
           }}
         >
           <EDText
             style={{
-              fontSize: FONT_SIZES.H1,
+              fontSize: FONT_SIZES.H20,
               color: COLORS.TEXT_BLACK
             }}
           >
@@ -120,7 +122,7 @@ const DrawerNavigator = createDrawerNavigator(
 );
 
 const tabbarLabel = (focused, title) => {
-  const color = focused ? COLORS.WHITE : COLORS.WHITE;
+  const color = focused ? COLORS.TEXT_BLACK : COLORS.TEXT_BLACK;
   return (
     <View style={{}}>
       <EDText style={{ color, textAlign: 'center', marginBottom: 5, fontSize: FONT_SIZES.H2 }}>
@@ -150,16 +152,16 @@ const Tabs = createMaterialTopTabNavigator(
   },
   {
     swipeEnabled: true,
-    // tabBarPosition: 'bottom',
+    tabBarPosition: 'bottom',
     animationEnabled: true,
     lazy: false,
     optimizationsEnabled: true,
     tabBarOptions: {
       showIcon: false,
-      activeBackgroundColor: COLORS.APP_THEME_BLUE,
-      inactiveBackgroundColor: COLORS.WHITE,
-      indicatorStyle: { backgroundColor: COLORS.WHITE },
-      style: { height: 40 }
+      // activeBackgroundColor: COLORS.WHITE,
+      // inactiveBackgroundColor: COLORS.WHITE,
+      indicatorStyle: { backgroundColor: COLORS.TEXT_BLACK },
+      style: { height: 40, backgroundColor: COLORS.WHITE }
     }
   }
 );
@@ -194,9 +196,9 @@ class CustomTabs extends React.Component<Props> {
 
 const AppNavigator = createStackNavigator(
   {
+    Tabs: { screen: CustomTabs },
     NewBill: { screen: NewBill },
     SelectFriends: { screen: SelectFriends },
-    Tabs: { screen: CustomTabs },
     Payment: { screen: Payment },
     DrawerNavigator: { screen: DrawerNavigator },
     SignIn: { screen: SignIn }

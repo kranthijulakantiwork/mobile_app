@@ -236,10 +236,10 @@ export default class NewBill extends Component {
       <View style={styles.container}>
         <ToolBar
           title={I18n.t('new_bill')}
-          leftTitle={I18n.t('back')}
+          leftImage="back"
           onLeft={() => goBack()}
           onRight={() => alert('TODO')}
-          rightTitle={I18n.t('add')}
+          rightImage="tick"
         />
         <View style={styles.container}>
           <View style={styles.subContainer}>
