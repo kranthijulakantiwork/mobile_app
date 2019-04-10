@@ -18,16 +18,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignSelf: 'center',
     borderRadius: 1,
-    // elevation: 2,
-    backgroundColor: COLORS.APP_THEME_BLUE,
-    shadowColor: '#000'
+    backgroundColor: COLORS.WHITE,
+    borderBottomWidth: 1,
+    borderColor: '#4d95989a'
   },
   subTitleContainer: { flex: 1, marginVertical: 5 },
   title: {
     flex: 1,
     textAlign: 'center',
     fontSize: 20,
-    color: COLORS.WHITE
+    color: COLORS.TEXT_BLACK
   },
   button: { height: 60, width: 70, alignItems: 'center', justifyContent: 'center' },
   buttonText: { fontSize: FONT_SIZES.H1, color: COLORS.WHITE }
@@ -40,15 +40,16 @@ export default class ToolBar extends Component {
     leftTitle: PropTypes.string,
     rightTitle: PropTypes.string,
     onRight: PropTypes.func,
-    leftImage: PropTypes.number,
-    rightImage: PropTypes.number
+    leftImage: PropTypes.string,
+    rightImage: PropTypes.string
   };
 
   renderButton({ onPress, title, image }) {
     if (onPress) {
       return (
         <TouchableOpacity onPress={onPress} style={styles.button}>
-          <EDText style={styles.buttonText}>{title}</EDText>
+          {title && <EDText style={styles.buttonText}>{title}</EDText>}
+          {image && <Image source={Images[image]} />}
         </TouchableOpacity>
       );
     }
@@ -68,7 +69,7 @@ export default class ToolBar extends Component {
   }
 
   render() {
-    const { onLeft, leftTitle = '', leftImage, onRight, rightTitle = '', rightImage } = this.props;
+    const { onLeft, leftTitle, leftImage, onRight, rightTitle, rightImage } = this.props;
     return (
       <View style={styles.container}>
         {this.renderButton({ onPress: onLeft, title: leftTitle, image: leftImage })}

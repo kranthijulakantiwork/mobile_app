@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    borderColor: COLORS.LIGHT_GRAY,
+    borderColor: '#f9f9f9',
     borderWidth: 1
   },
   headerText: { fontSize: FONT_SIZES.H3, textAlign: 'center' },
@@ -41,8 +41,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     marginTop: 10,
     marginHorizontal: 15,
-    borderColor: COLORS.TEXT_BLACK,
-    borderWidth: 1
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 3
   },
   footerText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H3 }
 });

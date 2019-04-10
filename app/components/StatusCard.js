@@ -15,8 +15,9 @@ import PropTypes from 'prop-types';
 const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
-    height: 100,
-    padding: 15,
+    height: 90,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
     marginVertical: 5,
     marginHorizontal: 10,
     borderRadius: 5,
@@ -24,27 +25,37 @@ const styles = StyleSheet.create({
   },
   statusContainer: { flexDirection: 'row' },
   avatarContainer: {
-    height: 50,
-    width: 50,
+    height: 45,
+    width: 45,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 3,
     backgroundColor: COLORS.APP_THEME_PURPLE
   },
-  avatarText: { color: COLORS.WHITE, fontSize: FONT_SIZES.H2, fontWeight: 'bold' },
-  nameContainer: { flex: 2, paddingTop: 5, paddingHorizontal: 15 },
+  avatarText: { color: COLORS.WHITE, fontSize: FONT_SIZES.H20, fontWeight: 'bold' },
+  nameContainer: { flex: 2, paddingTop: 2, paddingHorizontal: 15 },
   name: {
     textAlignVertical: 'top',
     includeFontPadding: false,
     color: COLORS.TEXT_BLACK,
     fontWeight: 'bold',
-    fontSize: FONT_SIZES.H1
+    fontSize: FONT_SIZES.H20
   },
   detailsContainer: {},
-  details: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H5 },
+  details: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H6 },
   balanceContainer: { flex: 1 },
   balanceText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H4, textAlign: 'right' },
-  balanceValue: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H2, textAlign: 'right' }
+  balanceValue: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H20, textAlign: 'right' },
+  memberCountOuterContainer: {
+    flex: 1,
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end'
+  },
+  memberCountInnerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end'
+  }
 });
 
 export default class StatusCard extends Component {
@@ -65,10 +76,10 @@ export default class StatusCard extends Component {
 
   renderSummaryDetails(detail, i) {
     let oweText = detail.name + ' ' + I18n.t('owes_you') + ' ';
-    let color = COLORS.GREEN;
+    let color = COLORS.BALANCE_GREEN;
     if (detail.owed) {
       oweText = I18n.t('you_owe') + ' ' + detail.name + ' ';
-      color = COLORS.ORANGE;
+      color = COLORS.BALANCE_RED;
     }
     return (
       <EDText style={styles.details} key={i}>
@@ -117,20 +128,10 @@ export default class StatusCard extends Component {
     const { balanceType, details } = this.props;
     if (balanceType === 'groups') {
       return (
-        <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'flex-end' }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'flex-end'
-            }}
-          >
-            <Image
-              source={Images.group}
-              style={{ height: 20, width: 20 }}
-              tintColor={COLORS.GRAY}
-            />
-            <EDText style={{ fontSize: FONT_SIZES.H5, color: COLORS.GRAY, marginLeft: 5 }}>
+        <View style={styles.memberCountOuterContainer}>
+          <View style={styles.memberCountInnerContainer}>
+            <Image source={Images.member} />
+            <EDText style={{ fontSize: FONT_SIZES.H6, color: COLORS.GRAY, marginLeft: 5 }}>
               {details.length}
             </EDText>
           </View>
@@ -143,22 +144,21 @@ export default class StatusCard extends Component {
   // TODO Change group icon and customize for only groups
   renderBalance() {
     const { balance, balanceType, owed } = this.props;
+    let color = COLORS.BALANCE_GREEN;
+    let status = 'you_are_owed';
     if (!balance) {
-      return <EDText style={styles.balanceText}>{I18n.t('settled_up')}</EDText>;
+      status = 'settled_up';
+      color = COLORS.BALANCE_BLUE;
     }
-    let status = 'owes_you';
-    let color = COLORS.GREEN;
     if (owed) {
-      color = COLORS.ORANGE;
-      if (balanceType === 'groups') {
-        status = 'you_are_owed';
-      } else {
-        status = 'you_owe';
-      }
+      color = COLORS.BALANCE_RED;
+      status = 'you_owe';
     }
     return (
       <View style={styles.balanceContainer}>
-        <EDText style={{ ...styles.balanceValue, color }}>{'₹ ' + balance}</EDText>
+        <EDText style={{ ...styles.balanceValue, color }}>
+          {'₹ ' + balance ? balance : '0.00'}
+        </EDText>
         <EDText style={{ ...styles.balanceText, color }}>{I18n.t(status)}</EDText>
         {this.renderMemberCount()}
       </View>
@@ -166,9 +166,10 @@ export default class StatusCard extends Component {
   }
 
   renderName() {
-    const { name } = this.props;
+    const { name, balanceType } = this.props;
+    const containerStyle = balanceType === 'groups' ? {} : { paddingTop: 9 };
     return (
-      <View style={styles.nameContainer}>
+      <View style={[styles.nameContainer, containerStyle]}>
         <EDText style={styles.name} numberOfLines={1}>
           {name}
         </EDText>
@@ -178,9 +179,14 @@ export default class StatusCard extends Component {
   }
 
   renderAvatar() {
-    const { name } = this.props;
+    const { name, balanceType } = this.props;
+    // TODO get last edited date as Apr 4
+    const lastEdited =
+      balanceType === 'groups'
+        ? I18n.t('edited') + ' ' + 'Apr 4'
+        : I18n.t('updated') + ' ' + 'Apr 4';
     return (
-      <View>
+      <View style={{ alignItems: 'center' }}>
         <LinearGradient
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
@@ -189,17 +195,22 @@ export default class StatusCard extends Component {
         >
           <EDText style={styles.avatarText}>{name[0]}</EDText>
         </LinearGradient>
-        <EDText style={{ fontSize: FONT_SIZES.H6, paddingTop: 5, color: COLORS.GRAY }}>
-          {'edited Apr 4'}
+        <EDText style={{ fontSize: FONT_SIZES.H6, paddingTop: 5, color: '#bbbbbb' }}>
+          {lastEdited}
         </EDText>
       </View>
     );
   }
 
   render() {
-    const { onPress } = this.props;
+    const { onPress, balanceType } = this.props;
+    const buttonStyle = balanceType === 'groups' ? { paddingTop: 12 } : { height: 75 };
     return (
-      <TouchableHighlight onPress={onPress} underlayColor={COLORS.GRAY} style={styles.container}>
+      <TouchableHighlight
+        onPress={onPress}
+        underlayColor={COLORS.GRAY}
+        style={{ ...styles.container, ...buttonStyle }}
+      >
         <View style={styles.statusContainer}>
           {this.renderAvatar()}
           {this.renderName()}

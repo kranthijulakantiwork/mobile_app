@@ -2,6 +2,8 @@
 
 const SERVER = '/';
 const FONT_SIZES = {
+  H22: 22,
+  H20: 20,
   H1: 18,
   H2: 16,
   H3: 14,

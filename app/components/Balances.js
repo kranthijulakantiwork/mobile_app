@@ -33,8 +33,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  balanceValue: { color: COLORS.WHITE, fontSize: FONT_SIZES.H1, marginBottom: 5 },
-  balanceText: { color: COLORS.WHITE, fontSize: FONT_SIZES.H2, fontWeight: 'bold' }
+  balanceValue: { color: COLORS.WHITE, fontSize: FONT_SIZES.H22, marginBottom: 5 },
+  balanceText: { color: COLORS.WHITE, fontSize: FONT_SIZES.H1, fontWeight: 'bold' }
 });
 
 export default class Balances extends Component {

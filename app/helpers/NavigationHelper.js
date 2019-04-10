@@ -83,21 +83,21 @@ const navigationOptions = {
   defaultNavigationOptions: {
     gesturesEnabled: false,
     title: I18n.t('app_name'),
-    headerBackground: <View style={{ flex: 1, backgroundColor: COLORS.APP_THEME_BLUE }} />,
+    headerBackground: <View style={{ flex: 1, backgroundColor: COLORS.WHITE }} />,
     headerTitle: ({ children }) => {
       return (
         <View
           style={{
             flex: 1,
             height: 56,
-            backgroundColor: COLORS.APP_THEME_BLUE,
-            alignItems: 'center',
-            justifyContent: 'center'
+            backgroundColor: COLORS.WHITE,
+            justifyContent: 'center',
+            alignItems: 'center'
           }}
         >
           <EDText
             style={{
-              fontSize: FONT_SIZES.H1,
+              fontSize: FONT_SIZES.H20,
               color: COLORS.TEXT_BLACK
             }}
           >
