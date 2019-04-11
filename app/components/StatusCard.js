@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
+import Avatar from 'app/components/Avatar';
 import EDText from 'app/components/EDText';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
@@ -185,21 +186,7 @@ export default class StatusCard extends Component {
       balanceType === 'groups'
         ? I18n.t('edited') + ' ' + 'Apr 4'
         : I18n.t('updated') + ' ' + 'Apr 4';
-    return (
-      <View style={{ alignItems: 'center' }}>
-        <LinearGradient
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          colors={['#91b8f7', '#3b84f9']}
-          style={styles.avatarContainer}
-        >
-          <EDText style={styles.avatarText}>{name[0]}</EDText>
-        </LinearGradient>
-        <EDText style={{ fontSize: FONT_SIZES.H6, paddingTop: 5, color: '#bbbbbb' }}>
-          {lastEdited}
-        </EDText>
-      </View>
-    );
+    return <Avatar name={name} avatarSubText={lastEdited} />;
   }
 
   render() {
@@ -208,7 +195,7 @@ export default class StatusCard extends Component {
     return (
       <TouchableHighlight
         onPress={onPress}
-        underlayColor={COLORS.GRAY}
+        underlayColor={COLORS.BACKGROUND_GRAY}
         style={{ ...styles.container, ...buttonStyle }}
       >
         <View style={styles.statusContainer}>

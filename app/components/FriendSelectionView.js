@@ -13,6 +13,7 @@ import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
+import Avatar from 'app/components/Avatar';
 import EDText from 'app/components/EDText';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
@@ -20,17 +21,8 @@ import PropTypes from 'prop-types';
 
 const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
-  container: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10 },
-  avatarContainer: {
-    height: 30,
-    width: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 15,
-    marginHorizontal: 10,
-    backgroundColor: COLORS.APP_THEME_PURPLE
-  },
-  avatarText: { color: COLORS.WHITE, fontSize: FONT_SIZES.H3 },
+  container: { flexDirection: 'row', alignItems: 'center', padding: 10 },
+  nameContainer: { width: width - 100, marginLeft: 10 },
   name: {
     textAlignVertical: 'top',
     includeFontPadding: false,
@@ -80,7 +72,7 @@ export default class FriendSelectionView extends Component {
   renderName() {
     const { name, mobile } = this.props;
     return (
-      <View style={{ width: width - 100 }}>
+      <View style={styles.nameContainer}>
         <EDText style={styles.name} numberOfLines={1}>
           {name}
         </EDText>
@@ -91,11 +83,7 @@ export default class FriendSelectionView extends Component {
 
   renderAvatar() {
     const { name } = this.props;
-    return (
-      <View style={styles.avatarContainer}>
-        <EDText style={styles.avatarText}>{name[0]}</EDText>
-      </View>
-    );
+    return <Avatar name={name} />;
   }
 
   render() {

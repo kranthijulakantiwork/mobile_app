@@ -16,6 +16,7 @@ import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
+import Avatar from 'app/components/Avatar';
 import Contacts from 'react-native-contacts';
 import EDText from 'app/components/EDText';
 import FriendSelectionView from 'app/components/FriendSelectionView';
@@ -35,40 +36,6 @@ const styles = StyleSheet.create({
   },
   headerText: { fontSize: FONT_SIZES.H3, textAlign: 'center' },
   selectFriendAvatarContainer: { width: 55, alignItems: 'center', paddingVertical: 10 },
-  avatarContainer: {
-    height: 40,
-    width: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 20,
-    backgroundColor: COLORS.APP_THEME_PURPLE
-  },
-  avatarText: { color: COLORS.WHITE, fontSize: FONT_SIZES.H3 },
-  closeContainer: {
-    position: 'absolute',
-    top: 0,
-    right: 3,
-    width: 12,
-    height: 12,
-    borderColor: 'red',
-    borderRadius: 6,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'red'
-  },
-  closeText: {
-    color: 'white',
-    fontSize: 10,
-    fontWeight: 'bold'
-  },
-  avatarName: {
-    color: COLORS.TEXT_BLACK,
-    fontSize: FONT_SIZES.H4,
-    textAlign: 'center',
-    width: 50,
-    paddingTop: 3
-  },
   name: {
     textAlignVertical: 'top',
     includeFontPadding: false,
@@ -195,36 +162,19 @@ export default class SelectFriends extends Component {
     return friendsList.map((item, index) => this.renderSingleFriend(item, index));
   }
 
-  renderCloseImage(id) {
-    if (id !== 'you') {
-      return (
-        <View style={styles.closeContainer}>
-          <EDText style={styles.closeText}>{'X'}</EDText>
-        </View>
-      );
-    }
-    return null;
-  }
-
   renderSelectedFriendAvatar(id) {
     const { friends } = this.state;
     const friend = id === 'you' ? { name: 'Kranthi' } : friends[id];
     return (
-      <TouchableOpacity
-        onPress={() => this.unSelectFriend(id)}
+      <Avatar
+        name={friend['name']}
+        showClose={id !== 'you'}
         disabled={id === 'you'}
-        style={styles.selectFriendAvatarContainer}
-      >
-        <View style={{ width: 40, height: 45 }}>
-          <View style={styles.avatarContainer}>
-            <EDText style={styles.avatarText}>{friend['name'][0]}</EDText>
-          </View>
-          {this.renderCloseImage(id)}
-        </View>
-        <EDText numberOfLines={1} style={styles.avatarName}>
-          {friend['name']}
-        </EDText>
-      </TouchableOpacity>
+        avatarSubText={friend['name']}
+        avatarSubTextStyle={{ width: 50 }}
+        onPress={() => this.unSelectFriend(id)}
+        buttonStyle={styles.selectFriendAvatarContainer}
+      />
     );
   }
 

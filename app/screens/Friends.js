@@ -24,15 +24,7 @@ import StatusCard from 'app/components/StatusCard';
 const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scrollContainer: { flex: 1, backgroundColor: COLORS.LIGHT_GRAY },
-  headerContainer: {
-    paddingVertical: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderColor: '#f9f9f9',
-    borderWidth: 1
-  },
-  headerText: { fontSize: FONT_SIZES.H3, textAlign: 'center' },
+  scrollContainer: { flex: 1, backgroundColor: COLORS.BACKGROUND_GRAY },
   footerContainer: {
     width: width - 30,
     flexDirection: 'row',
