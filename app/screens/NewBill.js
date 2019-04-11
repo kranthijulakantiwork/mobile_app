@@ -25,6 +25,7 @@ import Images from 'app/config/Images';
 import PaidByOptions from 'app/components/PaidByOptions';
 import PropTypes from 'prop-types';
 import ToolBar from 'app/components/ToolBar';
+import Categories from 'app/components/Categories';
 
 const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -182,6 +183,17 @@ export default class NewBill extends Component {
     );
   }
 
+  renderCategories() {
+    const { showCategory } = this.state;
+    if (!showCategory) return null;
+    return (
+      <Categories
+        onPress={category => this.setState({ category, showCategory: false })}
+        onDialogClose={() => this.setState({ showCategory: false })}
+      />
+    );
+  }
+
   renderFooterButton(title, imageSource, onPress) {
     return (
       <TouchableOpacity onPress={onPress} style={{ flex: 1 }}>
@@ -324,19 +336,79 @@ export default class NewBill extends Component {
   }
 
   renderAmount() {
-    return this.renderTextInputField({
-      title: I18n.t('amount'),
-      stateKey: 'amount',
-      keyboardType: 'number-pad',
-      titleText: '₹'
-    });
+    return (
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <EDText style={{ color: COLORS.TEXT_BLACK, fontSize: 60 }}>{'₹'}</EDText>
+        <EDTextInput
+          title={I18n.t('amount')}
+          textInputStyle={{ width: width - 100, marginLeft: 15 }}
+          titleStyle={{ marginLeft: 15 }}
+          containerStyle={{ marginHorizontal: 0 }}
+          value={this.state['amount']}
+          onChangeText={text => this.onChangeText('amount', text)}
+          keyboardType={'number-pad'}
+        />
+      </View>
+    );
+  }
+
+  renderCategoryButton() {
+    const { category } = this.state;
+    const categoryText = category ? I18n.t(category) : I18n.t('select_category');
+    const categoryImage = category ? category : 'category';
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          this.setState({ showCategory: true });
+          dismissKeyboard();
+        }}
+        style={{ alignSelf: 'center' }}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+          <View
+            style={{
+              height: 34,
+              width: 34,
+              borderRadius: 34 / 2,
+              borderWidth: 2,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderColor: COLORS.TEXT_BLACK
+            }}
+          >
+            <Image source={Images[categoryImage]} />
+          </View>
+          <EDText style={{ width: 40, fontSize: 10, color: COLORS.TEXT_BLACK, marginLeft: 5 }}>
+            {categoryText}
+          </EDText>
+        </View>
+      </TouchableOpacity>
+    );
   }
 
   renderBillName() {
-    return this.renderTextInputField({
-      title: I18n.t('bill_name'),
-      stateKey: 'bill_name'
-    });
+    return (
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Image source={Images['bill_name']} />
+        <View
+          style={{
+            flexDirection: 'row',
+            borderBottomWidth: 1,
+            borderColor: COLORS.TEXT_BLACK,
+            marginLeft: 15
+          }}
+        >
+          <EDTextInput
+            title={I18n.t('bill_name')}
+            textInputStyle={{ width: width - 160, borderBottomWidth: 0 }}
+            containerStyle={{ marginHorizontal: 0 }}
+            value={this.state['bill_name']}
+            onChangeText={text => this.onChangeText('bill_name', text)}
+          />
+          {this.renderCategoryButton()}
+        </View>
+      </View>
+    );
   }
 
   render() {
@@ -367,6 +439,7 @@ export default class NewBill extends Component {
           </KeyboardAwareScrollView>
           {this.renderFooter()}
         </View>
+        {this.renderCategories()}
         {this.renderGroups()}
         {this.renderPaidByOptions()}
         {this.renderCalender()}
