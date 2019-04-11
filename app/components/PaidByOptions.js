@@ -86,7 +86,16 @@ export default class PaidByOptions extends Component {
         onPress={() => this.setState({ multiple: true })}
         underlayColor={COLORS.LIGHT_GRAY}
       >
-        <EDText style={styles.multipleButtonText}>{I18n.t('multiple_people')}</EDText>
+        <EDText
+          style={{
+            fontSize: FONT_SIZES.H3,
+            color: COLORS.TEXT_BLACK,
+            marginLeft: 10,
+            paddingVertical: 15
+          }}
+        >
+          {I18n.t('multiple_people')}
+        </EDText>
       </TouchableHighlight>
     );
   }

@@ -2,6 +2,7 @@
 
 const en = {
   add_more_friends: 'Add More Friends',
+  add_notes: 'Add Notes',
   add: 'Add',
   amount_left: '₹{{amountLeft}} left',
   amount: 'Amount',
@@ -15,9 +16,10 @@ const en = {
   choose_payer: 'Choose Payer',
   create_group: 'Create Group',
   create: 'Create',
+  date: 'Date',
   edited: 'edited',
   enter_each_persons_share: "Enter each person's share: ",
-  equally: 'Equally',
+  equally: 'EQUALLY',
   friends_tab: 'Friends',
   group: 'Group',
   groups_tab: 'Groups',
@@ -43,7 +45,7 @@ const en = {
   you_are_owed: 'you are owed',
   you_owe_: 'You owe',
   you_owe: 'you owe',
-  you: 'You'
+  you: 'YOU'
 };
 
 export default en;

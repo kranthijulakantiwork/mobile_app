@@ -6,6 +6,7 @@ const COLORS = {
   BALANCE_BLUE: '#398cbf',
   BALANCE_GREEN: '#4bcf62',
   BALANCE_RED: '#ff7474',
+  BLACK: '#000000',
   GRAY: 'gray',
   GREEN: 'lightgreen',
   LIGHT_GRAY: 'lightgray',
