@@ -25,7 +25,15 @@ import Images from 'app/config/Images';
 import PaidByOptions from 'app/components/PaidByOptions';
 import PropTypes from 'prop-types';
 import ToolBar from 'app/components/ToolBar';
+import ImagePicker from 'react-native-image-picker';
 
+const options = {
+  title: 'Select Avatar',
+  storageOptions: {
+    skipBackup: true,
+    path: 'images'
+  }
+};
 const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: { flex: 1 },
@@ -129,6 +137,29 @@ export default class NewBill extends Component {
     this.setState({ showGroups: true });
   }
 
+  onFooterCameraClick() {
+    ImagePicker.showImagePicker(options, response => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        const source = { uri: response.uri };
+
+        // You can also display the image using data:
+        // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+
+        this.setState({
+          avatarSource: source
+        });
+      }
+    });
+  }
+
   onSelectGroup(group) {
     dismissKeyboard();
     this.setState({ group, showGroups: false });
@@ -227,7 +258,7 @@ export default class NewBill extends Component {
         <View style={{ height: 48, width: 1, backgroundColor: COLORS.TEXT_BLACK }} />
         {this.renderFooterButton(groupName, 'multiple_people', () => this.onFooterGroupClick())}
         <View style={{ height: 50, width: 1, backgroundColor: COLORS.TEXT_BLACK }} />
-        {this.renderFooterButton('Image', 'camera', () => {})}
+        {this.renderFooterButton('Image', 'camera', () => this.onFooterCameraClick())}
       </View>
     );
   }
