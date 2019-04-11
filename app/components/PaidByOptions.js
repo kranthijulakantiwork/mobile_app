@@ -56,16 +56,21 @@ export default class PaidByOptions extends Component {
     onSelectFriend: PropTypes.func.isRequired,
     friends: PropTypes.array.isRequired,
     amount: PropTypes.string.isRequired,
-    showPaidByOptions: PropTypes.bool.isRequired
+    onOkay: PropTypes.func.isRequired,
+    paidBy: PropTypes.object.isRequired
   };
 
   constructor(props) {
     super(props);
-    const { friends } = this.props;
+    const { paidBy } = this.props;
+    const allocatedAmount =
+      paidBy && Object.values(paidBy).length
+        ? Object.values(paidBy).reduce((sum, amount) => sum + amount)
+        : 0;
     this.state = {
       multiple: false,
-      allocatedAmount: 0,
-      friendsAmount: _.fill(Object.keys(friends), '')
+      allocatedAmount,
+      friendsAmount: Object.assign({}, paidBy)
     };
   }
 
@@ -78,6 +83,14 @@ export default class PaidByOptions extends Component {
   onSelectFriend(friend) {
     const { onSelectFriend } = this.props;
     onSelectFriend && onSelectFriend(friend);
+  }
+
+  onOkay() {
+    const { onOkay, amount } = this.props;
+    const { allocatedAmount, friendsAmount } = this.state;
+    if (Number(allocatedAmount) !== Number(amount))
+      return alert(I18n.t('payment_values_do_not_add_up', { amount }));
+    onOkay && onOkay(friendsAmount);
   }
 
   renderMultipleButton() {
@@ -106,13 +119,16 @@ export default class PaidByOptions extends Component {
     return (
       <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
         <EDText style={styles.totalOfAmount}>
-          {I18n.t('total_of', { allocatedAmount, totalAmount: amount ? amount : '0.00' })}
+          {I18n.t('total_of', {
+            allocatedAmount,
+            totalAmount: amount ? amount : '0.00'
+          })}
         </EDText>
         <EDText style={styles.amountLeft}>
-          {I18n.t('amount_left', { amountLeft: amount - allocatedAmount })}
+          {I18n.t('amount_left', { amountLeft: (amount - allocatedAmount).toFixed(2) })}
         </EDText>
         <TouchableOpacity
-          onPress={() => alert('TODO')}
+          onPress={() => this.onOkay()}
           style={{ alignSelf: 'flex-end', paddingHorizontal: 15, paddingBottom: 10 }}
         >
           <EDText style={{ color: COLORS.APP_THEME_PURPLE, fontSize: FONT_SIZES.H4 }}>
@@ -139,29 +155,46 @@ export default class PaidByOptions extends Component {
     return 0;
   }
 
-  onChangeText(splitAmount, index) {
+  validateAmount(amount) {
+    if (
+      amount.includes('..') ||
+      amount.includes(',,') ||
+      amount.includes('.,') ||
+      amount.includes(',.')
+    ) {
+      return false;
+    } else if (amount.includes('.') && amount.indexOf('.') < amount.length - 3) {
+      return false;
+    } else if (amount.includes(',') && amount.indexOf(',') < amount.length - 3) {
+      return false;
+    }
+    return true;
+  }
+
+  onChangeText(splitAmount, id) {
     const { allocatedAmount } = this.state;
-    // if (splitAmount !== '' && !Number(splitAmount)) return;
+    if (!this.validateAmount(splitAmount)) return;
     const { friendsAmount } = this.state;
     let tempAllocatedAmount = allocatedAmount;
-    let tempFriendsAmount = Object.assign([], friendsAmount);
+    let tempFriendsAmount = Object.assign({}, friendsAmount);
 
     tempAllocatedAmount =
       tempAllocatedAmount -
-      this.getNumericAmount(tempFriendsAmount[index]) +
+      this.getNumericAmount(tempFriendsAmount[id] ? tempFriendsAmount[id].toString() : '') +
       this.getNumericAmount(splitAmount);
-    tempFriendsAmount[index] = splitAmount;
+    tempFriendsAmount[id] = splitAmount;
     this.setState({ friendsAmount: tempFriendsAmount, allocatedAmount: tempAllocatedAmount });
   }
 
   renderSingleFriends(friend, index) {
     const { friendsAmount, multiple } = this.state;
+    const amount = friendsAmount[friend.id] ? friendsAmount[friend.id] : '';
     return (
       <PaidByFriends
         onPress={() => this.onSelectFriend(friend)}
         hideCheckBox={true}
-        onChangeText={amount => this.onChangeText(amount, index)}
-        amount={friendsAmount[index]}
+        onChangeText={amount => this.onChangeText(amount, friend.id)}
+        amount={amount}
         showTextBoxes={multiple}
         name={friend.name}
         key={index}
@@ -192,8 +225,6 @@ export default class PaidByOptions extends Component {
   }
 
   render() {
-    const { showPaidByOptions } = this.props;
-    if (!showPaidByOptions) return null;
     return (
       <AbsoluteView onDialogClose={() => this.onDialogClose()}>
         <View style={styles.container}>

@@ -34,6 +34,7 @@ const en = {
   ok: 'OK',
   owes_you: 'owes you',
   paid_by: 'Paid by',
+  payment_values_do_not_add_up: 'The payment values do not add upto total value of {{amount}}',
   people: 'PEOPLE',
   plus_other_balances: 'Plus {{count}} other balances',
   select_friends: 'Select Friends',

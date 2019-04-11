@@ -32,8 +32,7 @@ export default class GroupsList extends Component {
   static propTypes = {
     onDialogClose: PropTypes.func.isRequired,
     onSelectGroup: PropTypes.func.isRequired,
-    groups: PropTypes.array.isRequired,
-    showGroups: PropTypes.bool.isRequired
+    groups: PropTypes.array.isRequired
   };
 
   onDialogClose() {
@@ -76,8 +75,6 @@ export default class GroupsList extends Component {
   }
 
   render() {
-    const { showGroups } = this.props;
-    if (!showGroups) return null;
     return (
       <AbsoluteView onDialogClose={() => this.onDialogClose()}>
         <View style={styles.container}>

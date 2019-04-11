@@ -41,6 +41,13 @@ const styles = StyleSheet.create({
     borderColor: COLORS.APP_THEME_PURPLE,
     borderWidth: 1
   },
+  paidByAndSplitContainer: {
+    flexDirection: 'row',
+    marginTop: 15,
+    width: width - 40,
+    marginHorizontal: 20,
+    alignItems: 'center'
+  },
   paidByAndSplitText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H1 },
   paidByAndSplitButton: {
     color: COLORS.TEXT_BLACK,
@@ -59,29 +66,10 @@ const FRIENDS_DETAILS = {
   name: 'Harshaknkvdkkndnf',
   mobile: '9491267523'
 };
-const FRIENDS = [
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS,
-  FRIENDS_DETAILS
-];
+const FRIENDS = [];
+for (let index = 0; index < 25; index++) {
+  FRIENDS.push({ ...FRIENDS_DETAILS, id: index });
+}
 
 export default class NewBill extends Component {
   static propTypes = {
@@ -98,7 +86,7 @@ export default class NewBill extends Component {
       bill_name: '',
       amount: '',
       group: null,
-      paid_by: null,
+      paidBy: {},
       split: null,
       friends: FRIENDS,
       groups: [...FRIENDS, { name: '' }],
@@ -141,11 +129,20 @@ export default class NewBill extends Component {
   onSelectPaidByFriend(friend) {
     dismissKeyboard();
     const { amount } = this.state;
-    this.setState({ showPaidByOptions: false, paid_by: [{ name: friend.name, amount }] });
+    this.setState({ showPaidByOptions: false, paidBy: { [friend.id]: amount } });
+  }
+
+  onMultiplePeoplePaid(friendsAmount) {
+    dismissKeyboard();
+    this.setState({
+      showPaidByOptions: false,
+      paidBy: friendsAmount
+    });
   }
 
   renderCalender() {
     const { selectedDay, showCalendar } = this.state;
+    if (!showCalendar) return null;
     return (
       <CalendarView
         onSelectDate={day => this.onSelectDate(day)}
@@ -157,7 +154,8 @@ export default class NewBill extends Component {
   }
 
   renderPaidByOptions() {
-    const { friends, amount, showPaidByOptions } = this.state;
+    const { friends, amount, showPaidByOptions, paidBy } = this.state;
+    if (!showPaidByOptions) return null;
     return (
       <PaidByOptions
         friends={friends}
@@ -165,12 +163,15 @@ export default class NewBill extends Component {
         showPaidByOptions={showPaidByOptions}
         onDialogClose={() => this.setState({ showPaidByOptions: false })}
         onSelectFriend={friend => this.onSelectPaidByFriend(friend)}
+        onOkay={friendsAmount => this.onMultiplePeoplePaid(friendsAmount)}
+        paidBy={paidBy}
       />
     );
   }
 
   renderGroups() {
     const { groups, showGroups } = this.state;
+    if (!showGroups) return null;
     return (
       <GroupsList
         groups={groups}
@@ -260,7 +261,12 @@ export default class NewBill extends Component {
 
   renderPaidByAndSplitButton(title, stateKey) {
     return (
-      <TouchableOpacity onPress={() => this.setState({ [stateKey]: true })}>
+      <TouchableOpacity
+        onPress={() => {
+          dismissKeyboard();
+          this.setState({ [stateKey]: true });
+        }}
+      >
         <EDText style={styles.paidByAndSplitButton} numberOfLines={1}>
           {title}
         </EDText>
@@ -269,21 +275,18 @@ export default class NewBill extends Component {
   }
 
   renderPaidByAndSplit() {
-    const { paid_by, split } = this.state;
+    const { paidBy, split, friends } = this.state;
     let paidByButtonTitle = I18n.t('you');
-    if (paid_by) {
-      if (paid_by.length === 1) {
-        const words = paid_by[0].name.split(' ');
-        paidByButtonTitle = words.length > 1 ? words[0] + ' ' + words[1] + '.' : words[0];
-      } else {
-        paidByButtonTitle = `2 + ${I18n.t('people')}`;
-      }
+    if (Object.keys(paidBy).length === 1) {
+      const paidByFriend = friends.filter(friend => friend.id == Object.keys(paidBy)[0])[0];
+      const words = paidByFriend.name.split(' ');
+      paidByButtonTitle = words.length > 1 ? words[0] + ' ' + words[1] + '.' : words[0];
+    } else if (Object.keys(paidBy).length > 1) {
+      paidByButtonTitle = `2 + ${I18n.t('people')}`;
     }
     const splitButtonTitle = split ? split : I18n.t('equally');
     return (
-      <View
-        style={{ flexDirection: 'row', marginTop: 15, width: width - 70, alignItems: 'center' }}
-      >
+      <View style={styles.paidByAndSplitContainer}>
         <EDText style={styles.paidByAndSplitText}>{I18n.t('paid_by')}</EDText>
         {this.renderPaidByAndSplitButton(paidByButtonTitle, 'showPaidByOptions')}
         <EDText style={styles.paidByAndSplitText}>{I18n.t('and_split')}</EDText>
@@ -359,7 +362,7 @@ export default class NewBill extends Component {
               {this.renderBillName()}
               {this.renderAmount()}
               {this.renderPaidByAndSplit()}
-              {this.renderAddNote()}
+              {/*this.renderAddNote()*/}
             </View>
           </KeyboardAwareScrollView>
           {this.renderFooter()}
