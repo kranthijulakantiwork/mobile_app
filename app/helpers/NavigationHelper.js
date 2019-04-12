@@ -33,6 +33,7 @@ import Payment from 'app/screens/Payment';
 import SelectFriends from 'app/screens/SelectFriends';
 import SignIn from 'app/screens/SignIn';
 import Splash from 'app/screens/Splash';
+import SettlementDetailView from 'app/screens/SettlementDetailView'
 
 const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -176,7 +177,8 @@ class CustomTabs extends React.Component<Props> {
     const { routes, index } = navigation.state;
     const activeRoute = routes[index];
     let bottom = (
-      <TouchableOpacity onPress={() => navigation.navigate('Payment')} style={styles.addButton}>
+    //   <TouchableOpacity onPress={() => navigation.navigate('Payment')} style={styles.addButton}>
+    <TouchableOpacity onPress={() => navigation.navigate('SettlementDetails')} style={styles.addButton}>
         <View style={styles.addButtonTextContainer}>
           <EDText style={styles.addButtonText}>+</EDText>
         </View>
@@ -201,7 +203,8 @@ const AppNavigator = createStackNavigator(
     SelectFriends: { screen: SelectFriends },
     Payment: { screen: Payment },
     DrawerNavigator: { screen: DrawerNavigator },
-    SignIn: { screen: SignIn }
+    SignIn: { screen: SignIn },
+    SettlementDetails: { screen: SettlementDetailView },
   },
   navigationOptions
 );
