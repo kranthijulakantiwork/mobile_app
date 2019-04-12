@@ -23,6 +23,7 @@ import GroupsList from 'app/components/GroupsList';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
 import PaidByOptions from 'app/components/PaidByOptions';
+import SplitByOptions from 'app/components/SplitByOptions';
 import PropTypes from 'prop-types';
 import ToolBar from 'app/components/ToolBar';
 import Categories from 'app/components/Categories';
@@ -92,15 +93,20 @@ export default class NewBill extends Component {
       friends: FRIENDS,
       groups: [...FRIENDS, { name: '' }],
       selectedFriends: ['you'],
-      showGroups: false,
-      showPaidByOptions: false,
-      showSplit: false,
       spinner: false,
       addNote1: '',
       addNote2: '',
       addNote3: '',
       selectedDay: '',
-      showCalendar: false
+      splitType: 'equally',
+      splitByFriends: FRIENDS.map(friend => friend.id),
+      allocatedSplitAmount: { shares: 0, percentages: 0, unequally: 0, adjustment: 0 },
+      friendsSplitAmount: { shares: {}, percentages: {}, unequally: {}, adjustment: {} },
+      showCategory: false,
+      showGroups: false,
+      showPaidByOptions: false,
+      showCalendar: false,
+      showSplitByOptions: false
     };
   }
 
@@ -141,6 +147,16 @@ export default class NewBill extends Component {
     });
   }
 
+  onSplitByCompleted(splitType, allocatedAmount, friendsAmount, splitByFriends) {
+    this.setState({
+      splitType,
+      allocatedSplitAmount: allocatedAmount,
+      friendsSplitAmount: friendsAmount,
+      splitByFriends,
+      showSplitByOptions: false
+    });
+  }
+
   renderCalender() {
     const { selectedDay, showCalendar } = this.state;
     if (!showCalendar) return null;
@@ -150,6 +166,33 @@ export default class NewBill extends Component {
         showCalendar={showCalendar}
         selectedDay={selectedDay}
         onDialogClose={() => this.setState({ showCalendar: false })}
+      />
+    );
+  }
+
+  renderSplitByOptions() {
+    const {
+      friends,
+      amount,
+      showSplitByOptions,
+      splitType,
+      splitByFriends,
+      allocatedSplitAmount,
+      friendsSplitAmount
+    } = this.state;
+    if (!showSplitByOptions) return null;
+    return (
+      <SplitByOptions
+        friends={friends}
+        splitByFriends={splitByFriends}
+        amount={amount}
+        allocatedAmount={allocatedSplitAmount}
+        friendsAmount={friendsSplitAmount}
+        showSplitByOptions={showSplitByOptions}
+        onDialogClose={() => this.setState({ showSplitByOptions: false })}
+        onSelectFriend={friend => this.onSelectPaidByFriend(friend)}
+        onOkay={this.onSplitByCompleted.bind(this)}
+        splitType={splitType}
       />
     );
   }
@@ -302,7 +345,7 @@ export default class NewBill extends Component {
         <EDText style={styles.paidByAndSplitText}>{I18n.t('paid_by')}</EDText>
         {this.renderPaidByAndSplitButton(paidByButtonTitle, 'showPaidByOptions')}
         <EDText style={styles.paidByAndSplitText}>{I18n.t('and_split')}</EDText>
-        {this.renderPaidByAndSplitButton(splitButtonTitle, 'showSplit')}
+        {this.renderPaidByAndSplitButton(splitButtonTitle, 'showSplitByOptions')}
       </View>
     );
   }
@@ -414,6 +457,7 @@ export default class NewBill extends Component {
         {this.renderCategories()}
         {this.renderGroups()}
         {this.renderPaidByOptions()}
+        {this.renderSplitByOptions()}
         {this.renderCalender()}
       </View>
     );

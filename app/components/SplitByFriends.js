@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     includeFontPadding: false,
     color: COLORS.TEXT_BLACK,
-    fontWeight: '200',
+    fontWeight: 'bold',
     fontSize: FONT_SIZES.H2,
     width: width - 100
   },
@@ -41,10 +41,13 @@ const styles = StyleSheet.create({
   }
 });
 
-export default class PaidByFriends extends Component {
+export default class SplitByFriends extends Component {
   static propTypes = {
     onPress: PropTypes.func.isRequired,
+    splitBy: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
+    amount: PropTypes.string,
+    shareValue: PropTypes.string,
     isSelected: PropTypes.bool,
     hideCheckBox: PropTypes.bool,
     showTextBoxes: PropTypes.bool,
@@ -58,11 +61,11 @@ export default class PaidByFriends extends Component {
     };
   }
 
-  renderTextBox() {
-    const { showTextBoxes, amount } = this.props;
-    if (!showTextBoxes) return null;
-    return (
-      <View style={{ flexDirection: 'row' }}>
+  renderRightText() {
+    const { splitBy } = this.props;
+    if (['percentages', 'shares'].includes(splitBy)) {
+      const text = splitBy === 'percentages' ? '%' : I18n.t('share_s');
+      return (
         <View style={{ height: 40, alignItems: 'center', justifyContent: 'center' }}>
           <EDText
             style={{
@@ -70,13 +73,46 @@ export default class PaidByFriends extends Component {
               color: COLORS.TEXT_BLACK
             }}
           >
-            ₹{' '}
+            {text}
           </EDText>
         </View>
+      );
+    }
+    return null;
+  }
+
+  renderLeftText() {
+    const { splitBy } = this.props;
+    if (['unequally', 'adjustment'].includes(splitBy)) {
+      const text = splitBy === 'unequally' ? '₹ ' : '+   ₹  ';
+      return (
+        <View
+          style={{ height: 40, alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}
+        >
+          <EDText
+            style={{
+              fontSize: FONT_SIZES.H4,
+              color: COLORS.TEXT_BLACK
+            }}
+          >
+            {text}
+          </EDText>
+        </View>
+      );
+    }
+    return null;
+  }
+
+  renderTextBox() {
+    const { amount, splitBy } = this.props;
+    if (splitBy === 'equally') return null;
+    return (
+      <View style={{ flexDirection: 'row' }}>
+        {this.renderLeftText()}
         <TextInput
           style={{
             height: 40,
-            marginHorizontal: 10,
+            marginHorizontal: 5,
             width: 50,
             color: COLORS.TEXT_BLACK,
             borderBottomWidth: 1,
@@ -88,13 +124,14 @@ export default class PaidByFriends extends Component {
           placeholder={'0.00'}
           keyboardType={'number-pad'}
         />
+        {this.renderRightText()}
       </View>
     );
   }
 
   renderSelectionBox() {
-    const { isSelected, hideCheckBox } = this.props;
-    if (hideCheckBox) return null;
+    const { isSelected, splitBy } = this.props;
+    if (splitBy !== 'equally') return null;
     return (
       <View
         style={{
@@ -106,15 +143,36 @@ export default class PaidByFriends extends Component {
   }
 
   renderName() {
-    const { name, showTextBoxes } = this.props;
-    let viewWidth = width - 140;
-    if (showTextBoxes) {
-      viewWidth = width - 170;
+    const { name, splitBy, shareValue } = this.props;
+    let viewWidth = width - 160;
+    const fontSize = shareValue ? FONT_SIZES.H3 : FONT_SIZES.H2;
+    switch (splitBy) {
+      case 'unequally':
+        viewWidth = width - 120;
+        break;
+      case 'percentages':
+        viewWidth = width - 130;
+        break;
+      case 'shares':
+        viewWidth = width - 180;
+        break;
+      case 'adjustment':
+        viewWidth = width - 140;
+        break;
+      default:
+        break;
     }
     return (
-      <EDText style={{ ...styles.name, width: viewWidth }} numberOfLines={1}>
-        {name}
-      </EDText>
+      <View>
+        <EDText style={{ ...styles.name, width: viewWidth, fontSize }} numberOfLines={1}>
+          {name}
+        </EDText>
+        {shareValue ? (
+          <EDText style={{ fontSize: 8, color: COLORS.TEXT_BLACK }}>
+            {I18n.t('total_share', { share: shareValue })}
+          </EDText>
+        ) : null}
+      </View>
     );
   }
 
@@ -124,10 +182,24 @@ export default class PaidByFriends extends Component {
   }
 
   render() {
-    const { onPress, showTextBoxes } = this.props;
+    const { onPress, showTextBoxes, splitBy } = this.props;
     let viewWidth = width - 40;
-    if (showTextBoxes) {
-      viewWidth = width - 120;
+    switch (splitBy) {
+      case 'unequally':
+        viewWidth = width - 120;
+        break;
+      case 'percentages':
+        viewWidth = width - 130;
+        break;
+      case 'shares':
+        viewWidth = width - 150;
+        break;
+      case 'adjustment':
+        viewWidth = width - 140;
+        break;
+      default:
+        viewWidth = width - 40;
+        break;
     }
     return (
       <View style={{ flexDirection: 'row', width: viewWidth }}>
