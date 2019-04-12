@@ -55,17 +55,15 @@ const DeleteButton = ({ title }) => (
   </TouchableOpacity>
 );
 
-export default class SettlementDetailView extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <SettlementAmount amount="123" />
-        <TimeStamp name="Some One" date="13 April 2019" />
-        <EmojiTransaction />
-        <TransactionDetails paidBy="Some other" />
-        <Amount />
-        <DeleteButton title="Delete" />
-      </View>
-    );
-  }
-}
+const SettlementDetailView = () => (
+  <View style={styles.container}>
+    <SettlementAmount amount="123" />
+    <TimeStamp name="Some One" date="13 April 2019" />
+    <EmojiTransaction />
+    <TransactionDetails paidBy="Some other" />
+    <Amount />
+    <DeleteButton title="Delete" />
+  </View>
+);
+
+export default SettlementDetailView;
