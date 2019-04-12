@@ -307,34 +307,6 @@ export default class NewBill extends Component {
     );
   }
 
-  renderTextInputField({
-    title,
-    stateKey,
-    keyboardType = 'default',
-    secureTextEntry = false,
-    titleText
-  }) {
-    return (
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        {titleText ? (
-          <EDText style={{ color: COLORS.TEXT_BLACK, fontSize: 60 }}>{titleText}</EDText>
-        ) : (
-          <Image source={Images[stateKey]} style={{ height: 30, width: 30 }} />
-        )}
-        <EDTextInput
-          title={title}
-          textInputStyle={{ width: width - 100, marginLeft: 15 }}
-          titleStyle={{ marginLeft: 15 }}
-          containerStyle={{ marginHorizontal: 0 }}
-          value={this.state[stateKey]}
-          onChangeText={text => this.onChangeText(stateKey, text)}
-          secureTextEntry={secureTextEntry}
-          keyboardType={keyboardType}
-        />
-      </View>
-    );
-  }
-
   renderAmount() {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -367,13 +339,13 @@ export default class NewBill extends Component {
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
           <View
             style={{
-              height: 34,
-              width: 34,
-              borderRadius: 34 / 2,
+              height: 40,
+              width: 40,
+              borderRadius: 40 / 2,
               borderWidth: 2,
               alignItems: 'center',
               justifyContent: 'center',
-              borderColor: COLORS.TEXT_BLACK
+              borderColor: '#bbbbbb'
             }}
           >
             <Image source={Images[categoryImage]} />

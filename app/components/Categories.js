@@ -15,16 +15,16 @@ import PropTypes from 'prop-types';
 const { width } = Dimensions.get('window');
 const CATEGORIES = [
   'food',
-  'transport',
-  'drinks',
-  'shopping',
-  'grocery',
-  'medicine',
-  'fuel',
-  'rent',
   'bills',
+  'groceries',
+  'travel',
   'entertainment',
+  'rent',
+  'shopping',
   'loan',
+  'drinks',
+  'medicine',
+  'holiday',
   'others'
 ];
 const styles = StyleSheet.create({
