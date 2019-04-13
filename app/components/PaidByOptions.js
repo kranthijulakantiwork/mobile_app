@@ -119,7 +119,7 @@ export default class PaidByOptions extends Component {
     return (
       <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
         <EDText style={styles.totalOfAmount}>
-          {I18n.t('total_of', {
+          {I18n.t('total_allocated_of_total', {
             allocatedAmount,
             totalAmount: amount ? amount : '0.00'
           })}

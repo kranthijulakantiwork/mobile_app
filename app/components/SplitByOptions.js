@@ -41,7 +41,7 @@ export default class SplitByOptions extends Component {
     allocatedAmount: PropTypes.object.isRequired,
     friendsAmount: PropTypes.object.isRequired,
     friends: PropTypes.array.isRequired,
-    amount: PropTypes.string.isRequired,
+    amount: PropTypes.number.isRequired,
     onOkay: PropTypes.func.isRequired
   };
 
@@ -73,42 +73,99 @@ export default class SplitByOptions extends Component {
     }
   }
 
-  validateCompletion() {
+  getCompletionError() {
     const { amount } = this.props;
-    const { splitType, allocatedAmount, friendsAmount, splitByFriends } = this.state;
-    if (splitType === 'equally' && splitByFriends.length) return true;
+    const { splitType, allocatedAmount, splitByFriends } = this.state;
+    const allocatedAmountSplitBy =
+      splitType === 'equally' ? splitByFriends.length : allocatedAmount[splitType];
+    const errorMessage =
+      I18n.t('the_payment_value_doesnt_addup', { amount }) ||
+      I18n.t('the_math_for_this_expense_doesnt_add_up');
+    if (!allocatedAmountSplitBy) return errorMessage;
+    switch (splitType) {
+      case 'unequally':
+      case 'adjustment':
+        if (allocatedAmountSplitBy > amount) return errorMessage;
+        break;
+      case 'percentages':
+        if (allocatedAmountSplitBy > 100) return errorMessage;
+      default:
+        break;
+    }
+    return '';
   }
 
   onOkay() {
+    const errorMessage = this.getCompletionError();
+    if (errorMessage) return alert(errorMessage);
     const { onOkay, amount } = this.props;
     const { splitType, allocatedAmount, friendsAmount, splitByFriends } = this.state;
-    if (Number(allocatedAmount[splitType]) !== Number(amount))
-      return alert(I18n.t('payment_values_do_not_add_up', { amount }));
     onOkay && onOkay(splitType, allocatedAmount, friendsAmount, splitByFriends);
   }
 
-  renderFooter() {
-    const { splitType, allocatedAmount } = this.state;
+  getFooterText() {
+    const { splitType, allocatedAmount, splitByFriends } = this.state;
     const { amount } = this.props;
+    let footerText = '';
+    let footerSubText = '';
+    let amountExceeded = false;
+    const totalAmount = amount.toFixed(2);
+    const amountLeft = (amount - Number(allocatedAmount[splitType])).toFixed(2);
+    switch (splitType) {
+      case 'equally':
+        const amount_per_person = (amount / splitByFriends.length).toFixed(2);
+        footerText = I18n.t('amount_per_person', {
+          amount: amount_per_person
+        });
+        break;
+      case 'unequally':
+        const allocatedAmountUnequally = allocatedAmount[splitType].toFixed(2);
+        footerText = I18n.t('total_allocated_of_total', {
+          allocatedAmount: allocatedAmountUnequally,
+          totalAmount
+        });
+        footerSubText = I18n.t('amount_left', {
+          amountLeft
+        });
+        amountExceeded = allocatedAmount[splitType] > amount;
+        break;
+      case 'percentages':
+        const allocatedAmountPercentages = allocatedAmount[splitType].toFixed(2);
+        footerText = I18n.t('total_allocated_of_total_percent', {
+          allocatedAmount: allocatedAmountPercentages
+        });
+        footerSubText = I18n.t('percent_left', {
+          percentLeft: (100 - Number(allocatedAmount[splitType])).toFixed(2)
+        });
+        amountExceeded = allocatedAmount[splitType] > 100;
+        break;
+      case 'shares':
+        const perShareValue = Number(allocatedAmount[splitType])
+          ? Number(amount) / Number(allocatedAmount[splitType])
+          : '';
+        footerText = perShareValue
+          ? I18n.t('total_per_share_amount', { shareValue: perShareValue.toFixed(2) })
+          : I18n.t('you_must_select_atleast_one');
+        amountExceeded = !perShareValue;
+        break;
+      case 'adjustment':
+        amountExceeded = allocatedAmount[splitType] > amount;
+        break;
+      default:
+        break;
+    }
+    return { footerText, footerSubText, amountExceeded };
+  }
+
+  renderFooter() {
+    const { footerText, footerSubText, amountExceeded } = this.getFooterText();
+    const footerTextStyle = amountExceeded ? { color: COLORS.BALANCE_RED } : {};
     return (
       <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
-        {splitType === 'equally' ? null : (
-          <EDText style={styles.totalOfAmount}>
-            {I18n.t('total_of', {
-              allocatedAmount: allocatedAmount[splitType]
-                ? allocatedAmount[splitType].toFixed(2)
-                : '0.00',
-              totalAmount: amount ? amount : '0.00'
-            })}
-          </EDText>
-        )}
-        {splitType === 'equally' ? null : (
-          <EDText style={styles.amountLeft}>
-            {I18n.t('amount_left', {
-              amountLeft: (amount - allocatedAmount[splitType]).toFixed(2)
-            })}
-          </EDText>
-        )}
+        {footerText ? (
+          <EDText style={{ ...styles.totalOfAmount, ...footerTextStyle }}>{footerText}</EDText>
+        ) : null}
+        {footerSubText ? <EDText style={styles.amountLeft}>{footerSubText}</EDText> : null}
         <TouchableOpacity
           onPress={() => this.onOkay()}
           style={{ alignSelf: 'flex-end', paddingHorizontal: 15, paddingBottom: 10 }}
@@ -158,39 +215,31 @@ export default class SplitByOptions extends Component {
         tempFriendsAmount[splitType][id] ? tempFriendsAmount[splitType][id].toString() : ''
       ) +
       this.getNumericAmount(splitAmount);
-    tempFriendsAmount[splitType][id] = Number(splitAmount);
+    tempFriendsAmount[splitType][id] = splitAmount;
     this.setState({ friendsAmount: tempFriendsAmount, allocatedAmount: tempAllocatedAmount });
   }
 
   getShareValue(friend) {
-    const { splitType, friendsAmount } = this.state;
+    const { splitType, friendsAmount, allocatedAmount } = this.state;
     const { amount, friends } = this.props;
     let shareValue = '';
     if (splitType === 'equally') return shareValue;
     if (amount) {
-      if (
-        splitType === 'shares' &&
-        Object.values(friendsAmount[splitType]) &&
-        Object.values(friendsAmount[splitType]).length
-      ) {
-        const share = friendsAmount[splitType][friend.id];
+      if (splitType === 'shares' && allocatedAmount[splitType]) {
+        const share = friendsAmount[splitType][friend.id]
+          ? Number(friendsAmount[splitType][friend.id])
+          : 0;
         if (!share) return '0.00';
-        const totalShares = Object.values(friendsAmount[splitType]).reduce(
-          (sum, amount) => sum + amount
-        );
+        const totalShares = allocatedAmount[splitType];
         shareValue = (share / totalShares) * amount;
         shareValue = shareValue.toFixed(2);
       }
-      if (
-        splitType === 'adjustment' &&
-        Object.values(friendsAmount[splitType]) &&
-        Object.values(friendsAmount[splitType]).length
-      ) {
-        const totalAdjustments = Object.values(friendsAmount[splitType]).reduce(
-          (sum, amount) => sum + amount
-        );
+      if (splitType === 'adjustment' && allocatedAmount[splitType]) {
+        const totalAdjustments = allocatedAmount[splitType];
         const eachPersonNormalShare = (amount - totalAdjustments) / friends.length;
-        const presentPersonAdjustment = friendsAmount[splitType][friend.id] || 0;
+        const presentPersonAdjustment = friendsAmount[splitType][friend.id]
+          ? Number(friendsAmount[splitType][friend.id])
+          : 0;
         shareValue = eachPersonNormalShare + presentPersonAdjustment;
         shareValue = shareValue.toFixed(2);
       }
@@ -199,8 +248,7 @@ export default class SplitByOptions extends Component {
   }
 
   renderSingleFriends(friend, index) {
-    const { splitType, friendsAmount, splitByFriends, amount } = this.state;
-    const { friends } = this.props;
+    const { splitType, friendsAmount, splitByFriends } = this.state;
     let amount_received = '';
     if (splitType !== 'equally') {
       amount_received = friendsAmount[splitType][friend.id]

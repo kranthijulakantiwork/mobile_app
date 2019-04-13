@@ -170,7 +170,7 @@ export default class StatusCard extends Component {
     const { name, balanceType } = this.props;
     const containerStyle = balanceType === 'groups' ? {} : { paddingTop: 9 };
     return (
-      <View style={[styles.nameContainer, containerStyle]}>
+      <View style={{ ...styles.nameContainer, ...containerStyle }}>
         <EDText style={styles.name} numberOfLines={1}>
           {name}
         </EDText>

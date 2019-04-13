@@ -1,11 +1,13 @@
 // @flow
 
 const en = {
+  add_friend: 'Add Friend',
   add_more_friends: 'Add More Friends',
   add_notes: 'Add Notes',
   add: 'Add',
   adjustment: 'ADJUSTMENT',
   amount_left: '₹{{amountLeft}} left',
+  amount_per_person: '₹{{amount}} / person',
   amount: 'Amount',
   and_split: 'and split',
   app_name: 'SettleMint',
@@ -46,6 +48,7 @@ const en = {
   paid_by: 'Paid by',
   payment_values_do_not_add_up: 'The payment values do not add upto total value of {{amount}}',
   people: 'PEOPLE',
+  percent_left: '{{percentLeft}}% left',
   percentages: 'PERCENTAGES',
   plus_other_balances: 'Plus {{count}} other balances',
   rent: 'Rent',
@@ -55,17 +58,23 @@ const en = {
   share_s: 'share(s)',
   shares: 'SHARES',
   shopping: 'Shopping',
+  the_payment_value_doesnt_addup: "The payment value doesn't add up to {{amount}}",
   to_get: 'To Get',
   to_pay: 'To Pay',
-  total_of: 'Total: ₹{{allocatedAmount}} of ₹{{totalAmount}}',
+  total_allocated_of_total_percent: 'Total: {{allocatedAmount}}% of 100%',
+  total_allocated_of_total: 'Total: ₹{{allocatedAmount}} of ₹{{totalAmount}}',
+  total_per_share_amount: 'Total per share: ₹{{shareValue}}',
   total_share: 'Total share: ₹{{share}}',
   travel: 'Travel',
   unequally: 'UNEQUALLY',
   updated: 'updated',
   you_are_owed: 'you are owed',
+  you_must_select_atleast_one: 'You must select at least one person to split with.',
   you_owe_: 'You owe',
   you_owe: 'you owe',
-  you: 'YOU'
+  you: 'YOU',
+  the_math_for_this_expense_doesnt_add_up:
+    "The math for this expense doesn't add up. Please double-check that you've entered the correct amounts for each person!"
 };
 
 export default en;

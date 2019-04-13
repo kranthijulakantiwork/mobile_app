@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import {
   Dimensions,
+  FlatList,
   Image,
   PermissionsAndroid,
   StyleSheet,
@@ -15,7 +16,9 @@ import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
+import Avatar from 'app/components/Avatar';
 import CalendarView from 'app/components/CalendarView';
+import Categories from 'app/components/Categories';
 import dismissKeyboard from 'dismissKeyboard';
 import EDText from 'app/components/EDText';
 import EDTextInput from 'app/components/EDTextInput';
@@ -23,15 +26,24 @@ import GroupsList from 'app/components/GroupsList';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
 import PaidByOptions from 'app/components/PaidByOptions';
-import SplitByOptions from 'app/components/SplitByOptions';
 import PropTypes from 'prop-types';
+import SplitByOptions from 'app/components/SplitByOptions';
 import ToolBar from 'app/components/ToolBar';
-import Categories from 'app/components/Categories';
 
 const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: { flex: 1 },
   subContainer: { flex: 1, width, alignItems: 'center', paddingVertical: 20 },
+  selectFriendAvatarContainer: { width: 65, alignItems: 'center', paddingVertical: 10 },
+  plusButtonView: {
+    height: 45,
+    width: 45,
+    borderRadius: 3,
+    borderWidth: 2,
+    borderColor: '#bbbbbb',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   selectedGroup: { flexDirection: 'row', alignItems: 'center', width: width - 70 },
   selectedGroupText: {
     color: COLORS.TEXT_BLACK,
@@ -92,7 +104,6 @@ export default class NewBill extends Component {
       split: null,
       friends: FRIENDS,
       groups: [...FRIENDS, { name: '' }],
-      selectedFriends: ['you'],
       spinner: false,
       addNote1: '',
       addNote2: '',
@@ -108,6 +119,10 @@ export default class NewBill extends Component {
       showCalendar: false,
       showSplitByOptions: false
     };
+  }
+
+  unSelectFriend(friend) {
+    alert('TODO');
   }
 
   onChangeText(stateKey, text) {
@@ -185,7 +200,7 @@ export default class NewBill extends Component {
       <SplitByOptions
         friends={friends}
         splitByFriends={splitByFriends}
-        amount={amount}
+        amount={Number(amount)}
         allocatedAmount={allocatedSplitAmount}
         friendsAmount={friendsSplitAmount}
         showSplitByOptions={showSplitByOptions}
@@ -426,6 +441,45 @@ export default class NewBill extends Component {
     );
   }
 
+  renderFriendAvatar(friend, index) {
+    console.log('fire', friend);
+    return (
+      <Avatar
+        name={friend['name']}
+        showClose={true}
+        avatarSubText={friend['name']}
+        avatarSubTextStyle={{ width: 50, color: COLORS.TEXT_BLACK }}
+        onPress={() => this.unSelectFriend(friend)}
+        buttonStyle={styles.selectFriendAvatarContainer}
+      />
+    );
+  }
+
+  renderFriends() {
+    const { friends } = this.state;
+    return (
+      <View style={{ flexDirection: 'row', marginVertical: 5 }}>
+        <FlatList
+          data={friends}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item, index }) => this.renderFriendAvatar(item, index)}
+        />
+        <TouchableOpacity onPress={() => alert('TODO')}>
+          <View style={styles.selectFriendAvatarContainer}>
+            <View style={styles.plusButtonView}>
+              <EDText style={{ color: '#bbbbbb', fontSize: 33 }}>{'+'}</EDText>
+            </View>
+            <EDText style={{ color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H5, paddingTop: 5 }}>
+              {I18n.t('add_friend')}
+            </EDText>
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   render() {
     const { spinner } = this.state;
     const { goBack } = this.props.navigation;
@@ -445,6 +499,7 @@ export default class NewBill extends Component {
             enableOnAndroid={true}
             keyboardShouldPersistTaps={'always'}
           >
+            {this.renderFriends()}
             <View style={styles.subContainer}>
               {this.renderBillName()}
               {this.renderAmount()}
