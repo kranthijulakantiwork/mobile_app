@@ -5,6 +5,7 @@ import {
   Dimensions,
   FlatList,
   Image,
+  PermissionsAndroid,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -16,6 +17,7 @@ import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import Avatar from 'app/components/Avatar';
+import Contacts from 'react-native-contacts';
 import EDText from 'app/components/EDText';
 import FriendSelectionView from 'app/components/FriendSelectionView';
 import I18n from 'app/config/i18n';
@@ -72,6 +74,43 @@ export default class SelectFriends extends Component {
       selectedFriends: ['you'],
       spinner: false
     };
+  }
+
+  componentWillMount() {
+    try {
+      PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
+        title: 'Contacts',
+        message: 'This app would like to view your contacts.'
+      }).then(() => {
+        Contacts.getAll((err, contacts) => {
+          if (err === 'denied') {
+            // error
+            console.log('err', err);
+          } else {
+            // contacts returned in Array
+            let contacts_data = {};
+            contacts.slice(0, 100).map((contact, contactIndex) => {
+              if (contact.phoneNumbers.length) {
+                contact.phoneNumbers.map((mobile, mobileIndex) => {
+                  const id = `contact${contactIndex}mobile${mobileIndex}`;
+                  contacts_data[id] = {
+                    id,
+                    name: `${contact.givenName ? contact.givenName : ''} ${
+                      contact.familyName ? contact.familyName : ''
+                    }`,
+                    mobile: mobile.number
+                  };
+                });
+              }
+            });
+            console.log('contacts', contacts_data);
+            this.setState({ friends: contacts_data });
+          }
+        });
+      });
+    } catch (error) {
+      console.log('error', error);
+    }
   }
 
   selectFriend(index) {

@@ -198,8 +198,8 @@ class CustomTabs extends React.Component<Props> {
 
 const AppNavigator = createStackNavigator(
   {
-    Tabs: { screen: CustomTabs },
     NewBill: { screen: NewBill },
+    Tabs: { screen: CustomTabs },
     SelectFriends: { screen: SelectFriends },
     Payment: { screen: Payment },
     DrawerNavigator: { screen: DrawerNavigator },

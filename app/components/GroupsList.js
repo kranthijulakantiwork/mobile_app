@@ -20,12 +20,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 20
   },
   headingText: {
-    textAlign: 'center',
+    marginLeft: 10,
     color: COLORS.TEXT_BLACK,
     fontSize: FONT_SIZES.H2,
     paddingVertical: 20,
-    borderColor: COLORS.LIGHT_GRAY,
-    borderWidth: 1
+    fontWeight: 'bold'
   }
 });
 
@@ -33,8 +32,7 @@ export default class GroupsList extends Component {
   static propTypes = {
     onDialogClose: PropTypes.func.isRequired,
     onSelectGroup: PropTypes.func.isRequired,
-    groups: PropTypes.array.isRequired,
-    showGroups: PropTypes.bool.isRequired
+    groups: PropTypes.array.isRequired
   };
 
   onDialogClose() {
@@ -77,8 +75,6 @@ export default class GroupsList extends Component {
   }
 
   render() {
-    const { showGroups } = this.props;
-    if (!showGroups) return null;
     return (
       <AbsoluteView onDialogClose={() => this.onDialogClose()}>
         <View style={styles.container}>
