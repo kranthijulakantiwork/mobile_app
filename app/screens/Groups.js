@@ -15,6 +15,7 @@ import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
+import Balances from 'app/components/Balances';
 import EDText from 'app/components/EDText';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
@@ -23,15 +24,7 @@ import StatusCard from 'app/components/StatusCard';
 const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scrollContainer: { flex: 1 },
-  headerContainer: {
-    paddingVertical: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderColor: COLORS.LIGHT_GRAY,
-    borderWidth: 1
-  },
-  headerText: { fontSize: FONT_SIZES.H3, textAlign: 'center' },
+  scrollContainer: { flex: 1, backgroundColor: COLORS.BACKGROUND_GRAY },
   footerContainer: {
     width: width - 30,
     flexDirection: 'row',
@@ -40,20 +33,19 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     marginTop: 10,
     marginHorizontal: 15,
-    borderColor: COLORS.TEXT_BLACK,
-    borderWidth: 1
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 3
   },
-  footerText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H3 },
-  addButton: { position: 'absolute', bottom: 20, right: 30 }
+  footerText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H3 }
 });
 
 const GROUPS_DETAILS = {
-  name: 'Kranthi',
+  name: 'KranthiKranthiKranthiKranthiKranthiKranthiKranthi',
   owed: true,
   details: [
     { name: 'Ram', amount: '20', owed: true },
-    { name: 'Ravi', amount: 100, owed: true },
-    { name: 'Ravi', amount: 100, owed: false }
+    { name: 'Ravi', amount: 100, owed: false },
+    { name: 'Ravi', amount: 100, owed: true }
   ],
   balance: '200',
   mobile: '9491267523'
@@ -99,17 +91,6 @@ export default class Groups extends Component {
     alert('TODO');
   }
 
-  renderAddButton() {
-    return (
-      <TouchableOpacity onPress={this.onAddBill} style={styles.addButton}>
-        <Image
-          source={{ uri: 'https://homepages.cae.wisc.edu/~ece533/images/airplane.png' }}
-          style={{ height: 60, width: 60, borderRadius: 30 }}
-        />
-      </TouchableOpacity>
-    );
-  }
-
   renderFooter() {
     return (
       <TouchableOpacity onPress={this.onCreateGroup}>
@@ -148,15 +129,7 @@ export default class Groups extends Component {
 
   renderHeader() {
     const { amountToBeSettled, isOwed } = this.state;
-    const color = isOwed ? COLORS.ORANGE : COLORS.GREEN;
-    return (
-      <View style={styles.headerContainer}>
-        <EDText style={styles.headerText}>
-          {I18n.t('net_settlement_amount_rs')}
-          <EDText style={{ ...styles.headerText, color }}>{amountToBeSettled}</EDText>
-        </EDText>
-      </View>
-    );
+    return <Balances to_pay={'15.00'} to_get={'344.00'} balance={'329.00'} />;
   }
 
   render() {
@@ -169,7 +142,6 @@ export default class Groups extends Component {
           {this.renderFooter()}
           <View style={{ width, height: 100 }} />
         </ScrollView>
-        {this.renderAddButton()}
         {spinner && <Spinner />}
       </View>
     );

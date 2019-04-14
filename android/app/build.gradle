@@ -148,6 +148,8 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-linear-gradient')
+    implementation project(':react-native-contacts')
     implementation project(':react-native-upi-payment')
     implementation project(':react-native-firebase')
     implementation project(':react-native-gesture-handler')

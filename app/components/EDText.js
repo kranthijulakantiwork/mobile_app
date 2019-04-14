@@ -6,7 +6,8 @@ import PropTypes from 'prop-types';
 
 export default class EDText extends Component {
   static propTypes = {
-    style: PropTypes.object
+    style: PropTypes.object,
+    numberOfLines: PropTypes.number
   };
 
   constructor(props) {
@@ -15,7 +16,15 @@ export default class EDText extends Component {
   }
 
   render() {
-    const { style, children } = this.props;
-    return <Text style={{ ...style }}>{children}</Text>;
+    const { style, children, numberOfLines } = this.props;
+    if (numberOfLines) {
+      return (
+        <Text style={{ ...style }} numberOfLines={numberOfLines}>
+          {children}
+        </Text>
+      );
+    } else {
+      return <Text style={{ ...style }}>{children}</Text>;
+    }
   }
 }

@@ -21,6 +21,7 @@ export default class Payment extends Component {
     title: 'Payment'
     // headerLeft:
   };
+
   constructor(props) {
     super(props);
     this.state = {

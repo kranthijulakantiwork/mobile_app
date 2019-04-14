@@ -1,7 +1,18 @@
 /* @flow */
 
 import React, { Component } from 'react';
-import { Animated, Dimensions, Easing, View } from 'react-native';
+import {
+  Animated,
+  Dimensions,
+  Easing,
+  Image,
+  LayoutAnimation,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import {
   createDrawerNavigator,
   createMaterialTopTabNavigator,
@@ -17,12 +28,32 @@ import EDText from 'app/components/EDText';
 import Friends from 'app/screens/Friends';
 import Groups from 'app/screens/Groups';
 import I18n from 'app/config/i18n';
+import NewBill from 'app/screens/NewBill';
 import Payment from 'app/screens/Payment';
+import SelectFriends from 'app/screens/SelectFriends';
 import SignIn from 'app/screens/SignIn';
 import Splash from 'app/screens/Splash';
+import SettlementDetailView from 'app/screens/SettlementDetailView'
 
 const { width } = Dimensions.get('window');
-
+const styles = StyleSheet.create({
+  addButton: { position: 'absolute', bottom: 50, right: 30 },
+  addButtonTextContainer: {
+    backgroundColor: COLORS.WHITE,
+    height: 60,
+    width: 60,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: COLORS.TEXT_BLACK,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  addButtonText: {
+    color: COLORS.TEXT_BLACK,
+    fontSize: 40,
+    includeFontPadding: false
+  }
+});
 const transitionConfig = () => ({
   transitionSpec: {
     duration: 300,
@@ -53,20 +84,21 @@ const navigationOptions = {
   defaultNavigationOptions: {
     gesturesEnabled: false,
     title: I18n.t('app_name'),
-    headerTitle: ({ style, children }) => {
+    headerBackground: <View style={{ flex: 1, backgroundColor: COLORS.WHITE }} />,
+    headerTitle: ({ children }) => {
       return (
         <View
           style={{
             flex: 1,
             height: 56,
-            backgroundColor: COLORS.APP_THEME_BLUE,
-            alignItems: 'center',
-            justifyContent: 'center'
+            backgroundColor: COLORS.WHITE,
+            justifyContent: 'center',
+            alignItems: 'center'
           }}
         >
           <EDText
             style={{
-              fontSize: FONT_SIZES.H1,
+              fontSize: FONT_SIZES.H20,
               color: COLORS.TEXT_BLACK
             }}
           >
@@ -91,7 +123,7 @@ const DrawerNavigator = createDrawerNavigator(
 );
 
 const tabbarLabel = (focused, title) => {
-  const color = focused ? COLORS.WHITE : COLORS.WHITE;
+  const color = focused ? COLORS.TEXT_BLACK : COLORS.TEXT_BLACK;
   return (
     <View style={{}}>
       <EDText style={{ color, textAlign: 'center', marginBottom: 5, fontSize: FONT_SIZES.H2 }}>
@@ -121,26 +153,58 @@ const Tabs = createMaterialTopTabNavigator(
   },
   {
     swipeEnabled: true,
-    // tabBarPosition: 'bottom',
+    tabBarPosition: 'bottom',
     animationEnabled: true,
     lazy: false,
     optimizationsEnabled: true,
     tabBarOptions: {
       showIcon: false,
-      activeBackgroundColor: COLORS.APP_THEME_BLUE,
-      inactiveBackgroundColor: COLORS.WHITE,
-      indicatorStyle: { backgroundColor: COLORS.WHITE },
-      style: { height: 40 }
+      // activeBackgroundColor: COLORS.WHITE,
+      // inactiveBackgroundColor: COLORS.WHITE,
+      indicatorStyle: { backgroundColor: COLORS.TEXT_BLACK },
+      style: { height: 40, backgroundColor: COLORS.WHITE }
     }
   }
 );
 
+class CustomTabs extends React.Component<Props> {
+  static router = Tabs.router;
+  componentWillUpdate() {
+    LayoutAnimation.easeInEaseOut();
+  }
+  render() {
+    const { navigation } = this.props;
+    const { routes, index } = navigation.state;
+    const activeRoute = routes[index];
+    let bottom = (
+    //   <TouchableOpacity onPress={() => navigation.navigate('Payment')} style={styles.addButton}>
+    <TouchableOpacity onPress={() => navigation.navigate('SettlementDetails')} style={styles.addButton}>
+        <View style={styles.addButtonTextContainer}>
+          <EDText style={styles.addButtonText}>+</EDText>
+        </View>
+      </TouchableOpacity>
+    );
+    return (
+      <View style={{ flex: 1 }}>
+        <StatusBar barStyle="default" />
+        <SafeAreaView style={{ flex: 1 }} forceInset={{ horizontal: 'always', top: 'always' }}>
+          <Tabs navigation={navigation} />
+        </SafeAreaView>
+        {bottom}
+      </View>
+    );
+  }
+}
+
 const AppNavigator = createStackNavigator(
   {
-    Tabs: { screen: Tabs },
+    NewBill: { screen: NewBill },
+    Tabs: { screen: CustomTabs },
+    SelectFriends: { screen: SelectFriends },
     Payment: { screen: Payment },
     DrawerNavigator: { screen: DrawerNavigator },
-    SignIn: { screen: SignIn }
+    SignIn: { screen: SignIn },
+    SettlementDetails: { screen: SettlementDetailView },
   },
   navigationOptions
 );
