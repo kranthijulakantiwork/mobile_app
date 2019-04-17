@@ -72,7 +72,7 @@ export default class Avatar extends Component {
   }
 
   renderName() {
-    const { name, colors, showClose } = this.props;
+    const { name, colors } = this.props;
     if (!name) return null;
     return (
       <View style={{ paddingRight: 3, paddingTop: 3 }}>

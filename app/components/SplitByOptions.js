@@ -52,8 +52,15 @@ export default class SplitByOptions extends Component {
       splitType,
       allocatedAmount: Object.assign({}, allocatedAmount),
       splitByFriends: Object.assign([], splitByFriends),
-      friendsAmount: Object.assign({}, friendsAmount)
+      friendsAmount: this.getFriendsAmount()
     };
+  }
+
+  getFriendsAmount() {
+    const { friendsAmount } = this.props;
+    let amount = {};
+    Object.keys(friendsAmount).map(key => (amount[key] = Object.assign({}, friendsAmount[key])));
+    return amount;
   }
 
   onDialogClose() {
