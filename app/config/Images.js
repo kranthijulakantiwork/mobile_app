@@ -9,6 +9,7 @@ export default {
   camera: require('app/assets/camera.png'),
   category: require('app/assets/category.png'),
   drinks: require('app/assets/drinks.png'),
+  edit: require('app/assets/edit.png'),
   entertainment: require('app/assets/entertainment.png'),
   food: require('app/assets/food.png'),
   fuel: require('app/assets/fuel.png'),

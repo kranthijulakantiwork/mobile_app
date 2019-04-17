@@ -25,15 +25,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.WHITE
   },
   statusContainer: { flexDirection: 'row' },
-  avatarContainer: {
-    height: 45,
-    width: 45,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 3,
-    backgroundColor: COLORS.APP_THEME_PURPLE
-  },
-  avatarText: { color: COLORS.WHITE, fontSize: FONT_SIZES.H20, fontWeight: 'bold' },
   nameContainer: { flex: 2, paddingTop: 2, paddingHorizontal: 15 },
   name: {
     textAlignVertical: 'top',

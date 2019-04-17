@@ -15,6 +15,7 @@ import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { navigateToScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import Avatar from 'app/components/Avatar';
 import CalendarView from 'app/components/CalendarView';
@@ -81,7 +82,7 @@ const FRIENDS_DETAILS = {
   mobile: '9491267523'
 };
 const FRIENDS = [];
-for (let index = 0; index < 25; index++) {
+for (let index = 0; index < 8; index++) {
   FRIENDS.push({ ...FRIENDS_DETAILS, id: index });
 }
 
@@ -101,14 +102,14 @@ export default class NewBill extends Component {
       amount: '',
       group: null,
       paidBy: {},
-      split: null,
       friends: FRIENDS,
       groups: [...FRIENDS, { name: '' }],
       spinner: false,
       addNote1: '',
       addNote2: '',
       addNote3: '',
-      selectedDay: '',
+      selectedDay: new Date().toDateString().substr(4),
+      category: 'others',
       splitType: 'equally',
       splitByFriends: FRIENDS.map(friend => friend.id),
       allocatedSplitAmount: { shares: 0, percentages: 0, unequally: 0, adjustment: 0 },
@@ -169,6 +170,49 @@ export default class NewBill extends Component {
       friendsSplitAmount: friendsAmount,
       splitByFriends,
       showSplitByOptions: false
+    });
+  }
+
+  onSubmit() {
+    const {
+      bill_name,
+      amount,
+      group,
+      paidBy,
+      friends,
+      selectedDay,
+      category,
+      splitType,
+      splitByFriends,
+      allocatedSplitAmount,
+      friendsSplitAmount
+    } = this.state;
+    if (!bill_name) alert(I18n.t('please_enter_description'));
+    if (!amount) alert(I18n.t('please_enter_amount'));
+    // TODO if paidBy is empty change it to the user himself
+    //  Add added_by
+    // Need to replace screen instead of navigating.
+    //  TODO remove current user here
+    const current_user = { id: 1 };
+    const paidByFinal =
+      paidBy && Object.keys(paidBy).length ? paidBy : { [current_user.id]: amount };
+    const { dispatch } = this.props.navigation;
+    navigateToScreen({
+      routeName: 'BillDetails',
+      params: {
+        bill_name,
+        amount,
+        group,
+        paidBy: paidByFinal,
+        friends,
+        added_on: selectedDay,
+        category,
+        splitType,
+        splitByFriends,
+        allocatedSplitAmount,
+        friendsSplitAmount
+      },
+      dispatch
     });
   }
 
@@ -264,7 +308,7 @@ export default class NewBill extends Component {
               fontSize: FONT_SIZES.H2,
               color: COLORS.TEXT_BLACK,
               marginLeft: 5,
-              maxWidth: width / 3 - 50
+              maxWidth: width / 2 - 50
             }}
             numberOfLines={1}
           >
@@ -297,8 +341,8 @@ export default class NewBill extends Component {
         {this.renderFooterButton(dateValue, 'calendar', () => this.onFooterCalendarClick())}
         <View style={{ height: 48, width: 1, backgroundColor: COLORS.TEXT_BLACK }} />
         {this.renderFooterButton(groupName, 'multiple_people', () => this.onFooterGroupClick())}
-        <View style={{ height: 50, width: 1, backgroundColor: COLORS.TEXT_BLACK }} />
-        {this.renderFooterButton('Image', 'camera', () => {})}
+        {/*<View style={{ height: 50, width: 1, backgroundColor: COLORS.TEXT_BLACK }} />
+      {this.renderFooterButton('Image', 'camera', () => {})*/}
       </View>
     );
   }
@@ -345,7 +389,7 @@ export default class NewBill extends Component {
   }
 
   renderPaidByAndSplit() {
-    const { paidBy, split, friends } = this.state;
+    const { paidBy, splitType, friends } = this.state;
     let paidByButtonTitle = I18n.t('you');
     if (Object.keys(paidBy).length === 1) {
       const paidByFriend = friends.filter(friend => friend.id == Object.keys(paidBy)[0])[0];
@@ -354,7 +398,7 @@ export default class NewBill extends Component {
     } else if (Object.keys(paidBy).length > 1) {
       paidByButtonTitle = `2 + ${I18n.t('people')}`;
     }
-    const splitButtonTitle = split ? split : I18n.t('equally');
+    const splitButtonTitle = splitType === 'equally' ? I18n.t('equally') : I18n.t('unequally');
     return (
       <View style={styles.paidByAndSplitContainer}>
         <EDText style={styles.paidByAndSplitText}>{I18n.t('paid_by')}</EDText>
@@ -442,7 +486,6 @@ export default class NewBill extends Component {
   }
 
   renderFriendAvatar(friend, index) {
-    console.log('fire', friend);
     return (
       <Avatar
         name={friend['name']}
@@ -489,7 +532,7 @@ export default class NewBill extends Component {
           title={I18n.t('new_bill')}
           leftImage="back"
           onLeft={() => goBack()}
-          onRight={() => alert('TODO')}
+          onRight={() => this.onSubmit()}
           rightImage="tick"
         />
         <View style={styles.container}>

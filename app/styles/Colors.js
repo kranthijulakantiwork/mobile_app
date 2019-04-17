@@ -7,6 +7,7 @@ const COLORS = {
   BALANCE_BLUE: '#398cbf',
   BALANCE_GREEN: '#4bcf62',
   BALANCE_RED: '#ff7474',
+  BILL_DETAILS_BLACK: '#5d5d5d',
   BLACK: '#000000',
   GRAY: 'gray',
   GREEN: 'lightgreen',
