@@ -23,6 +23,7 @@ import {
 } from 'react-navigation';
 import { COLORS } from 'app/styles/Colors';
 import { FONT_SIZES } from 'app/config/ENV';
+import BillDetails from 'app/screens/BillDetails';
 import DrawerScreen from 'app/screens/DrawerScreen';
 import EDText from 'app/components/EDText';
 import Friends from 'app/screens/Friends';
@@ -31,6 +32,7 @@ import I18n from 'app/config/i18n';
 import NewBill from 'app/screens/NewBill';
 import Payment from 'app/screens/Payment';
 import SelectFriends from 'app/screens/SelectFriends';
+import SettlementDetailView from 'app/screens/SettlementDetailView';
 import SignIn from 'app/screens/SignIn';
 import Splash from 'app/screens/Splash';
 
@@ -176,7 +178,11 @@ class CustomTabs extends React.Component<Props> {
     const { routes, index } = navigation.state;
     const activeRoute = routes[index];
     let bottom = (
-      <TouchableOpacity onPress={() => navigation.navigate('Payment')} style={styles.addButton}>
+      //   <TouchableOpacity onPress={() => navigation.navigate('Payment')} style={styles.addButton}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('SettlementDetails')}
+        style={styles.addButton}
+      >
         <View style={styles.addButtonTextContainer}>
           <EDText style={styles.addButtonText}>+</EDText>
         </View>
@@ -196,17 +202,24 @@ class CustomTabs extends React.Component<Props> {
 
 const AppNavigator = createStackNavigator(
   {
-    Tabs: { screen: CustomTabs },
     NewBill: { screen: NewBill },
+    BillDetails: { screen: BillDetails },
+    Tabs: { screen: CustomTabs },
     SelectFriends: { screen: SelectFriends },
     Payment: { screen: Payment },
     DrawerNavigator: { screen: DrawerNavigator },
-    SignIn: { screen: SignIn }
+    SignIn: { screen: SignIn },
+    SettlementDetails: { screen: SettlementDetailView }
   },
   navigationOptions
 );
 
-const resetAndGoToScreen = (routeName, key, params, dispatch) => {
+const resetAndGoToScreen = ({
+  routeName,
+  key = routeName + Math.random(),
+  params = {},
+  dispatch
+}) => {
   const resetAction = StackActions.reset({
     index: 0,
     key: null,
@@ -221,7 +234,7 @@ const resetAndGoToScreen = (routeName, key, params, dispatch) => {
   return dispatch(resetAction);
 };
 
-const replaceScreen = (routeName, currentScreenKey, params, dispatch) => {
+const replaceScreen = ({ routeName, currentScreenKey, params = {}, dispatch }) => {
   const replaceAction = StackActions.replace({
     key: currentScreenKey,
     routeName,
@@ -230,7 +243,7 @@ const replaceScreen = (routeName, currentScreenKey, params, dispatch) => {
   return dispatch(replaceAction);
 };
 
-const navigateToScreen = (routeName, key, params, dispatch) => {
+const navigateToScreen = ({ routeName, key = routeName, params = {}, dispatch }) => {
   const navigateAction = NavigationActions.navigate({
     routeName,
     params,

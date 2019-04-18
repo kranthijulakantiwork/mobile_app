@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import {
   Dimensions,
+  FlatList,
   Image,
   PermissionsAndroid,
   StyleSheet,
@@ -13,19 +14,37 @@ import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { navigateToScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
+import Avatar from 'app/components/Avatar';
+import CalendarView from 'app/components/CalendarView';
+import Categories from 'app/components/Categories';
+import dismissKeyboard from 'dismissKeyboard';
 import EDText from 'app/components/EDText';
 import EDTextInput from 'app/components/EDTextInput';
 import GroupsList from 'app/components/GroupsList';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
+import PaidByOptions from 'app/components/PaidByOptions';
 import PropTypes from 'prop-types';
+import SplitByOptions from 'app/components/SplitByOptions';
 import ToolBar from 'app/components/ToolBar';
 
 const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  subContainer: { flex: 1, alignItems: 'center', paddingVertical: 20 },
+  subContainer: { flex: 1, width, alignItems: 'center', paddingVertical: 20 },
+  selectFriendAvatarContainer: { width: 65, alignItems: 'center', paddingVertical: 10 },
+  plusButtonView: {
+    height: 45,
+    width: 45,
+    borderRadius: 3,
+    borderWidth: 2,
+    borderColor: '#bbbbbb',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   selectedGroup: { flexDirection: 'row', alignItems: 'center', width: width - 70 },
   selectedGroupText: {
     color: COLORS.TEXT_BLACK,
@@ -37,14 +56,23 @@ const styles = StyleSheet.create({
     borderColor: COLORS.APP_THEME_PURPLE,
     borderWidth: 1
   },
-  paidByAndSplitText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H3 },
+  paidByAndSplitContainer: {
+    flexDirection: 'row',
+    marginTop: 15,
+    width: width - 40,
+    marginHorizontal: 20,
+    alignItems: 'center'
+  },
+  paidByAndSplitText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H1 },
   paidByAndSplitButton: {
     color: COLORS.TEXT_BLACK,
-    fontSize: FONT_SIZES.H3,
-    maxWidth: width / 2,
+    fontSize: FONT_SIZES.H1,
+    maxWidth: width / 4,
     marginHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
     paddingHorizontal: 5,
-    borderColor: COLORS.APP_THEME_PURPLE,
+    borderColor: '#707070',
     borderWidth: 1
   }
 });
@@ -53,18 +81,10 @@ const FRIENDS_DETAILS = {
   name: 'Harshaknkvdkkndnf',
   mobile: '9491267523'
 };
-const FRIENDS = {
-  1: { ...FRIENDS_DETAILS, id: 1 },
-  2: { ...FRIENDS_DETAILS, id: 2 },
-  3: { ...FRIENDS_DETAILS, id: 3 },
-  4: { ...FRIENDS_DETAILS, id: 4 },
-  5: { ...FRIENDS_DETAILS, id: 5 },
-  6: { ...FRIENDS_DETAILS, id: 6 },
-  7: { ...FRIENDS_DETAILS, id: 7 },
-  8: { ...FRIENDS_DETAILS, id: 8 },
-  9: { ...FRIENDS_DETAILS, id: 9 },
-  10: { ...FRIENDS_DETAILS, id: 10 }
-};
+const FRIENDS = [];
+for (let index = 0; index < 8; index++) {
+  FRIENDS.push({ ...FRIENDS_DETAILS, id: index });
+}
 
 export default class NewBill extends Component {
   static propTypes = {
@@ -81,73 +101,180 @@ export default class NewBill extends Component {
       bill_name: '',
       amount: '',
       group: null,
-      paid_by: null,
-      split: null,
+      paidBy: {},
       friends: FRIENDS,
-      groups: [
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        { name: '' }
-      ],
-      selectedFriends: ['you'],
+      groups: [...FRIENDS, { name: '' }],
+      spinner: false,
+      addNote1: '',
+      addNote2: '',
+      addNote3: '',
+      selectedDay: new Date().toDateString().substr(4),
+      category: 'others',
+      splitType: 'equally',
+      splitByFriends: FRIENDS.map(friend => friend.id),
+      allocatedSplitAmount: { shares: 0, percentages: 0, unequally: 0, adjustment: 0 },
+      friendsSplitAmount: { shares: {}, percentages: {}, unequally: {}, adjustment: {} },
+      showCategory: false,
       showGroups: false,
-      showPaidBy: false,
-      showSplit: false,
-      spinner: false
+      showPaidByOptions: false,
+      showCalendar: false,
+      showSplitByOptions: false
     };
+  }
+
+  unSelectFriend(friend) {
+    alert('TODO');
   }
 
   onChangeText(stateKey, text) {
     this.setState({ [stateKey]: text });
   }
 
+  onFooterCalendarClick() {
+    dismissKeyboard();
+    this.setState({ showCalendar: true });
+  }
+
+  onFooterGroupClick() {
+    dismissKeyboard();
+    this.setState({ showGroups: true });
+  }
+
   onSelectGroup(group) {
+    dismissKeyboard();
     this.setState({ group, showGroups: false });
   }
 
-  renderPaidByAndSplitButton(title, stateKey) {
+  onSelectDate(day) {
+    this.setState({ selectedDay: day.dateString, showCalendar: false });
+  }
+
+  onSelectPaidByFriend(friend) {
+    dismissKeyboard();
+    const { amount } = this.state;
+    this.setState({ showPaidByOptions: false, paidBy: { [friend.id]: amount } });
+  }
+
+  onMultiplePeoplePaid(friendsAmount) {
+    dismissKeyboard();
+    this.setState({
+      showPaidByOptions: false,
+      paidBy: friendsAmount
+    });
+  }
+
+  onSplitByCompleted(splitType, allocatedAmount, friendsAmount, splitByFriends) {
+    this.setState({
+      splitType,
+      allocatedSplitAmount: allocatedAmount,
+      friendsSplitAmount: friendsAmount,
+      splitByFriends,
+      showSplitByOptions: false
+    });
+  }
+
+  onSubmit() {
+    const {
+      bill_name,
+      amount,
+      group,
+      paidBy,
+      friends,
+      selectedDay,
+      category,
+      splitType,
+      splitByFriends,
+      allocatedSplitAmount,
+      friendsSplitAmount
+    } = this.state;
+    if (!bill_name) alert(I18n.t('please_enter_description'));
+    if (!amount) alert(I18n.t('please_enter_amount'));
+    // TODO if paidBy is empty change it to the user himself
+    //  Add added_by
+    // Need to replace screen instead of navigating.
+    //  TODO remove current user here
+    const current_user = { id: 1 };
+    const paidByFinal =
+      paidBy && Object.keys(paidBy).length ? paidBy : { [current_user.id]: amount };
+    const { dispatch } = this.props.navigation;
+    navigateToScreen({
+      routeName: 'BillDetails',
+      params: {
+        bill_name,
+        amount,
+        group,
+        paidBy: paidByFinal,
+        friends,
+        added_on: selectedDay,
+        category,
+        splitType,
+        splitByFriends,
+        allocatedSplitAmount,
+        friendsSplitAmount
+      },
+      dispatch
+    });
+  }
+
+  renderCalender() {
+    const { selectedDay, showCalendar } = this.state;
+    if (!showCalendar) return null;
     return (
-      <TouchableOpacity onPress={() => this.setState({ [stateKey]: true })}>
-        <EDText style={styles.paidByAndSplitButton}>{title}</EDText>
-      </TouchableOpacity>
+      <CalendarView
+        onSelectDate={day => this.onSelectDate(day)}
+        showCalendar={showCalendar}
+        selectedDay={selectedDay}
+        onDialogClose={() => this.setState({ showCalendar: false })}
+      />
     );
   }
 
-  renderPaidByAndSplit() {
-    const { paid_by, split } = this.state;
-    const paidByButtonTitle = paid_by ? paid_by : I18n.t('you');
-    const splitButtonTitle = split ? split : I18n.t('equally');
+  renderSplitByOptions() {
+    const {
+      friends,
+      amount,
+      showSplitByOptions,
+      splitType,
+      splitByFriends,
+      allocatedSplitAmount,
+      friendsSplitAmount
+    } = this.state;
+    if (!showSplitByOptions) return null;
     return (
-      <View style={{ flexDirection: 'row', marginTop: 15, width: width - 70 }}>
-        <EDText style={styles.paidByAndSplitText}>{I18n.t('paid_by')}</EDText>
-        {this.renderPaidByAndSplitButton(paidByButtonTitle, 'showPaidBy')}
-        <EDText style={styles.paidByAndSplitText}>{I18n.t('and_split')}</EDText>
-        {this.renderPaidByAndSplitButton(splitButtonTitle, 'showSplit')}
-      </View>
+      <SplitByOptions
+        friends={friends}
+        splitByFriends={splitByFriends}
+        amount={Number(amount)}
+        allocatedAmount={allocatedSplitAmount}
+        friendsAmount={friendsSplitAmount}
+        showSplitByOptions={showSplitByOptions}
+        onDialogClose={() => this.setState({ showSplitByOptions: false })}
+        onSelectFriend={friend => this.onSelectPaidByFriend(friend)}
+        onOkay={this.onSplitByCompleted.bind(this)}
+        splitType={splitType}
+      />
+    );
+  }
+
+  renderPaidByOptions() {
+    const { friends, amount, showPaidByOptions, paidBy } = this.state;
+    if (!showPaidByOptions) return null;
+    return (
+      <PaidByOptions
+        friends={friends}
+        amount={amount}
+        showPaidByOptions={showPaidByOptions}
+        onDialogClose={() => this.setState({ showPaidByOptions: false })}
+        onSelectFriend={friend => this.onSelectPaidByFriend(friend)}
+        onOkay={friendsAmount => this.onMultiplePeoplePaid(friendsAmount)}
+        paidBy={paidBy}
+      />
     );
   }
 
   renderGroups() {
     const { groups, showGroups } = this.state;
+    if (!showGroups) return null;
     return (
       <GroupsList
         groups={groups}
@@ -158,56 +285,242 @@ export default class NewBill extends Component {
     );
   }
 
-  renderSelectedGroup() {
-    const { group } = this.state;
-    const title = group && group.name ? ` ${group.name}` : ` ${I18n.t('group')}: ${I18n.t('none')}`;
+  renderCategories() {
+    const { showCategory } = this.state;
+    if (!showCategory) return null;
     return (
-      <View style={styles.selectedGroup}>
-        <Image source={Images['group']} style={{ height: 30, width: 30 }} />
-        <TouchableOpacity onPress={() => this.setState({ showGroups: true })} style={{}}>
-          <EDText style={styles.selectedGroupText}>{title}</EDText>
-        </TouchableOpacity>
+      <Categories
+        onPress={category => this.setState({ category, showCategory: false })}
+        onDialogClose={() => this.setState({ showCategory: false })}
+      />
+    );
+  }
+
+  renderFooterButton(title, imageSource, onPress) {
+    return (
+      <TouchableOpacity onPress={onPress} style={{ flex: 1 }}>
+        <View
+          style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Image source={Images[imageSource]} />
+          <EDText
+            style={{
+              fontSize: FONT_SIZES.H2,
+              color: COLORS.TEXT_BLACK,
+              marginLeft: 5,
+              maxWidth: width / 2 - 50
+            }}
+            numberOfLines={1}
+          >
+            {title}
+          </EDText>
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
+  renderFooter() {
+    const { group, selectedDay } = this.state;
+    const groupName = group && group.name ? group.name : I18n.t('none');
+    const dateValue = selectedDay ? selectedDay : I18n.t('date');
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          width: width,
+          alignItems: 'center',
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          justifyContent: 'space-evenly',
+          height: 50,
+          borderColor: COLORS.TEXT_BLACK,
+          borderTopWidth: 1
+        }}
+      >
+        {this.renderFooterButton(dateValue, 'calendar', () => this.onFooterCalendarClick())}
+        <View style={{ height: 48, width: 1, backgroundColor: COLORS.TEXT_BLACK }} />
+        {this.renderFooterButton(groupName, 'multiple_people', () => this.onFooterGroupClick())}
+        {/*<View style={{ height: 50, width: 1, backgroundColor: COLORS.TEXT_BLACK }} />
+      {this.renderFooterButton('Image', 'camera', () => {})*/}
       </View>
     );
   }
 
-  renderTextInputField({
-    title,
-    placeholder = title,
-    stateKey,
-    keyboardType = 'default',
-    secureTextEntry = false
-  }) {
+  renderAddNote() {
     return (
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Image source={Images[stateKey]} style={{ height: 30, width: 30 }} />
+      <View style={{}}>
         <EDTextInput
-          title={title}
-          textInputStyle={{ width: width - 100, paddingLeft: 15 }}
-          containerStyle={{ marginHorizontal: 0 }}
-          placeholder={placeholder}
-          value={this.state[stateKey]}
-          onChangeText={text => this.onChangeText(stateKey, text)}
-          secureTextEntry={secureTextEntry}
-          keyboardType={keyboardType}
+          textInputStyle={{ width: (2 * width) / 3 }}
+          placeholder={I18n.t('add_notes')}
+          containerStyle={{ marginVertical: 0, marginTop: 15 }}
+          value={this.state.addNote1}
+          onChangeText={text => this.onChangeText('addNote1', text)}
+        />
+        <EDTextInput
+          textInputStyle={{ width: (2 * width) / 3 }}
+          containerStyle={{ marginVertical: 0 }}
+          value={this.state.addNote2}
+          onChangeText={text => this.onChangeText('addNote2', text)}
+        />
+        <EDTextInput
+          textInputStyle={{ width: (2 * width) / 3 }}
+          containerStyle={{ marginVertical: 0 }}
+          value={this.state.addNote3}
+          onChangeText={text => this.onChangeText('addNote3', text)}
         />
       </View>
     );
   }
 
+  renderPaidByAndSplitButton(title, stateKey) {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          dismissKeyboard();
+          this.setState({ [stateKey]: true });
+        }}
+      >
+        <EDText style={styles.paidByAndSplitButton} numberOfLines={1}>
+          {title}
+        </EDText>
+      </TouchableOpacity>
+    );
+  }
+
+  renderPaidByAndSplit() {
+    const { paidBy, splitType, friends } = this.state;
+    let paidByButtonTitle = I18n.t('you');
+    if (Object.keys(paidBy).length === 1) {
+      const paidByFriend = friends.filter(friend => friend.id == Object.keys(paidBy)[0])[0];
+      const words = paidByFriend.name.split(' ');
+      paidByButtonTitle = words.length > 1 ? words[0] + ' ' + words[1] + '.' : words[0];
+    } else if (Object.keys(paidBy).length > 1) {
+      paidByButtonTitle = `2 + ${I18n.t('people')}`;
+    }
+    const splitButtonTitle = splitType === 'equally' ? I18n.t('equally') : I18n.t('unequally');
+    return (
+      <View style={styles.paidByAndSplitContainer}>
+        <EDText style={styles.paidByAndSplitText}>{I18n.t('paid_by')}</EDText>
+        {this.renderPaidByAndSplitButton(paidByButtonTitle, 'showPaidByOptions')}
+        <EDText style={styles.paidByAndSplitText}>{I18n.t('and_split')}</EDText>
+        {this.renderPaidByAndSplitButton(splitButtonTitle, 'showSplitByOptions')}
+      </View>
+    );
+  }
+
   renderAmount() {
-    return this.renderTextInputField({
-      title: I18n.t('amount'),
-      stateKey: 'amount',
-      keyboardType: 'number-pad'
-    });
+    return (
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <EDText style={{ color: COLORS.TEXT_BLACK, fontSize: 60 }}>{'₹'}</EDText>
+        <EDTextInput
+          title={I18n.t('amount')}
+          textInputStyle={{ width: width - 100, marginLeft: 15 }}
+          titleStyle={{ marginLeft: 15 }}
+          containerStyle={{ marginHorizontal: 0 }}
+          value={this.state['amount']}
+          onChangeText={text => this.onChangeText('amount', text)}
+          keyboardType={'number-pad'}
+        />
+      </View>
+    );
+  }
+
+  renderCategoryButton() {
+    const { category } = this.state;
+    const categoryText = category ? I18n.t(category) : I18n.t('select_category');
+    const categoryImage = category ? category : 'category';
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          this.setState({ showCategory: true });
+          dismissKeyboard();
+        }}
+        style={{ alignSelf: 'center' }}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+          <View
+            style={{
+              height: 40,
+              width: 40,
+              borderRadius: 40 / 2,
+              borderWidth: 2,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderColor: '#bbbbbb'
+            }}
+          >
+            <Image source={Images[categoryImage]} />
+          </View>
+          <EDText style={{ width: 40, fontSize: 10, color: COLORS.TEXT_BLACK, marginLeft: 5 }}>
+            {categoryText}
+          </EDText>
+        </View>
+      </TouchableOpacity>
+    );
   }
 
   renderBillName() {
-    return this.renderTextInputField({
-      title: I18n.t('bill_name'),
-      stateKey: 'bill_name'
-    });
+    return (
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Image source={Images['bill_name']} />
+        <View
+          style={{
+            flexDirection: 'row',
+            borderBottomWidth: 1,
+            borderColor: COLORS.TEXT_BLACK,
+            marginLeft: 15
+          }}
+        >
+          <EDTextInput
+            title={I18n.t('bill_name')}
+            textInputStyle={{ width: width - 160, borderBottomWidth: 0 }}
+            containerStyle={{ marginHorizontal: 0 }}
+            value={this.state['bill_name']}
+            onChangeText={text => this.onChangeText('bill_name', text)}
+          />
+          {this.renderCategoryButton()}
+        </View>
+      </View>
+    );
+  }
+
+  renderFriendAvatar(friend, index) {
+    return (
+      <Avatar
+        name={friend['name']}
+        showClose={true}
+        avatarSubText={friend['name']}
+        avatarSubTextStyle={{ width: 50, color: COLORS.TEXT_BLACK }}
+        onPress={() => this.unSelectFriend(friend)}
+        buttonStyle={styles.selectFriendAvatarContainer}
+      />
+    );
+  }
+
+  renderFriends() {
+    const { friends } = this.state;
+    return (
+      <View style={{ flexDirection: 'row', marginVertical: 5 }}>
+        <FlatList
+          data={friends}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item, index }) => this.renderFriendAvatar(item, index)}
+        />
+        <TouchableOpacity onPress={() => alert('TODO')}>
+          <View style={styles.selectFriendAvatarContainer}>
+            <View style={styles.plusButtonView}>
+              <EDText style={{ color: '#bbbbbb', fontSize: 33 }}>{'+'}</EDText>
+            </View>
+            <EDText style={{ color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H5, paddingTop: 5 }}>
+              {I18n.t('add_friend')}
+            </EDText>
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
   }
 
   render() {
@@ -219,18 +532,31 @@ export default class NewBill extends Component {
           title={I18n.t('new_bill')}
           leftImage="back"
           onLeft={() => goBack()}
-          onRight={() => alert('TODO')}
+          onRight={() => this.onSubmit()}
           rightImage="tick"
         />
         <View style={styles.container}>
-          <View style={styles.subContainer}>
-            {this.renderBillName()}
-            {this.renderAmount()}
-            {this.renderSelectedGroup()}
-            {this.renderPaidByAndSplit()}
-          </View>
+          <KeyboardAwareScrollView
+            style={{ flex: 1, backgroundColor: COLORS.WHITE }}
+            showsVerticalScrollIndicator={false}
+            enableOnAndroid={true}
+            keyboardShouldPersistTaps={'always'}
+          >
+            {this.renderFriends()}
+            <View style={styles.subContainer}>
+              {this.renderBillName()}
+              {this.renderAmount()}
+              {this.renderPaidByAndSplit()}
+              {/*this.renderAddNote()*/}
+            </View>
+          </KeyboardAwareScrollView>
+          {this.renderFooter()}
         </View>
+        {this.renderCategories()}
         {this.renderGroups()}
+        {this.renderPaidByOptions()}
+        {this.renderSplitByOptions()}
+        {this.renderCalender()}
       </View>
     );
   }
