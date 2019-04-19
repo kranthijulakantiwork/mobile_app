@@ -15,7 +15,7 @@ import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { navigateToScreen } from 'app/helpers/NavigationHelper';
+import { navigateToScreen, replaceScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import Avatar from 'app/components/Avatar';
 import CalendarView from 'app/components/CalendarView';
@@ -98,27 +98,42 @@ export default class NewBill extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      bill_name: '',
-      amount: '',
-      group: null,
-      paidBy: {},
-      friends: FRIENDS,
-      groups: [...FRIENDS, { name: '' }],
-      spinner: false,
-      addNote1: '',
-      addNote2: '',
-      addNote3: '',
-      selectedDay: new Date().toDateString().substr(4),
-      category: 'others',
-      splitType: 'equally',
-      splitByFriends: FRIENDS.map(friend => friend.id),
-      allocatedSplitAmount: { shares: 0, percentages: 0, unequally: 0, adjustment: 0 },
-      friendsSplitAmount: { shares: {}, percentages: {}, unequally: {}, adjustment: {} },
+      ...this.getState(),
       showCategory: false,
       showGroups: false,
       showPaidByOptions: false,
       showCalendar: false,
       showSplitByOptions: false
+    };
+  }
+
+  getState() {
+    const { state, getParam } = this.props.navigation;
+    const {
+      bill_name = '',
+      amount = '',
+      group = null,
+      paidBy = {},
+      friends = getParam('friends'),
+      added_on = '',
+      category = 'others',
+      splitType = 'equally',
+      splitByFriends = getParam('friends').map(friend => friend.id),
+      allocatedSplitAmount = { shares: 0, percentages: 0, unequally: 0, adjustment: 0 },
+      friendsSplitAmount = { shares: {}, percentages: {}, unequally: {}, adjustment: {} }
+    } = state.params;
+    return {
+      bill_name,
+      amount,
+      group,
+      paidBy,
+      friends,
+      added_on,
+      category,
+      splitType,
+      splitByFriends,
+      allocatedSplitAmount,
+      friendsSplitAmount
     };
   }
 
@@ -146,7 +161,7 @@ export default class NewBill extends Component {
   }
 
   onSelectDate(day) {
-    this.setState({ selectedDay: day.dateString, showCalendar: false });
+    this.setState({ added_on: day.dateString, showCalendar: false });
   }
 
   onSelectPaidByFriend(friend) {
@@ -174,13 +189,14 @@ export default class NewBill extends Component {
   }
 
   onSubmit() {
+    dismissKeyboard();
     const {
       bill_name,
       amount,
       group,
       paidBy,
       friends,
-      selectedDay,
+      added_on,
       category,
       splitType,
       splitByFriends,
@@ -196,16 +212,17 @@ export default class NewBill extends Component {
     const current_user = { id: 1 };
     const paidByFinal =
       paidBy && Object.keys(paidBy).length ? paidBy : { [current_user.id]: amount };
-    const { dispatch } = this.props.navigation;
-    navigateToScreen({
+    const { state, dispatch } = this.props.navigation;
+    replaceScreen({
       routeName: 'BillDetails',
+      currentScreenKey: state.key,
       params: {
         bill_name,
         amount,
         group,
-        paidBy: paidByFinal,
+        paidBy,
         friends,
-        added_on: selectedDay,
+        added_on,
         category,
         splitType,
         splitByFriends,
@@ -217,13 +234,13 @@ export default class NewBill extends Component {
   }
 
   renderCalender() {
-    const { selectedDay, showCalendar } = this.state;
+    const { added_on, showCalendar } = this.state;
     if (!showCalendar) return null;
     return (
       <CalendarView
         onSelectDate={day => this.onSelectDate(day)}
         showCalendar={showCalendar}
-        selectedDay={selectedDay}
+        selectedDay={added_on}
         onDialogClose={() => this.setState({ showCalendar: false })}
       />
     );
@@ -320,9 +337,9 @@ export default class NewBill extends Component {
   }
 
   renderFooter() {
-    const { group, selectedDay } = this.state;
+    const { group, added_on } = this.state;
     const groupName = group && group.name ? group.name : I18n.t('none');
-    const dateValue = selectedDay ? selectedDay : I18n.t('date');
+    const dateValue = added_on ? added_on : I18n.t('date');
     return (
       <View
         style={{
@@ -335,7 +352,8 @@ export default class NewBill extends Component {
           justifyContent: 'space-evenly',
           height: 50,
           borderColor: COLORS.TEXT_BLACK,
-          borderTopWidth: 1
+          borderTopWidth: 1,
+          backgroundColor: COLORS.WHITE
         }}
       >
         {this.renderFooterButton(dateValue, 'calendar', () => this.onFooterCalendarClick())}

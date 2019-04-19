@@ -15,12 +15,13 @@ import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { navigateToScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
-import LinearGradient from 'react-native-linear-gradient';
 import dismissKeyboard from 'dismissKeyboard';
 import EDText from 'app/components/EDText';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
+import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import ToolBar from 'app/components/ToolBar';
 
@@ -153,6 +154,19 @@ export default class BillDetails extends Component {
     return splitBy;
   }
 
+  onSubmit() {
+    // TODO navigate to edit bill
+    const { dispatch } = this.props.navigation;
+    navigateToScreen({
+      routeName: 'NewBill',
+      key: 'NewBillFromBillDetails',
+      params: {
+        ...this.props.navigation.state.params
+      },
+      dispatch
+    });
+  }
+
   renderText({
     text,
     fontSize = FONT_SIZES.H22,
@@ -180,11 +194,15 @@ export default class BillDetails extends Component {
           data={Object.keys(summary)}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <EDText style={{ fontSize: FONT_SIZES.H2, color }}>{`${friends[item].name} ₹${
-              summary[item]
-            }`}</EDText>
-          )}
+          renderItem={({ item }) => {
+            const friend = friends.filter(friend => friend.id == item)[0];
+            const name = friend ? friend.name : '';
+            return (
+              <EDText style={{ fontSize: FONT_SIZES.H2, color }}>{`${name} ₹${
+                summary[item]
+              }`}</EDText>
+            );
+          }}
         />
       </View>
     );
