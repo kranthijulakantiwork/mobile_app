@@ -15,6 +15,7 @@ import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
+import { replaceScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import Avatar from 'app/components/Avatar';
 import Contacts from 'react-native-contacts';
@@ -46,11 +47,6 @@ const styles = StyleSheet.create({
   }
 });
 
-const FRIENDS_DETAILS = {
-  name: 'Harshaknkvdkkndnf',
-  mobile: '9491267523'
-};
-
 export default class SelectFriends extends Component {
   static navigationOptions = {
     header: null
@@ -59,18 +55,7 @@ export default class SelectFriends extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      friendsList: [
-        { ...FRIENDS_DETAILS, id: 1 },
-        { ...FRIENDS_DETAILS, id: 2 },
-        { ...FRIENDS_DETAILS, id: 3 },
-        { ...FRIENDS_DETAILS, id: 4 },
-        { ...FRIENDS_DETAILS, id: 5 },
-        { ...FRIENDS_DETAILS, id: 6 },
-        { ...FRIENDS_DETAILS, id: 7 },
-        { ...FRIENDS_DETAILS, id: 8 },
-        { ...FRIENDS_DETAILS, id: 9 },
-        { ...FRIENDS_DETAILS, id: 10 }
-      ],
+      friendsList: [],
       selectedFriends: ['you'],
       spinner: false
     };
@@ -88,29 +73,48 @@ export default class SelectFriends extends Component {
             console.log('err', err);
           } else {
             // contacts returned in Array
-            let contacts_data = {};
-            contacts.slice(0, 100).map((contact, contactIndex) => {
+            // let contacts_data = {};
+            let contacts_data = [];
+            const mobileNumbers = [];
+            contacts.slice(0, 50).map((contact, contactIndex) => {
               if (contact.phoneNumbers.length) {
                 contact.phoneNumbers.map((mobile, mobileIndex) => {
-                  const id = `contact${contactIndex}mobile${mobileIndex}`;
-                  contacts_data[id] = {
-                    id,
-                    name: `${contact.givenName ? contact.givenName : ''} ${
-                      contact.familyName ? contact.familyName : ''
-                    }`,
-                    mobile: mobile.number
-                  };
+                  const mobileNumber = this.getMobileNumber(mobile);
+                  if (mobileNumber && !mobileNumbers.includes(mobileNumber)) {
+                    mobileNumbers.push(mobileNumber);
+                    const id = `contact${contactIndex}mobile${mobileIndex}`;
+                    data = {
+                      id,
+                      name: `${contact.givenName ? contact.givenName : ''} ${
+                        contact.familyName ? contact.familyName : ''
+                      }`,
+                      mobile: mobileNumber
+                    };
+                    contacts_data.push(data);
+                    // contacts_data[id] = data;
+                  }
                 });
               }
             });
-            console.log('contacts', contacts_data);
-            this.setState({ friends: contacts_data });
+            // console.log('contacts', contacts_data);
+            this.setState({ friendsList: contacts_data });
           }
         });
       });
     } catch (error) {
       console.log('error', error);
     }
+  }
+
+  getMobileNumber(mobile) {
+    if (mobile && mobile.number) {
+      return mobile.number
+        .replace('-', '')
+        .replace('-', '')
+        .replace('-', '')
+        .replace('-', '');
+    }
+    return '';
   }
 
   selectFriend(index) {
@@ -120,7 +124,7 @@ export default class SelectFriends extends Component {
       tempFriends[index].selected = true;
       let tempSelectedFriends = Object.assign([], selectedFriends);
       tempSelectedFriends.push(index);
-      return this.setState({ friends: tempFriends, selectedFriends: tempSelectedFriends });
+      return this.setState({ friendsList: tempFriends, selectedFriends: tempSelectedFriends });
     }
     return alert(I18n.t('maximum_friends_reached'));
   }
@@ -132,7 +136,7 @@ export default class SelectFriends extends Component {
     let tempSelectedFriends = Object.assign([], selectedFriends);
     const positionIndex = tempSelectedFriends.indexOf(index);
     tempSelectedFriends.splice(positionIndex, 1);
-    return this.setState({ friends: tempFriends, selectedFriends: tempSelectedFriends });
+    return this.setState({ friendsList: tempFriends, selectedFriends: tempSelectedFriends });
   }
 
   onFriendSelection(index) {
@@ -142,6 +146,24 @@ export default class SelectFriends extends Component {
     } else {
       return this.selectFriend(index);
     }
+  }
+
+  onSubmit() {
+    // TODO replace screen with screen from props or so
+    const { dispatch, state } = this.props.navigation;
+    const { selectedFriends, friendsList } = this.state;
+    const selected_friends = [];
+    selectedFriends.map(index => {
+      if (index !== 'you') {
+        selected_friends.push(friendsList[index]);
+      }
+    });
+    replaceScreen({
+      routeName: 'NewBill',
+      currentScreenKey: state.key,
+      params: { friends: selected_friends },
+      dispatch
+    });
   }
 
   renderSingleFriend(friendDetails, index) {
@@ -163,8 +185,8 @@ export default class SelectFriends extends Component {
   }
 
   renderSelectedFriendAvatar(id) {
-    const { friends } = this.state;
-    const friend = id === 'you' ? { name: 'Kranthi' } : friends[id];
+    const { friendsList } = this.state;
+    const friend = id === 'you' ? { name: 'Kranthi' } : friendsList[id];
     return (
       <Avatar
         name={friend['name']}
@@ -211,9 +233,9 @@ export default class SelectFriends extends Component {
         <ToolBar
           title={I18n.t('select_friends')}
           subTitle={`${selectedFriends.length} / 15`}
-          leftTitle={I18n.t('cancel')}
+          leftImage="back"
           onLeft={() => goBack()}
-          onRight={() => alert('TODO')}
+          onRight={() => this.onSubmit()}
           rightTitle={I18n.t('next')}
         />
         {this.renderHeader()}
