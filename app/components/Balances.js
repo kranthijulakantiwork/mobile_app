@@ -55,11 +55,15 @@ export default class Balances extends Component {
       to_get: {},
       balance: { borderTopRightRadius: 5, borderBottomRightRadius: 5 }
     };
+    let imageSource = title;
+    if (title === 'balance') {
+      imageSource = Number(this.props[title]) > 0 ? 'balance_positive' : 'balance_negative';
+    }
     return (
       <ImageBackground
         style={{ ...styles.image, ...balanceStyles[title] }}
         key={index}
-        source={Images[title]}
+        source={Images[imageSource]}
       >
         <EDText style={styles.balanceValue}>{'₹' + this.props[title]}</EDText>
         <EDText style={styles.balanceText}>{I18n.t(title)}</EDText>
@@ -68,7 +72,6 @@ export default class Balances extends Component {
   }
 
   render() {
-    const { onPress } = this.props;
     return (
       <View style={styles.container}>
         {BALANCES.map((title, index) => this.renderBalance(title, index))}

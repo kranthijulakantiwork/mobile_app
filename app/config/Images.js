@@ -3,6 +3,8 @@
 export default {
   amount: require('app/assets/amount.png'),
   back: require('app/assets/back.png'),
+  balance_negative: require('app/assets/balance_negative.png'),
+  balance_positive: require('app/assets/balance_positive.png'),
   bill_name: require('app/assets/bill_name.png'),
   bills: require('app/assets/bills.png'),
   calendar: require('app/assets/calendar.png'),
@@ -17,6 +19,7 @@ export default {
   group: require('app/assets/group.png'),
   holiday: require('app/assets/holiday.png'),
   loan: require('app/assets/loan.png'),
+  logo: require('app/assets/logo.png'),
   medicine: require('app/assets/medicine.png'),
   member: require('app/assets/member.png'),
   multiple_people: require('app/assets/multiple_people.png'),
@@ -24,9 +27,7 @@ export default {
   rent: require('app/assets/rent.png'),
   shopping: require('app/assets/shopping.png'),
   tick: require('app/assets/tick.png'),
-  travel: require('app/assets/travel.png'),
-  logo: require('app/assets/logo.png'),
-  to_pay: require('app/assets/logo.png'),
-  to_get: require('app/assets/logo.png'),
-  balance: require('app/assets/logo.png')
+  to_get: require('app/assets/to_get.png'),
+  to_pay: require('app/assets/to_pay.png'),
+  travel: require('app/assets/travel.png')
 };
