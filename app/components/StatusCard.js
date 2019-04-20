@@ -10,7 +10,6 @@ import Avatar from 'app/components/Avatar';
 import EDText from 'app/components/EDText';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
-import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 
 const { width } = Dimensions.get('window');

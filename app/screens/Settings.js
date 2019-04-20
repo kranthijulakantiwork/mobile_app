@@ -75,7 +75,6 @@ export default class Settings extends Component {
                 marginTop: 40
               }}
               placeholder="Name"
-              placeholderTextColor="black"
             />
             <TextInput
               style={{
@@ -108,7 +107,6 @@ export default class Settings extends Component {
                 marginLeft: 10
               }}
               placeholder="Optional"
-              placeholderTextColor="black"
             />
           </View>
           <View

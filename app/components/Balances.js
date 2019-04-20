@@ -65,7 +65,7 @@ export default class Balances extends Component {
         key={index}
         source={Images[imageSource]}
       >
-        <EDText style={styles.balanceValue}>{'₹' + this.props[title]}</EDText>
+        <EDText style={styles.balanceValue}>{'₹' + Math.abs(this.props[title])}</EDText>
         <EDText style={styles.balanceText}>{I18n.t(title)}</EDText>
       </ImageBackground>
     );
