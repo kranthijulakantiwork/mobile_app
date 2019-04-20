@@ -36,6 +36,7 @@ import Settings from 'app/screens/Settings';
 import SettlementDetailView from 'app/screens/SettlementDetailView';
 import SignIn from 'app/screens/SignIn';
 import Splash from 'app/screens/Splash';
+import ChatRoom from 'app/screens/ChatRoom';
 
 const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -203,6 +204,7 @@ class CustomTabs extends React.Component<Props> {
 
 const AppNavigator = createStackNavigator(
   {
+    ChatRoom: { screen: ChatRoom },
     Tabs: { screen: CustomTabs },
     NewBill: { screen: NewBill },
     BillDetails: { screen: BillDetails },
