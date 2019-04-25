@@ -60,6 +60,7 @@ const en = {
   please_enter_description: 'Please enter description.',
   plus_other_balances: 'Plus {{count}} other balances',
   rent: 'Rent',
+  search_friends: 'Search Friends',
   select_category: 'Select Category',
   select_friends: 'Select Friends',
   settled_up: 'settled up',

@@ -21,6 +21,7 @@ import {
   NavigationActions,
   StackActions
 } from 'react-navigation';
+import { askPermissionsAndgetContacts } from 'app/helpers/Contacts';
 import { COLORS } from 'app/styles/Colors';
 import { FONT_SIZES } from 'app/config/ENV';
 import BillDetails from 'app/screens/BillDetails';
@@ -171,6 +172,9 @@ const Tabs = createMaterialTopTabNavigator(
 
 class CustomTabs extends React.Component<Props> {
   static router = Tabs.router;
+  componentWillMount() {
+    askPermissionsAndgetContacts();
+  }
   componentWillUpdate() {
     LayoutAnimation.easeInEaseOut();
   }

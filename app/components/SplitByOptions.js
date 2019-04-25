@@ -71,12 +71,12 @@ export default class SplitByOptions extends Component {
   onSelectFriend(friend) {
     const { splitByFriends } = this.state;
     const tempSplitByFriends = Object.assign([], splitByFriends);
-    if (splitByFriends.includes(friend.id)) {
-      const index = tempSplitByFriends.indexOf(friend.id);
+    if (splitByFriends.includes(friend.mobile)) {
+      const index = tempSplitByFriends.indexOf(friend.mobile);
       tempSplitByFriends.splice(index, 1);
       this.setState({ splitByFriends: tempSplitByFriends });
     } else {
-      this.setState({ splitByFriends: [...splitByFriends, friend.id] });
+      this.setState({ splitByFriends: [...splitByFriends, friend.mobile] });
     }
   }
 
@@ -209,7 +209,7 @@ export default class SplitByOptions extends Component {
     return true;
   }
 
-  onChangeText(splitAmount, id) {
+  onChangeText(splitAmount, mobile) {
     const { allocatedAmount, splitType } = this.state;
     if (!this.validateAmount(splitAmount)) return;
     const { friendsAmount } = this.state;
@@ -219,10 +219,10 @@ export default class SplitByOptions extends Component {
     tempAllocatedAmount[splitType] =
       tempAllocatedAmount[splitType] -
       this.getNumericAmount(
-        tempFriendsAmount[splitType][id] ? tempFriendsAmount[splitType][id].toString() : ''
+        tempFriendsAmount[splitType][mobile] ? tempFriendsAmount[splitType][mobile].toString() : ''
       ) +
       this.getNumericAmount(splitAmount);
-    tempFriendsAmount[splitType][id] = splitAmount;
+    tempFriendsAmount[splitType][mobile] = splitAmount;
     this.setState({ friendsAmount: tempFriendsAmount, allocatedAmount: tempAllocatedAmount });
   }
 
@@ -233,8 +233,8 @@ export default class SplitByOptions extends Component {
     if (splitType === 'equally') return shareValue;
     if (amount) {
       if (splitType === 'shares' && allocatedAmount[splitType]) {
-        const share = friendsAmount[splitType][friend.id]
-          ? Number(friendsAmount[splitType][friend.id])
+        const share = friendsAmount[splitType][friend.mobile]
+          ? Number(friendsAmount[splitType][friend.mobile])
           : 0;
         if (!share) return '0.00';
         const totalShares = allocatedAmount[splitType];
@@ -244,8 +244,8 @@ export default class SplitByOptions extends Component {
       if (splitType === 'adjustment' && allocatedAmount[splitType]) {
         const totalAdjustments = allocatedAmount[splitType];
         const eachPersonNormalShare = (amount - totalAdjustments) / friends.length;
-        const presentPersonAdjustment = friendsAmount[splitType][friend.id]
-          ? Number(friendsAmount[splitType][friend.id])
+        const presentPersonAdjustment = friendsAmount[splitType][friend.mobile]
+          ? Number(friendsAmount[splitType][friend.mobile])
           : 0;
         shareValue = eachPersonNormalShare + presentPersonAdjustment;
         shareValue = shareValue.toFixed(2);
@@ -258,16 +258,16 @@ export default class SplitByOptions extends Component {
     const { splitType, friendsAmount, splitByFriends } = this.state;
     let amount_received = '';
     if (splitType !== 'equally') {
-      amount_received = friendsAmount[splitType][friend.id]
-        ? friendsAmount[splitType][friend.id].toString()
+      amount_received = friendsAmount[splitType][friend.mobile]
+        ? friendsAmount[splitType][friend.mobile].toString()
         : '';
     }
     return (
       <SplitByFriends
         onPress={() => this.onSelectFriend(friend)}
         splitBy={splitType}
-        isSelected={splitByFriends.includes(friend.id)}
-        onChangeText={amount => this.onChangeText(amount, friend.id)}
+        isSelected={splitByFriends.includes(friend.mobile)}
+        onChangeText={amount => this.onChangeText(amount, friend.mobile)}
         amount={amount_received}
         shareValue={this.getShareValue(friend)}
         name={friend.name}
