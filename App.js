@@ -7,13 +7,16 @@ import store from 'app/helpers/Store';
 import { AppNavigation } from 'app/screens/Index';
 import React from 'react';
 import Hello from './app/screens/settings';
+import Settlement from './app/screens/settlement';
+import Selection from './app/screens/selectionscreen';
+
 
 export default class App extends React.Component {
 
   render() {
     return (
      <View>
-       <Hello/>
+       <Selection/>
      </View>
     );
   }
