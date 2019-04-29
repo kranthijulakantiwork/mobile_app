@@ -15,7 +15,7 @@ import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { navigateToScreen } from 'app/helpers/NavigationHelper';
+import { navigateToScreen, replaceScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import Avatar from 'app/components/Avatar';
 import CalendarView from 'app/components/CalendarView';
@@ -28,6 +28,7 @@ import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
 import PaidByOptions from 'app/components/PaidByOptions';
 import PropTypes from 'prop-types';
+import SelectFriends from 'app/screens/SelectFriends';
 import SplitByOptions from 'app/components/SplitByOptions';
 import ToolBar from 'app/components/ToolBar';
 
@@ -83,7 +84,7 @@ const FRIENDS_DETAILS = {
 };
 const FRIENDS = [];
 for (let index = 0; index < 8; index++) {
-  FRIENDS.push({ ...FRIENDS_DETAILS, id: index });
+  FRIENDS.push({ ...FRIENDS_DETAILS, id: index, mobile: '949126752' + index });
 }
 
 export default class NewBill extends Component {
@@ -98,28 +99,52 @@ export default class NewBill extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      bill_name: '',
-      amount: '',
-      group: null,
-      paidBy: {},
-      friends: FRIENDS,
-      groups: [...FRIENDS, { name: '' }],
-      spinner: false,
-      addNote1: '',
-      addNote2: '',
-      addNote3: '',
-      selectedDay: new Date().toDateString().substr(4),
-      category: 'others',
-      splitType: 'equally',
-      splitByFriends: FRIENDS.map(friend => friend.id),
-      allocatedSplitAmount: { shares: 0, percentages: 0, unequally: 0, adjustment: 0 },
-      friendsSplitAmount: { shares: {}, percentages: {}, unequally: {}, adjustment: {} },
+      ...this.getState(),
       showCategory: false,
       showGroups: false,
       showPaidByOptions: false,
       showCalendar: false,
-      showSplitByOptions: false
+      showSplitByOptions: false,
+      showFriendsList: false
     };
+  }
+
+  getState() {
+    const { state, getParam } = this.props.navigation;
+    const { params = {} } = state;
+    const friendsList = getParam('friends') || FRIENDS;
+    const {
+      bill_name = '',
+      amount = '',
+      group = null,
+      paidBy = {},
+      friends = friendsList,
+      added_on = new Date().toDateString().substr(4),
+      category = 'others',
+      splitType = 'equally',
+      splitByFriends = friendsList.map(friend => friend.mobile),
+      allocatedSplitAmount = { shares: 0, percentages: 0, unequally: 0, adjustment: 0 },
+      friendsSplitAmount = { shares: {}, percentages: {}, unequally: {}, adjustment: {} }
+    } = params;
+    return {
+      bill_name,
+      amount,
+      group,
+      paidBy,
+      friends,
+      added_on,
+      category,
+      splitType,
+      splitByFriends,
+      allocatedSplitAmount,
+      friendsSplitAmount
+    };
+  }
+
+  onAddFriend(friend) {
+    const { friends } = this.state;
+    // TODO handle split
+    this.setState({ showFriendsList: false, friends: [...friends, friend] });
   }
 
   unSelectFriend(friend) {
@@ -146,17 +171,18 @@ export default class NewBill extends Component {
   }
 
   onSelectDate(day) {
-    this.setState({ selectedDay: day.dateString, showCalendar: false });
+    this.setState({ added_on: day.dateString, showCalendar: false });
   }
 
   onSelectPaidByFriend(friend) {
     dismissKeyboard();
     const { amount } = this.state;
-    this.setState({ showPaidByOptions: false, paidBy: { [friend.id]: amount } });
+    this.setState({ showPaidByOptions: false, paidBy: { [friend.mobile]: amount } });
   }
 
   onMultiplePeoplePaid(friendsAmount) {
     dismissKeyboard();
+    console.log('friendsAmount', friendsAmount);
     this.setState({
       showPaidByOptions: false,
       paidBy: friendsAmount
@@ -174,13 +200,14 @@ export default class NewBill extends Component {
   }
 
   onSubmit() {
+    dismissKeyboard();
     const {
       bill_name,
       amount,
       group,
       paidBy,
       friends,
-      selectedDay,
+      added_on,
       category,
       splitType,
       splitByFriends,
@@ -193,19 +220,20 @@ export default class NewBill extends Component {
     //  Add added_by
     // Need to replace screen instead of navigating.
     //  TODO remove current user here
-    const current_user = { id: 1 };
+    const current_user = { id: 1, mobile: '9866070833' };
     const paidByFinal =
-      paidBy && Object.keys(paidBy).length ? paidBy : { [current_user.id]: amount };
-    const { dispatch } = this.props.navigation;
-    navigateToScreen({
+      paidBy && Object.keys(paidBy).length ? paidBy : { [current_user.mobile]: amount };
+    const { state, dispatch } = this.props.navigation;
+    replaceScreen({
       routeName: 'BillDetails',
+      currentScreenKey: state.key,
       params: {
         bill_name,
         amount,
         group,
-        paidBy: paidByFinal,
+        paidBy,
         friends,
-        added_on: selectedDay,
+        added_on,
         category,
         splitType,
         splitByFriends,
@@ -216,14 +244,25 @@ export default class NewBill extends Component {
     });
   }
 
+  renderFriendsList() {
+    const { showFriendsList } = this.state;
+    if (!showFriendsList) return null;
+    return (
+      <SelectFriends
+        onDialogClose={() => this.setState({ showFriendsList: false })}
+        onAddFriend={friend => this.onAddFriend(friend)}
+      />
+    );
+  }
+
   renderCalender() {
-    const { selectedDay, showCalendar } = this.state;
+    const { added_on, showCalendar } = this.state;
     if (!showCalendar) return null;
     return (
       <CalendarView
         onSelectDate={day => this.onSelectDate(day)}
         showCalendar={showCalendar}
-        selectedDay={selectedDay}
+        selectedDay={added_on}
         onDialogClose={() => this.setState({ showCalendar: false })}
       />
     );
@@ -320,9 +359,9 @@ export default class NewBill extends Component {
   }
 
   renderFooter() {
-    const { group, selectedDay } = this.state;
+    const { group, added_on } = this.state;
     const groupName = group && group.name ? group.name : I18n.t('none');
-    const dateValue = selectedDay ? selectedDay : I18n.t('date');
+    const dateValue = added_on ? added_on : I18n.t('date');
     return (
       <View
         style={{
@@ -335,7 +374,8 @@ export default class NewBill extends Component {
           justifyContent: 'space-evenly',
           height: 50,
           borderColor: COLORS.TEXT_BLACK,
-          borderTopWidth: 1
+          borderTopWidth: 1,
+          backgroundColor: COLORS.WHITE
         }}
       >
         {this.renderFooterButton(dateValue, 'calendar', () => this.onFooterCalendarClick())}
@@ -392,7 +432,7 @@ export default class NewBill extends Component {
     const { paidBy, splitType, friends } = this.state;
     let paidByButtonTitle = I18n.t('you');
     if (Object.keys(paidBy).length === 1) {
-      const paidByFriend = friends.filter(friend => friend.id == Object.keys(paidBy)[0])[0];
+      const paidByFriend = friends.filter(friend => friend.mobile == Object.keys(paidBy)[0])[0];
       const words = paidByFriend.name.split(' ');
       paidByButtonTitle = words.length > 1 ? words[0] + ' ' + words[1] + '.' : words[0];
     } else if (Object.keys(paidBy).length > 1) {
@@ -509,7 +549,7 @@ export default class NewBill extends Component {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => this.renderFriendAvatar(item, index)}
         />
-        <TouchableOpacity onPress={() => alert('TODO')}>
+        <TouchableOpacity onPress={() => this.setState({ showFriendsList: true })}>
           <View style={styles.selectFriendAvatarContainer}>
             <View style={styles.plusButtonView}>
               <EDText style={{ color: '#bbbbbb', fontSize: 33 }}>{'+'}</EDText>
@@ -557,6 +597,7 @@ export default class NewBill extends Component {
         {this.renderPaidByOptions()}
         {this.renderSplitByOptions()}
         {this.renderCalender()}
+        {this.renderFriendsList()}
       </View>
     );
   }

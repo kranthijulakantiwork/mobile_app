@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     color: COLORS.TEXT_BLACK
   },
   button: { height: 60, width: 70, alignItems: 'center', justifyContent: 'center' },
-  buttonText: { fontSize: FONT_SIZES.H1, color: COLORS.WHITE }
+  buttonText: { fontSize: FONT_SIZES.H1, color: COLORS.TEXT_BLACK }
 });
 
 export default class ToolBar extends Component {

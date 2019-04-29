@@ -59,6 +59,8 @@ buck-out/
 *.jsbundle
 android/app/src/main/assets/index.android.bundle
 android/app/src/main/res/drawable*/*assets*.png
+android/app/src/main/res/drawable*/node_modules_*.png
+
 
 # VSCODE
 .vscode

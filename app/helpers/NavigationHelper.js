@@ -21,6 +21,7 @@ import {
   NavigationActions,
   StackActions
 } from 'react-navigation';
+import { askPermissionsAndgetContacts } from 'app/helpers/Contacts';
 import { COLORS } from 'app/styles/Colors';
 import { FONT_SIZES } from 'app/config/ENV';
 import BillDetails from 'app/screens/BillDetails';
@@ -32,6 +33,7 @@ import I18n from 'app/config/i18n';
 import NewBill from 'app/screens/NewBill';
 import Payment from 'app/screens/Payment';
 import SelectFriends from 'app/screens/SelectFriends';
+import Settings from 'app/screens/Settings';
 import SettlementDetailView from 'app/screens/SettlementDetailView';
 import SignIn from 'app/screens/SignIn';
 import Splash from 'app/screens/Splash';
@@ -170,6 +172,9 @@ const Tabs = createMaterialTopTabNavigator(
 
 class CustomTabs extends React.Component<Props> {
   static router = Tabs.router;
+  componentWillMount() {
+    askPermissionsAndgetContacts();
+  }
   componentWillUpdate() {
     LayoutAnimation.easeInEaseOut();
   }
@@ -180,7 +185,7 @@ class CustomTabs extends React.Component<Props> {
     let bottom = (
       //   <TouchableOpacity onPress={() => navigation.navigate('Payment')} style={styles.addButton}>
       <TouchableOpacity
-        onPress={() => navigation.navigate('SettlementDetails')}
+        onPress={() => navigation.navigate('SelectFriends')}
         style={styles.addButton}
       >
         <View style={styles.addButtonTextContainer}>
@@ -202,14 +207,15 @@ class CustomTabs extends React.Component<Props> {
 
 const AppNavigator = createStackNavigator(
   {
+    Tabs: { screen: CustomTabs },
     NewBill: { screen: NewBill },
     BillDetails: { screen: BillDetails },
-    Tabs: { screen: CustomTabs },
     SelectFriends: { screen: SelectFriends },
     Payment: { screen: Payment },
     DrawerNavigator: { screen: DrawerNavigator },
     SignIn: { screen: SignIn },
-    SettlementDetails: { screen: SettlementDetailView }
+    SettlementDetails: { screen: SettlementDetailView },
+    Settings: { screen: Settings }
   },
   navigationOptions
 );

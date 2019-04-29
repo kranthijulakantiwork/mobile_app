@@ -15,12 +15,13 @@ import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { navigateToScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
-import LinearGradient from 'react-native-linear-gradient';
 import dismissKeyboard from 'dismissKeyboard';
 import EDText from 'app/components/EDText';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
+import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import ToolBar from 'app/components/ToolBar';
 
@@ -123,7 +124,7 @@ export default class BillDetails extends Component {
     switch (splitType) {
       case 'equally':
         let eachPersonShare = Number(amount) / splitByFriends.length;
-        splitByFriends.map(id => (splitBy[id] = eachPersonShare));
+        splitByFriends.map(mobile => (splitBy[mobile] = eachPersonShare));
         break;
       case 'unequally':
         splitBy = friendsSplit;
@@ -131,26 +132,39 @@ export default class BillDetails extends Component {
       case 'shares':
         const eachShareValue = Number(amount) / allocatedSplitAmount[splitType];
         Object.keys(friendsSplit).map(
-          id => (splitBy[id] = Number(friendsSplit[id]) * eachShareValue)
+          mobile => (splitBy[mobile] = Number(friendsSplit[mobile]) * eachShareValue)
         );
         break;
       case 'percentages':
         Object.keys(friendsSplit).map(
-          id => (splitBy[id] = (Number(friendsSplit[id]) * Number(amount)) / 100)
+          mobile => (splitBy[mobile] = (Number(friendsSplit[mobile]) * Number(amount)) / 100)
         );
         break;
       case 'adjustment':
         eachPersonShare = (amount - allocatedSplitAmount[splitType]) / friends.length;
         friends.map(friend => {
-          const id = friend.id;
-          const adjustment = friendsSplit[id] ? Number(friendsSplit[id]) : 0;
-          splitBy[id] = eachPersonShare + adjustment;
+          const mobile = friend.mobile;
+          const adjustment = friendsSplit[mobile] ? Number(friendsSplit[mobile]) : 0;
+          splitBy[mobile] = eachPersonShare + adjustment;
         });
         break;
       default:
         break;
     }
     return splitBy;
+  }
+
+  onSubmit() {
+    // TODO navigate to edit bill
+    const { dispatch } = this.props.navigation;
+    navigateToScreen({
+      routeName: 'NewBill',
+      key: 'NewBillFromBillDetails',
+      params: {
+        ...this.props.navigation.state.params
+      },
+      dispatch
+    });
   }
 
   renderText({
@@ -180,11 +194,15 @@ export default class BillDetails extends Component {
           data={Object.keys(summary)}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <EDText style={{ fontSize: FONT_SIZES.H2, color }}>{`${friends[item].name} ₹${
-              summary[item]
-            }`}</EDText>
-          )}
+          renderItem={({ item }) => {
+            const friend = friends.filter(friend => friend.mobile == item)[0];
+            const name = friend ? friend.name : '';
+            return (
+              <EDText style={{ fontSize: FONT_SIZES.H2, color }}>{`${name} ₹${
+                summary[item]
+              }`}</EDText>
+            );
+          }}
         />
       </View>
     );
@@ -194,9 +212,9 @@ export default class BillDetails extends Component {
     //  TODO get owed or paid
     const { paidBy, splitBy } = this.state;
     //  TODO remove current user here
-    const current_user = { id: 1 };
-    const paidByUser = paidBy[current_user.id] ? Number(paidBy[current_user.id]) : 0;
-    const splitByUser = splitBy[current_user.id] ? Number(splitBy[current_user.id]) : 0;
+    const current_user = { id: 1, mobile: '9866070833' };
+    const paidByUser = paidBy[current_user.mobile] ? Number(paidBy[current_user.mobile]) : 0;
+    const splitByUser = splitBy[current_user.mobile] ? Number(splitBy[current_user.mobile]) : 0;
     const amount = paidByUser - splitByUser;
     if (!amount) return null;
     const colors = amount < 0 ? ['#ff9966', '#ff5e62'] : ['#93f9b9', '#1d976c'];

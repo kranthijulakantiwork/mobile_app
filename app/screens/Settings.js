@@ -1,36 +1,33 @@
 import React, { Component } from 'react';
-import { Text, View, Button, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { Text, View, Button, StyleSheet, TextInput } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
-console.disableYellowBox = true;
-export default class Hello extends Component {
-  renderTitlebar() {
-    return (
-      <View
-        style={{
-          flexDirection: 'row',
-          backgroundColor: 'grey',
-          justifyContent: 'space-between',
-          alignItems: 'stretch',
-          border: '3px solid black'
-        }}
-      >
-        <TouchableOpacity>
-          <Text style={{ fontSize: 15, color: 'black' }}>Back</Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity>
-          <Text style={{ fontSize: 15, color: 'black' }}>Setting</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={{ fontSize: 15, color: 'black' }}>Save</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+export default class Settings extends Component {
+  static navigationOptions = {
+    header: null
+  };
 
-  renderBody() {
+  render() {
     return (
       <View>
+        <View
+          style={{
+            flexDirection: 'row',
+            backgroundColor: 'grey',
+            justifyContent: 'space-between',
+            alignItems: 'stretch',
+            border: '3px solid black'
+          }}
+        >
+          <Button
+            title="back"
+            color="grey"
+            style={[styles.button, { width: 200, marginLeft: 0 }]}
+          />
+
+          <Button container title="settings" color="grey" />
+          <Button title="save" color="grey" />
+        </View>
         <View
           style={{
             flexDirection: 'row',
@@ -78,7 +75,6 @@ export default class Hello extends Component {
                 marginTop: 40
               }}
               placeholder="Name"
-              placeholderTextColor="black"
             />
             <TextInput
               style={{
@@ -97,7 +93,6 @@ export default class Hello extends Component {
                 borderColor: 'white',
                 borderBottomColor: 'black',
                 marginTop: 30,
-                placeholder: 'name',
                 marginLeft: 10
               }}
               placeholder="UPI Address"
@@ -108,12 +103,10 @@ export default class Hello extends Component {
                 width: 200,
                 borderColor: 'white',
                 borderBottomColor: 'black',
-                label: 'name',
                 marginTop: 10,
                 marginLeft: 10
               }}
               placeholder="Optional"
-              placeholderTextColor="black"
             />
           </View>
           <View
@@ -135,13 +128,13 @@ export default class Hello extends Component {
         </View>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around'
+            flexDirection: 'row'
           }}
         >
           <Text
             style={{
               marginTop: 70,
+              marginLeft: 125,
               fontWeight: 'bold',
               fontSize: 50,
               borderColor: 'black',
@@ -157,6 +150,7 @@ export default class Hello extends Component {
           <Text
             style={{
               marginTop: 70,
+              marginLeft: 120,
               fontWeight: 'bold',
               fontSize: 50,
               borderColor: 'black',
@@ -172,33 +166,18 @@ export default class Hello extends Component {
         </View>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around'
+            flexDirection: 'row'
           }}
         >
-          <Text style={{ marginTop: 0, fontWeight: 'bold', fontSize: 15 }}>Currency</Text>
-          <Text style={{ marginTop: 0, fontWeight: 'bold', fontSize: 15 }}>Language</Text>
+          <Text style={{ marginTop: 0, marginLeft: 115, fontWeight: 'bold', fontSize: 15 }}>
+            Currency
+          </Text>
+          <Text style={{ marginTop: 0, marginLeft: 90, fontWeight: 'bold', fontSize: 15 }}>
+            Language
+          </Text>
         </View>
-      </View>
-    );
-  }
-
-  renderButton() {
-    return (
-      <View>
-        <View
-          style={{
-            height: 100,
-            width: 100,
-            marginTop: 60,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginLeft: 170
-          }}
-        >
-          <TouchableOpacity style={{ backgroundColor: 'white', width: 100, height: 100 }}>
-            <Text style={{ color: 'black', fontSize: 30 }}>Save</Text>
-          </TouchableOpacity>
+        <View style={{ height: 100, width: 100, marginTop: 60, marginLeft: 170 }}>
+          <Button title="Save" color="grey" size={30} />
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Text
@@ -212,16 +191,6 @@ export default class Hello extends Component {
             Logout
           </Text>
         </View>
-      </View>
-    );
-  }
-
-  render() {
-    return (
-      <View>
-        {this.renderTitlebar()}
-        {this.renderBody()}
-        {this.renderButton()}
       </View>
     );
   }

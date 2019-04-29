@@ -4,10 +4,10 @@ import React, { Component } from 'react';
 import {
   Dimensions,
   FlatList,
-  Image,
-  PermissionsAndroid,
+  InteractionManager,
   ScrollView,
   StyleSheet,
+  TextInput,
   TouchableOpacity,
   View
 } from 'react-native';
@@ -15,9 +15,11 @@ import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
+import { realm } from 'app/models/schema';
+import { replaceScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
+import AbsoluteView from 'app/components/AbsoluteView';
 import Avatar from 'app/components/Avatar';
-import Contacts from 'react-native-contacts';
 import EDText from 'app/components/EDText';
 import FriendSelectionView from 'app/components/FriendSelectionView';
 import I18n from 'app/config/i18n';
@@ -26,15 +28,13 @@ import ToolBar from 'app/components/ToolBar';
 
 const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, backgroundColor: COLORS.WHITE, marginHorizontal: 20 },
   scrollContainer: { flex: 1 },
   headerContainer: {
     alignItems: 'center',
-    justifyContent: 'center',
-    borderColor: COLORS.LIGHT_GRAY,
-    borderWidth: 1
+    justifyContent: 'center'
   },
-  headerText: { fontSize: FONT_SIZES.H3, textAlign: 'center' },
+  headerText: { fontSize: FONT_SIZES.H1, textAlign: 'center', fontWeight: 'bold' },
   selectFriendAvatarContainer: { width: 55, alignItems: 'center', paddingVertical: 10 },
   name: {
     textAlignVertical: 'top',
@@ -45,104 +45,81 @@ const styles = StyleSheet.create({
     width: width - 100
   }
 });
-
-const FRIENDS_DETAILS = {
-  name: 'Harshaknkvdkkndnf',
-  mobile: '9491267523'
-};
-
-export default class SelectFriends extends Component {
+class SelectFriends extends Component {
   static navigationOptions = {
     header: null
   };
 
   constructor(props) {
     super(props);
+    console.log(this.props.contacts.length);
     this.state = {
-      friendsList: [
-        { ...FRIENDS_DETAILS, id: 1 },
-        { ...FRIENDS_DETAILS, id: 2 },
-        { ...FRIENDS_DETAILS, id: 3 },
-        { ...FRIENDS_DETAILS, id: 4 },
-        { ...FRIENDS_DETAILS, id: 5 },
-        { ...FRIENDS_DETAILS, id: 6 },
-        { ...FRIENDS_DETAILS, id: 7 },
-        { ...FRIENDS_DETAILS, id: 8 },
-        { ...FRIENDS_DETAILS, id: 9 },
-        { ...FRIENDS_DETAILS, id: 10 }
-      ],
+      friendsList: this.props.contacts,
       selectedFriends: ['you'],
-      spinner: false
+      spinner: false,
+      searchName: ''
     };
   }
 
-  componentWillMount() {
-    try {
-      PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
-        title: 'Contacts',
-        message: 'This app would like to view your contacts.'
-      }).then(() => {
-        Contacts.getAll((err, contacts) => {
-          if (err === 'denied') {
-            // error
-            console.log('err', err);
-          } else {
-            // contacts returned in Array
-            let contacts_data = {};
-            contacts.slice(0, 100).map((contact, contactIndex) => {
-              if (contact.phoneNumbers.length) {
-                contact.phoneNumbers.map((mobile, mobileIndex) => {
-                  const id = `contact${contactIndex}mobile${mobileIndex}`;
-                  contacts_data[id] = {
-                    id,
-                    name: `${contact.givenName ? contact.givenName : ''} ${
-                      contact.familyName ? contact.familyName : ''
-                    }`,
-                    mobile: mobile.number
-                  };
-                });
-              }
-            });
-            console.log('contacts', contacts_data);
-            this.setState({ friends: contacts_data });
-          }
-        });
-      });
-    } catch (error) {
-      console.log('error', error);
-    }
+  onDialogClose() {
+    const { onDialogClose } = this.props;
+    onDialogClose && onDialogClose();
   }
 
-  selectFriend(index) {
-    const { friendsList, selectedFriends } = this.state;
-    if (selectedFriends.length < 14) {
-      let tempFriends = Object.assign([], friendsList);
-      tempFriends[index].selected = true;
-      let tempSelectedFriends = Object.assign([], selectedFriends);
-      tempSelectedFriends.push(index);
-      return this.setState({ friends: tempFriends, selectedFriends: tempSelectedFriends });
-    }
-    return alert(I18n.t('maximum_friends_reached'));
+  onChangeText(text) {
+    this.setState({
+      searchName: text,
+      friendsList: realm.objects('Contact').filtered('name CONTAINS[c] $0', text)
+    });
   }
 
-  unSelectFriend(index) {
-    const { friendsList, selectedFriends } = this.state;
-    let tempFriends = Object.assign([], friendsList);
-    tempFriends[index].selected = false;
-    let tempSelectedFriends = Object.assign([], selectedFriends);
-    const positionIndex = tempSelectedFriends.indexOf(index);
-    tempSelectedFriends.splice(positionIndex, 1);
-    return this.setState({ friends: tempFriends, selectedFriends: tempSelectedFriends });
-  }
+  // selectFriend(index) {
+  //   const { friendsList, selectedFriends } = this.state;
+  //   if (selectedFriends.length < 14) {
+  //     let tempFriends = Object.assign([], friendsList);
+  //     tempFriends[index].selected = true;
+  //     let tempSelectedFriends = Object.assign([], selectedFriends);
+  //     tempSelectedFriends.push(index);
+  //     return this.setState({ friendsList: tempFriends, selectedFriends: tempSelectedFriends });
+  //   }
+  //   return alert(I18n.t('maximum_friends_reached'));
+  // }
+
+  // unSelectFriend(index) {
+  //   const { friendsList, selectedFriends } = this.state;
+  //   let tempFriends = Object.assign([], friendsList);
+  //   tempFriends[index].selected = false;
+  //   let tempSelectedFriends = Object.assign([], selectedFriends);
+  //   const positionIndex = tempSelectedFriends.indexOf(index);
+  //   tempSelectedFriends.splice(positionIndex, 1);
+  //   return this.setState({ friendsList: tempFriends, selectedFriends: tempSelectedFriends });
+  // }
 
   onFriendSelection(index) {
-    const { selectedFriends } = this.state;
-    if (selectedFriends.includes(index)) {
-      return this.unSelectFriend(index);
-    } else {
-      return this.selectFriend(index);
-    }
+    const { friendsList } = this.state;
+    const friend = friendsList[index];
+    const { onAddFriend } = this.props;
+    // return console.log(friend);
+    onAddFriend && onAddFriend(friend);
   }
+
+  // onSubmit() {
+  //   // TODO replace screen with screen from props or so
+  //   const { dispatch, state } = this.props.navigation;
+  //   const { selectedFriends, friendsList } = this.state;
+  //   const selected_friends = [];
+  //   selectedFriends.map(index => {
+  //     if (index !== 'you') {
+  //       selected_friends.push(friendsList[index]);
+  //     }
+  //   });
+  //   replaceScreen({
+  //     routeName: 'NewBill',
+  //     currentScreenKey: state.key,
+  //     params: { friends: selected_friends },
+  //     dispatch
+  //   });
+  // }
 
   renderSingleFriend(friendDetails, index) {
     const { name, mobile, selected } = friendDetails;
@@ -153,76 +130,115 @@ export default class SelectFriends extends Component {
         name={name}
         key={index}
         mobile={mobile}
+        hideCheckBox={true}
       />
     );
   }
 
   renderFriends() {
     const { friendsList } = this.state;
+    return (
+      <FlatList
+        data={friendsList}
+        showsHorizontalScrollIndicator={false}
+        initialNumToRender={50}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item, index }) => this.renderSingleFriend(item, index)}
+      />
+    );
     return friendsList.map((item, index) => this.renderSingleFriend(item, index));
   }
 
-  renderSelectedFriendAvatar(id) {
-    const { friends } = this.state;
-    const friend = id === 'you' ? { name: 'Kranthi' } : friends[id];
-    return (
-      <Avatar
-        name={friend['name']}
-        showClose={id !== 'you'}
-        disabled={id === 'you'}
-        avatarSubText={friend['name']}
-        avatarSubTextStyle={{ width: 50 }}
-        onPress={() => this.unSelectFriend(id)}
-        buttonStyle={styles.selectFriendAvatarContainer}
-      />
-    );
-  }
+  // renderSelectedFriendAvatar(id) {
+  //   const { friendsList } = this.state;
+  //   const friend = id === 'you' ? { name: 'Kranthi' } : friendsList[id];
+  //   return (
+  //     <Avatar
+  //       name={friend['name']}
+  //       showClose={id !== 'you'}
+  //       disabled={id === 'you'}
+  //       avatarSubText={friend['name']}
+  //       avatarSubTextStyle={{ width: 50 }}
+  //       onPress={() => this.unSelectFriend(id)}
+  //       buttonStyle={styles.selectFriendAvatarContainer}
+  //     />
+  //   );
+  // }
 
-  renderSelectedFriends() {
-    const { selectedFriends } = this.state;
-    return (
-      <View style={{ flexDirection: 'row' }}>
-        <FlatList
-          data={selectedFriends}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => this.renderSelectedFriendAvatar(item)}
-        />
-      </View>
-    );
-  }
+  // renderSelectedFriends() {
+  //   const { selectedFriends } = this.state;
+  //   return (
+  //     <View style={{ flexDirection: 'row' }}>
+  //       <FlatList
+  //         data={selectedFriends}
+  //         horizontal={true}
+  //         showsHorizontalScrollIndicator={false}
+  //         keyExtractor={(item, index) => index.toString()}
+  //         renderItem={({ item }) => this.renderSelectedFriendAvatar(item)}
+  //       />
+  //     </View>
+  //   );
+  // }
 
   renderHeader() {
     // TODO add search Bar and show selected Friends
     return (
       <View style={styles.headerContainer}>
-        <EDText style={styles.headerText}>TODO</EDText>
-        {this.renderSelectedFriends()}
+        <EDText style={styles.headerText}>{I18n.t('add_friend')}</EDText>
+        <TextInput
+          style={{
+            height: 50,
+            width: width - 80,
+            margin: 20,
+            borderColor: 'black',
+            borderWidth: 1
+          }}
+          onChangeText={text => this.onChangeText(text)}
+          autoCorrect={false}
+          underlineColorAndroid={'transparent'}
+          value={this.state.searchName}
+          placeholder={I18n.t('search_friends')}
+        />
+        {/* {this.renderSelectedFriends()} */}
       </View>
     );
   }
 
   render() {
     const { spinner, selectedFriends } = this.state;
-    const { goBack } = this.props.navigation;
     return (
-      <View style={styles.container}>
-        <ToolBar
-          title={I18n.t('select_friends')}
-          subTitle={`${selectedFriends.length} / 15`}
-          leftTitle={I18n.t('cancel')}
-          onLeft={() => goBack()}
-          onRight={() => alert('TODO')}
-          rightTitle={I18n.t('next')}
-        />
-        {this.renderHeader()}
-        <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-          {this.renderFriends()}
-          <View style={{ width, height: 20 }} />
-        </ScrollView>
-        {spinner && <Spinner />}
-      </View>
+      <AbsoluteView onDialogClose={() => this.onDialogClose()}>
+        <View style={styles.container}>
+          {/* <ToolBar
+            title={I18n.t('select_friends')}
+            leftImage="back"
+            onLeft={() => goBack()}
+            onRight={() => this.onSubmit()}
+            rightTitle={I18n.t('next')}
+          /> */}
+          {this.renderHeader()}
+          <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+            {this.renderFriends()}
+            <View style={{ width, height: 20 }} />
+          </ScrollView>
+          {spinner && <Spinner />}
+        </View>
+      </AbsoluteView>
     );
   }
 }
+
+function mapStateToProps(state) {
+  return {
+    contacts: state.common.contacts
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({}, dispatch);
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SelectFriends);
