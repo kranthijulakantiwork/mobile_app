@@ -184,10 +184,7 @@ class CustomTabs extends React.Component<Props> {
     const activeRoute = routes[index];
     let bottom = (
       //   <TouchableOpacity onPress={() => navigation.navigate('Payment')} style={styles.addButton}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('SelectFriends')}
-        style={styles.addButton}
-      >
+      <TouchableOpacity onPress={() => navigation.navigate('NewBill')} style={styles.addButton}>
         <View style={styles.addButtonTextContainer}>
           <EDText style={styles.addButtonText}>+</EDText>
         </View>
