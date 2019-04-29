@@ -208,6 +208,8 @@ class CustomTabs extends React.Component<Props> {
 
 const AppNavigator = createStackNavigator(
   {
+    Settlement: { screen: Settlement },
+    Settings: { screen: Settings },
     Tabs: { screen: CustomTabs },
     NewBill: { screen: NewBill },
     BillDetails: { screen: BillDetails },
@@ -215,9 +217,7 @@ const AppNavigator = createStackNavigator(
     Payment: { screen: Payment },
     DrawerNavigator: { screen: DrawerNavigator },
     SignIn: { screen: SignIn },
-    SettlementDetails: { screen: SettlementDetailView },
-    Settings: { screen: Settings },
-    Settlement: { screen: Settlement }
+    SettlementDetails: { screen: SettlementDetailView }
   },
   navigationOptions
 );
