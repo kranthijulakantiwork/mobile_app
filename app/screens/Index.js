@@ -8,6 +8,7 @@ import {
   reduxifyNavigator,
   createReactNavigationReduxMiddleware
 } from 'react-navigation-redux-helpers';
+import { askPermissionsAndgetContacts } from 'app/helpers/Contacts';
 import { NavigationActions, StackActions } from 'react-navigation';
 import Notifications from 'app/helpers/Notifications';
 
@@ -31,6 +32,8 @@ class AppWithNavigationState extends React.Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
+    // TODO move to backgroundJob
+    askPermissionsAndgetContacts();
     this.unregisterNotification = Notifications.init(dispatch);
     BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
   }

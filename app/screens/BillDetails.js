@@ -124,7 +124,7 @@ export default class BillDetails extends Component {
     switch (splitType) {
       case 'equally':
         let eachPersonShare = Number(amount) / splitByFriends.length;
-        splitByFriends.map(id => (splitBy[id] = eachPersonShare));
+        splitByFriends.map(mobile => (splitBy[mobile] = eachPersonShare));
         break;
       case 'unequally':
         splitBy = friendsSplit;
@@ -132,20 +132,20 @@ export default class BillDetails extends Component {
       case 'shares':
         const eachShareValue = Number(amount) / allocatedSplitAmount[splitType];
         Object.keys(friendsSplit).map(
-          id => (splitBy[id] = Number(friendsSplit[id]) * eachShareValue)
+          mobile => (splitBy[mobile] = Number(friendsSplit[mobile]) * eachShareValue)
         );
         break;
       case 'percentages':
         Object.keys(friendsSplit).map(
-          id => (splitBy[id] = (Number(friendsSplit[id]) * Number(amount)) / 100)
+          mobile => (splitBy[mobile] = (Number(friendsSplit[mobile]) * Number(amount)) / 100)
         );
         break;
       case 'adjustment':
         eachPersonShare = (amount - allocatedSplitAmount[splitType]) / friends.length;
         friends.map(friend => {
-          const id = friend.id;
-          const adjustment = friendsSplit[id] ? Number(friendsSplit[id]) : 0;
-          splitBy[id] = eachPersonShare + adjustment;
+          const mobile = friend.mobile;
+          const adjustment = friendsSplit[mobile] ? Number(friendsSplit[mobile]) : 0;
+          splitBy[mobile] = eachPersonShare + adjustment;
         });
         break;
       default:
@@ -195,7 +195,7 @@ export default class BillDetails extends Component {
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => {
-            const friend = friends.filter(friend => friend.id == item)[0];
+            const friend = friends.filter(friend => friend.mobile == item)[0];
             const name = friend ? friend.name : '';
             return (
               <EDText style={{ fontSize: FONT_SIZES.H2, color }}>{`${name} ₹${
@@ -212,9 +212,9 @@ export default class BillDetails extends Component {
     //  TODO get owed or paid
     const { paidBy, splitBy } = this.state;
     //  TODO remove current user here
-    const current_user = { id: 1 };
-    const paidByUser = paidBy[current_user.id] ? Number(paidBy[current_user.id]) : 0;
-    const splitByUser = splitBy[current_user.id] ? Number(splitBy[current_user.id]) : 0;
+    const current_user = { id: 1, mobile: '9866070833' };
+    const paidByUser = paidBy[current_user.mobile] ? Number(paidBy[current_user.mobile]) : 0;
+    const splitByUser = splitBy[current_user.mobile] ? Number(splitBy[current_user.mobile]) : 0;
     const amount = paidByUser - splitByUser;
     if (!amount) return null;
     const colors = amount < 0 ? ['#ff9966', '#ff5e62'] : ['#93f9b9', '#1d976c'];

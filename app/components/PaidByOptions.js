@@ -171,7 +171,7 @@ export default class PaidByOptions extends Component {
     return true;
   }
 
-  onChangeText(splitAmount, id) {
+  onChangeText(splitAmount, mobile) {
     const { allocatedAmount } = this.state;
     if (!this.validateAmount(splitAmount)) return;
     const { friendsAmount } = this.state;
@@ -180,20 +180,20 @@ export default class PaidByOptions extends Component {
 
     tempAllocatedAmount =
       tempAllocatedAmount -
-      this.getNumericAmount(tempFriendsAmount[id] ? tempFriendsAmount[id].toString() : '') +
+      this.getNumericAmount(tempFriendsAmount[mobile] ? tempFriendsAmount[mobile].toString() : '') +
       this.getNumericAmount(splitAmount);
-    tempFriendsAmount[id] = splitAmount;
+    tempFriendsAmount[mobile] = splitAmount;
     this.setState({ friendsAmount: tempFriendsAmount, allocatedAmount: tempAllocatedAmount });
   }
 
   renderSingleFriends(friend, index) {
     const { friendsAmount, multiple } = this.state;
-    const amount = friendsAmount[friend.id] ? friendsAmount[friend.id] : '';
+    const amount = friendsAmount[friend.mobile] ? friendsAmount[friend.mobile] : '';
     return (
       <PaidByFriends
         onPress={() => this.onSelectFriend(friend)}
         hideCheckBox={true}
-        onChangeText={amount => this.onChangeText(amount, friend.id)}
+        onChangeText={amount => this.onChangeText(amount, friend.mobile)}
         amount={amount}
         showTextBoxes={multiple}
         name={friend.name}

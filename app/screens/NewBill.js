@@ -28,6 +28,7 @@ import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
 import PaidByOptions from 'app/components/PaidByOptions';
 import PropTypes from 'prop-types';
+import SelectFriends from 'app/screens/SelectFriends';
 import SplitByOptions from 'app/components/SplitByOptions';
 import ToolBar from 'app/components/ToolBar';
 
@@ -83,7 +84,7 @@ const FRIENDS_DETAILS = {
 };
 const FRIENDS = [];
 for (let index = 0; index < 8; index++) {
-  FRIENDS.push({ ...FRIENDS_DETAILS, id: index });
+  FRIENDS.push({ ...FRIENDS_DETAILS, id: index, mobile: '949126752' + index });
 }
 
 export default class NewBill extends Component {
@@ -103,25 +104,28 @@ export default class NewBill extends Component {
       showGroups: false,
       showPaidByOptions: false,
       showCalendar: false,
-      showSplitByOptions: false
+      showSplitByOptions: false,
+      showFriendsList: false
     };
   }
 
   getState() {
     const { state, getParam } = this.props.navigation;
+    const { params = {} } = state;
+    const friendsList = getParam('friends') || FRIENDS;
     const {
       bill_name = '',
       amount = '',
       group = null,
       paidBy = {},
-      friends = getParam('friends'),
-      added_on = '',
+      friends = friendsList,
+      added_on = new Date().toDateString().substr(4),
       category = 'others',
       splitType = 'equally',
-      splitByFriends = getParam('friends').map(friend => friend.id),
+      splitByFriends = friendsList.map(friend => friend.mobile),
       allocatedSplitAmount = { shares: 0, percentages: 0, unequally: 0, adjustment: 0 },
       friendsSplitAmount = { shares: {}, percentages: {}, unequally: {}, adjustment: {} }
-    } = state.params;
+    } = params;
     return {
       bill_name,
       amount,
@@ -135,6 +139,12 @@ export default class NewBill extends Component {
       allocatedSplitAmount,
       friendsSplitAmount
     };
+  }
+
+  onAddFriend(friend) {
+    const { friends } = this.state;
+    // TODO handle split
+    this.setState({ showFriendsList: false, friends: [...friends, friend] });
   }
 
   unSelectFriend(friend) {
@@ -167,11 +177,12 @@ export default class NewBill extends Component {
   onSelectPaidByFriend(friend) {
     dismissKeyboard();
     const { amount } = this.state;
-    this.setState({ showPaidByOptions: false, paidBy: { [friend.id]: amount } });
+    this.setState({ showPaidByOptions: false, paidBy: { [friend.mobile]: amount } });
   }
 
   onMultiplePeoplePaid(friendsAmount) {
     dismissKeyboard();
+    console.log('friendsAmount', friendsAmount);
     this.setState({
       showPaidByOptions: false,
       paidBy: friendsAmount
@@ -209,9 +220,9 @@ export default class NewBill extends Component {
     //  Add added_by
     // Need to replace screen instead of navigating.
     //  TODO remove current user here
-    const current_user = { id: 1 };
+    const current_user = { id: 1, mobile: '9866070833' };
     const paidByFinal =
-      paidBy && Object.keys(paidBy).length ? paidBy : { [current_user.id]: amount };
+      paidBy && Object.keys(paidBy).length ? paidBy : { [current_user.mobile]: amount };
     const { state, dispatch } = this.props.navigation;
     replaceScreen({
       routeName: 'BillDetails',
@@ -231,6 +242,17 @@ export default class NewBill extends Component {
       },
       dispatch
     });
+  }
+
+  renderFriendsList() {
+    const { showFriendsList } = this.state;
+    if (!showFriendsList) return null;
+    return (
+      <SelectFriends
+        onDialogClose={() => this.setState({ showFriendsList: false })}
+        onAddFriend={friend => this.onAddFriend(friend)}
+      />
+    );
   }
 
   renderCalender() {
@@ -410,7 +432,7 @@ export default class NewBill extends Component {
     const { paidBy, splitType, friends } = this.state;
     let paidByButtonTitle = I18n.t('you');
     if (Object.keys(paidBy).length === 1) {
-      const paidByFriend = friends.filter(friend => friend.id == Object.keys(paidBy)[0])[0];
+      const paidByFriend = friends.filter(friend => friend.mobile == Object.keys(paidBy)[0])[0];
       const words = paidByFriend.name.split(' ');
       paidByButtonTitle = words.length > 1 ? words[0] + ' ' + words[1] + '.' : words[0];
     } else if (Object.keys(paidBy).length > 1) {
@@ -527,7 +549,7 @@ export default class NewBill extends Component {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => this.renderFriendAvatar(item, index)}
         />
-        <TouchableOpacity onPress={() => alert('TODO')}>
+        <TouchableOpacity onPress={() => this.setState({ showFriendsList: true })}>
           <View style={styles.selectFriendAvatarContainer}>
             <View style={styles.plusButtonView}>
               <EDText style={{ color: '#bbbbbb', fontSize: 33 }}>{'+'}</EDText>
@@ -575,6 +597,7 @@ export default class NewBill extends Component {
         {this.renderPaidByOptions()}
         {this.renderSplitByOptions()}
         {this.renderCalender()}
+        {this.renderFriendsList()}
       </View>
     );
   }

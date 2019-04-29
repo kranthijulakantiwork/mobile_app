@@ -13,3 +13,10 @@ export function stopSpinner() {
     type: Types.STOP_SPINNER
   };
 }
+
+export function setContacts(contacts) {
+  return {
+    type: Types.SET_CONTACTS,
+    contacts
+  };
+}
