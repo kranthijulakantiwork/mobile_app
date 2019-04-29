@@ -3,7 +3,6 @@ package com.lostking.docsam;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import io.realm.react.RealmReactPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.rt2zz.reactnativecontacts.ReactNativeContacts;
 import com.upi.payment.UpiPaymentPackage;
@@ -31,7 +30,6 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-          new RealmReactPackage(),
           new LinearGradientPackage(),
           new ReactNativeContacts(),
           new UpiPaymentPackage(),
