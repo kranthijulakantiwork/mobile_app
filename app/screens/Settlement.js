@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View, Button, StyleSheet, TextInput } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
-console.disableYellowBox = true;
+
 export default class Settlement extends Component {
   constructor(props) {
     super(props);
@@ -13,7 +13,7 @@ export default class Settlement extends Component {
     };
   }
   componentDidMount() {
-    if (isRequest == true) {
+    if (this.state.isRequest == true) {
       this.setState({
         display: true
       });

@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { bindActionCreators } from 'redux';
-//import { Calendar } from 'react-native-calendars';
+import { Calendar } from 'react-native-calendars';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
@@ -52,7 +52,7 @@ export default class CalendarView extends Component {
     return (
       <AbsoluteView onDialogClose={() => this.onDialogClose()}>
         <View style={styles.container}>
-          {/* <Calendar
+          <Calendar
             onDayPress={day => this.onSelectDate(day)}
             style={{ width: (2 * width) / 3, borderRadius: 10, height: 350 }}
             hideExtraDays
@@ -63,7 +63,7 @@ export default class CalendarView extends Component {
                 selectedDotColor: 'orange'
               }
             }}
-          /> */}
+          />
         </View>
       </AbsoluteView>
     );
