@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Text, View, Button, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
-
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
+console.disableYellowBox=true;
 export default class Settings extends Component {
   static navigationOptions = {
     header: null
@@ -19,14 +20,14 @@ export default class Settings extends Component {
         }}
       >
         <TouchableOpacity>
-          <Text style={{ fontSize: 15, color: 'black' }}>Back</Text>
+          <Text style={{ fontSize:20, color: 'black' }}>Back</Text>
         </TouchableOpacity>
 
         <TouchableOpacity>
-          <Text style={{ fontSize: 15, color: 'black' }}>Setting</Text>
+          <Text style={{ fontSize: 20, color: 'black' }}>Setting</Text>
         </TouchableOpacity>
         <TouchableOpacity>
-          <Text style={{ fontSize: 15, color: 'black' }}>Save</Text>
+          <Text style={{ fontSize: 20, color: 'black' }}>Save</Text>
         </TouchableOpacity>
       </View>
     );
@@ -38,7 +39,7 @@ export default class Settings extends Component {
         <View
           style={{
             flexDirection: 'row',
-            justifyContent: 'flex-start'
+            justifyContent: 'space-between'
           }}
         >
           <View
@@ -63,7 +64,7 @@ export default class Settings extends Component {
                 borderWidth: 2
               }}
             />
-            <Text style={{ marginTop: 60, marginLeft: 20 }}>UPI</Text>
+            <Text style={{ marginTop: 50, marginLeft: 20 }}>UPI</Text>
             <Text style={{ marginTop: 30, marginLeft: 20 }}>Email id</Text>
           </View>
           <View
@@ -71,45 +72,50 @@ export default class Settings extends Component {
               flexDirection: 'column'
             }}
           >
+          <KeyboardAwareScrollView>
             <TextInput
               style={{
-                height: 40,
+               // height: 40,
                 width: 200,
                 borderColor: 'white',
                 borderBottomColor: 'black',
-                color: 'white',
+                color: 'black',
                 marginLeft: 10,
                 marginTop: 40
               }}
               placeholder="Name"
               placeholderTextColor="black"
-            />
+            /></KeyboardAwareScrollView>
+            <KeyboardAwareScrollView>
             <TextInput
               style={{
-                height: 40,
-                width: 200,
+                //height: 40,
+                //width: 200,
                 borderColor: 'white',
                 borderBottomColor: 'black',
                 marginLeft: 10
               }}
               placeholder="Number"
             />
+            </KeyboardAwareScrollView>
+          <KeyboardAwareScrollView>
             <TextInput
               style={{
-                height: 40,
-                width: 200,
+               // height: 40,
+               // width: 200,
                 borderColor: 'white',
                 borderBottomColor: 'black',
-                marginTop: 30,
+                marginTop: 10,
                 placeholder: 'name',
                 marginLeft: 10
               }}
               placeholder="UPI Address"
-            />
+            /></KeyboardAwareScrollView>
+            <KeyboardAwareScrollView>
             <TextInput
               style={{
-                height: 40,
-                width: 200,
+               // height: 40,
+               // width: 200,
                 borderColor: 'white',
                 borderBottomColor: 'black',
                 label: 'name',
@@ -118,18 +124,17 @@ export default class Settings extends Component {
               }}
               placeholder="Optional"
               placeholderTextColor="black"
-            />
+            /></KeyboardAwareScrollView>
           </View>
           <View
             style={{
-              flexDirection: 'column'
+              flexDirection: 'column',
+             marginTop:160
             }}
           >
             <Text
               style={{
                 color: 'blue',
-                marginTop: 165,
-                marginLeft: 10,
                 textDecorationLine: 'underline'
               }}
             >
@@ -145,7 +150,7 @@ export default class Settings extends Component {
         >
           <Text
             style={{
-              marginTop: 70,
+             
               fontWeight: 'bold',
               fontSize: 50,
               borderColor: 'black',
@@ -160,7 +165,7 @@ export default class Settings extends Component {
           </Text>
           <Text
             style={{
-              marginTop: 70,
+            
               fontWeight: 'bold',
               fontSize: 50,
               borderColor: 'black',
@@ -177,7 +182,8 @@ export default class Settings extends Component {
         <View
           style={{
             flexDirection: 'row',
-            justifyContent: 'space-around'
+            justifyContent: 'space-around',
+            marginTop:20
           }}
         >
           <Text style={{ marginTop: 0, fontWeight: 'bold', fontSize: 15 }}>Currency</Text>
@@ -189,43 +195,46 @@ export default class Settings extends Component {
 
   renderButton() {
     return (
-      <View>
-        <View
-          style={{
-            height: 100,
-            width: 100,
-            marginTop: 60,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginLeft: 170
-          }}
-        >
-          <TouchableOpacity style={{ backgroundColor: 'white', width: 100, height: 100 }}>
-            <Text style={{ color: 'black', fontSize: 30 }}>Save</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text
-            style={{ color: 'blue', fontSize: 20, textDecorationLine: 'underline', marginTop: 20 }}
-          >
-            Delete Account
-          </Text>
-          <Text
-            style={{ color: 'blue', fontSize: 20, textDecorationLine: 'underline', marginTop: 20 }}
-          >
-            Logout
-          </Text>
-        </View>
-      </View>
+     
+      <View
+      style={{
+        flexDirection: 'row',
+        backgroundColor: 'white',
+        justifyContent: 'space-around',
+        alignItems: 'stretch',
+        marginTop:10
+      }}
+    >
+      <TouchableOpacity>
+        <Text style={{ fontSize: 30, color: 'black' }}>Save</Text>
+      </TouchableOpacity>
+    </View>
     );
   }
+renderBottom(){
+  return(
+  <View style={{ flexDirection: 'row', justifyContent: 'space-between',marginTop:10 }}>
+  <Text
+    style={{ color: 'blue', fontSize: 20, textDecorationLine: 'underline' }}
+  >
+    Delete Account
+  </Text>
+  <Text
+    style={{ color: 'blue', fontSize: 20, textDecorationLine: 'underline' }}
+  >
+    Logout
+  </Text>
+</View>
+  )
+}
 
   render() {
     return (
-      <View>
+      <View style={{flexDirection:"column",justifyContent:"space-evenly"}}>
         {this.renderTitlebar()}
         {this.renderBody()}
         {this.renderButton()}
+        {this.renderBottom()}
       </View>
     );
   }
