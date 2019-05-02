@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     width: 45,
     borderRadius: 3,
     borderWidth: 2,
-    borderColor: '#bbbbbb',
+    borderColor: COLORS.TEXT_LIGHT_GRAY,
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -145,7 +145,6 @@ export default class NewBill extends Component {
 
   onAddFriend(friend) {
     const { friends } = this.state;
-    // TODO handle split
     this.setState({ showFriendsList: false, friends: [...friends, friend] });
   }
 
@@ -187,7 +186,6 @@ export default class NewBill extends Component {
 
   onMultiplePeoplePaid(friendsAmount) {
     dismissKeyboard();
-    console.log('friendsAmount', friendsAmount);
     this.setState({
       showPaidByOptions: false,
       paidBy: friendsAmount
@@ -492,7 +490,7 @@ export default class NewBill extends Component {
               borderWidth: 2,
               alignItems: 'center',
               justifyContent: 'center',
-              borderColor: '#bbbbbb'
+              borderColor: COLORS.TEXT_LIGHT_GRAY
             }}
           >
             <Image source={Images[categoryImage]} />
@@ -570,7 +568,7 @@ export default class NewBill extends Component {
         <TouchableOpacity onPress={() => this.setState({ showFriendsList: true })}>
           <View style={styles.selectFriendAvatarContainer}>
             <View style={styles.plusButtonView}>
-              <EDText style={{ color: '#bbbbbb', fontSize: 33 }}>{'+'}</EDText>
+              <EDText style={{ color: COLORS.TEXT_LIGHT_GRAY, fontSize: 33 }}>{'+'}</EDText>
             </View>
             <EDText style={{ color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H5, paddingTop: 5 }}>
               {I18n.t('add_friend')}
@@ -584,7 +582,6 @@ export default class NewBill extends Component {
   render() {
     const { spinner } = this.state;
     const { goBack } = this.props.navigation;
-    console.log(this.state);
     return (
       <View style={styles.container}>
         <ToolBar

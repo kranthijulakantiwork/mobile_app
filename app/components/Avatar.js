@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     borderRadius: 3
   },
   avatarText: { color: COLORS.WHITE, fontSize: FONT_SIZES.H20, fontWeight: 'bold' },
-  avatarSubText: { fontSize: FONT_SIZES.H6, paddingTop: 5, color: '#bbbbbb' },
+  avatarSubText: { fontSize: FONT_SIZES.H6, paddingTop: 5, color: COLORS.TEXT_LIGHT_GRAY },
   closeContainer: {
     position: 'absolute',
     top: 0,

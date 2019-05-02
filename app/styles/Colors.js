@@ -18,6 +18,7 @@ const COLORS = {
   TEXT_GRAY: '#505050',
   TEXT_INPUT_BACK: '#d1ecff',
   TEXT_LIGHT_BLACK: '#797979',
+  TEXT_LIGHT_GRAY: '#bbbbbb',
   WHITE: '#ffffff'
 };
 

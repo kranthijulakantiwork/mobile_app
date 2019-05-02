@@ -32,6 +32,7 @@ const en = {
   food: 'Food',
   friends_tab: 'Friends',
   groceries: 'Groceries',
+  group_name: 'Enter Group Name',
   group: 'Group',
   groups_tab: 'Groups',
   holiday: 'Holiday',

@@ -1,7 +1,13 @@
 /* @flow */
 
 import React, { Component } from 'react';
-import { ActivityIndicator, View, PermissionsAndroid, Platform, ImageBackground } from 'react-native';
+import {
+  ActivityIndicator,
+  View,
+  PermissionsAndroid,
+  Platform,
+  ImageBackground
+} from 'react-native';
 import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
@@ -11,25 +17,27 @@ import SmsAndroid from 'react-native-get-sms-android';
 class Splash extends Component {
   async componentWillMount() {
     const { dispatch } = this.props.navigation;
-    let granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_SMS)
-      if (granted) {
-        SmsAndroid.list(JSON.stringify({}), (fail) => {
-          console.log("Failed with this error: " + fail)
+    let granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_SMS);
+    if (granted) {
+      SmsAndroid.list(
+        JSON.stringify({}),
+        fail => {
+          console.log('Failed with this error: ' + fail);
         },
-          (count, smsList) => {
-            console.log('Count: ', count);
-            console.log('List: ', smsList);
-            var arr = JSON.parse(smsList);
-    
-            arr.forEach(function (object) {
-              console.log("Object: " + object);
-              console.log("-->" + object.date);
-              console.log("-->" + object.body);
-            })
+        (count, smsList) => {
+          console.log('Count: ', count);
+          console.log('List: ', smsList);
+          var arr = JSON.parse(smsList);
+
+          arr.forEach(function(object) {
+            console.log('Object: ' + object);
+            console.log('-->' + object.date);
+            console.log('-->' + object.body);
           });
-      }
-      
-    
+        }
+      );
+    }
+
     firebase
       .notifications()
       .getInitialNotification()
