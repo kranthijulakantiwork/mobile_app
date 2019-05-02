@@ -14,9 +14,9 @@ import Getting_Started from './app/screens/Gettingstarted';
 export default class App extends React.Component {
   render() {
     return (
-     <View>
-       <Getting_Started/>
-     </View>
+      <View style={{ flex: 1 }}>
+        <Getting_Started />
+      </View>
     );
   }
 }
