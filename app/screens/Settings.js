@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Text, View, Button, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { Text, View, Button, StyleSheet, TextInput, TouchableOpacity,Image } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 console.disableYellowBox=true;
 export default class Settings extends Component {
@@ -13,235 +14,239 @@ export default class Settings extends Component {
       <View
         style={{
           flexDirection: 'row',
-          backgroundColor: 'grey',
+          backgroundColor: 'white',
           justifyContent: 'space-between',
           alignItems: 'stretch',
-          border: '3px solid black'
+          borderWidth:1,
+          borderColor:"black",
+          height:"88.6dp",
+          width:"360dp"
         }}
-      >
+      > <TouchableOpacity>
+      <Image source={require('../assets/ic_arrow_back_48_px.png')} style={{width:40, height: 40}} /> </TouchableOpacity>
         <TouchableOpacity>
-          <Text style={{ fontSize:20, color: 'black' }}>Back</Text>
+          <Text style={{ fontSize: 30, color: 'black' }}>Settings</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity>
-          <Text style={{ fontSize: 20, color: 'black' }}>Setting</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={{ fontSize: 20, color: 'black' }}>Save</Text>
+        <TouchableOpacity style={{backgroundColor:"#1da370",borderWidth:1,width:90,height:45,borderRadius:15}} activeOpacity={2}>
+          <Text style={{ color: 'black', fontSize: 30,textAlign:"center" }}>Save</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
-  renderBody() {
+  renderupperbody() {
     return (
-      <View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
-          }}
-        >
-          <View
-            style={{
-              flexDirection: 'column',
-              justifyContent: 'center'
-            }}
-          >
-            <Entypo
-              name="camera"
-              size={50}
-              style={{
-                marginTop: 50,
-                marginLeft: 20,
-                borderColor: 'black',
-                alignContent: 'center',
-                flexWrap: 'wrap',
-                borderRadius: 30,
-                width: 60,
-                height: 57,
-                margin: 6,
-                borderWidth: 2
-              }}
-            />
-            <Text style={{ marginTop: 50, marginLeft: 20 }}>UPI</Text>
-            <Text style={{ marginTop: 30, marginLeft: 20 }}>Email id</Text>
-          </View>
-          <View
-            style={{
-              flexDirection: 'column'
-            }}
-          >
-          <KeyboardAwareScrollView>
-            <TextInput
-              style={{
-               // height: 40,
-                width: 200,
-                borderColor: 'white',
-                borderBottomColor: 'black',
-                color: 'black',
-                marginLeft: 10,
-                marginTop: 40
-              }}
-              placeholder="Name"
-              placeholderTextColor="black"
-            /></KeyboardAwareScrollView>
-            <KeyboardAwareScrollView>
-            <TextInput
-              style={{
-                //height: 40,
-                //width: 200,
-                borderColor: 'white',
-                borderBottomColor: 'black',
-                marginLeft: 10
-              }}
-              placeholder="Number"
-            />
-            </KeyboardAwareScrollView>
-          <KeyboardAwareScrollView>
-            <TextInput
-              style={{
-               // height: 40,
-               // width: 200,
-                borderColor: 'white',
-                borderBottomColor: 'black',
-                marginTop: 10,
-                placeholder: 'name',
-                marginLeft: 10
-              }}
-              placeholder="UPI Address"
-            /></KeyboardAwareScrollView>
-            <KeyboardAwareScrollView>
-            <TextInput
-              style={{
-               // height: 40,
-               // width: 200,
-                borderColor: 'white',
-                borderBottomColor: 'black',
-                label: 'name',
-                marginTop: 10,
-                marginLeft: 10
-              }}
-              placeholder="Optional"
-              placeholderTextColor="black"
-            /></KeyboardAwareScrollView>
-          </View>
-          <View
-            style={{
-              flexDirection: 'column',
-             marginTop:160
-            }}
-          >
-            <Text
-              style={{
-                color: 'blue',
-                textDecorationLine: 'underline'
-              }}
-            >
-              Change
-            </Text>
-          </View>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around'
-          }}
-        >
-          <Text
-            style={{
-             
-              fontWeight: 'bold',
-              fontSize: 50,
-              borderColor: 'black',
-              borderLeftWidth: 5,
-              borderTopWidth: 3,
-              borderRightWidth: 5,
-              borderBottomWidth: 3,
-              borderStyle: 'solid'
-            }}
-          >
-            {'\u20B9'}
-          </Text>
-          <Text
-            style={{
-            
-              fontWeight: 'bold',
-              fontSize: 50,
-              borderColor: 'black',
-              borderLeftWidth: 5,
-              borderTopWidth: 3,
-              borderRightWidth: 5,
-              borderBottomWidth: 3,
-              borderStyle: 'solid'
-            }}
-          >
-            E
-          </Text>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            marginTop:20
-          }}
-        >
-          <Text style={{ marginTop: 0, fontWeight: 'bold', fontSize: 15 }}>Currency</Text>
-          <Text style={{ marginTop: 0, fontWeight: 'bold', fontSize: 15 }}>Language</Text>
-        </View>
-      </View>
-    );
-  }
-
-  renderButton() {
-    return (
-     
       <View
       style={{
         flexDirection: 'row',
         backgroundColor: 'white',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         alignItems: 'stretch',
-        marginTop:10
+        marginTop:30
       }}
     >
-      <TouchableOpacity>
-        <Text style={{ fontSize: 30, color: 'black' }}>Save</Text>
+     <TouchableOpacity style={{backgroundColor:"#bbbbbb",paddingTop:5,borderWidth:1,width:90,height:45,borderRadius:15}} activeOpacity={2}>
+        <Text style={{ color: 'black', fontSize:20,textAlign:"center" }}>Logout</Text>
       </TouchableOpacity>
-    </View>
-    );
-  }
-renderBottom(){
-  return(
-  <View style={{ flexDirection: 'row', justifyContent: 'space-between',marginTop:10 }}>
-  <Text
-    style={{ color: 'blue', fontSize: 20, textDecorationLine: 'underline' }}
-  >
-    Delete Account
-  </Text>
-  <Text
-    style={{ color: 'blue', fontSize: 20, textDecorationLine: 'underline' }}
-  >
-    Logout
-  </Text>
+      <View style={{
+       width: 120,
+       height:120,
+       borderRadius: 120/2,
+      // backgroundColor: 'white',
+       borderWidth:2,
+       borderColor:"black"
+         
+}}   
+
+ >
+  <View style={{
+      
+       marginLeft:60,
+       marginTop:60,
+       borderRadius: 50/2,
+       borderWidth:2,
+       height:50,
+       width:50,
+       borderColor:"black",
+       backgroundColor:"white"
+}}>
+ <TouchableOpacity>
+ <Image source={require('../assets/camera_20.png')} style={{width:35, height: 35,alignSelf:"center"}} />
+ </TouchableOpacity>
+
 </View>
-  )
-}
+ </View>
+           <TouchableOpacity>
+        <Text style={{ fontSize: 30, color: 'black' }}>Contact us</Text>
+      </TouchableOpacity>
+     
+    </View>
+
+    )}
+     
+    renderbody() {
+      return (
+        <View
+        style={{
+          flexDirection: 'column',
+          backgroundColor: 'white',
+          justifyContent: 'space-between',
+          alignItems: 'stretch',
+        }}
+      >
+        <View
+        style={{
+          flexDirection: 'row',
+          backgroundColor: 'white',
+          justifyContent: 'space-between',
+          alignItems: 'stretch',
+          marginTop:20
+        }}
+      >
+      <TouchableOpacity> <Image source={require('../assets/single.png')} style={{width:40, height: 40}} /></TouchableOpacity>
+      
+       
+       <KeyboardAwareScrollView>
+            <TextInput
+              style={{
+                borderColor: 'white',
+                borderBottomColor: 'black',
+                marginLeft:20
+              }}
+              placeholder="Name"
+              placeholderTextColor="black"
+            /></KeyboardAwareScrollView>
+            <Image source={require('../assets/pencil.png')} style={{width:20, height: 20}} />
+       
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          backgroundColor: 'white',
+          justifyContent: 'space-between',
+          alignItems: 'stretch',
+          marginTop:20
+        }}
+      >
+        <Image source={require('../assets/phone_2.png')} style={{width:40, height: 40}} />
+       
+       <KeyboardAwareScrollView>
+            <TextInput
+              style={{
+                borderColor: 'white',
+                borderBottomColor: 'black',
+                marginLeft:20,
+                fontFamily:"Roboto-Regular"
+              }}
+              placeholder="Phone Number"
+              placeholderTextColor="black"
+              
+            /></KeyboardAwareScrollView>
+            <Image source={require('../assets/pencil.png')} style={{width:20, height: 20}} />
+       
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          backgroundColor: 'white',
+          justifyContent: 'space-between',
+          alignItems: 'stretch',
+          marginTop:20
+        }}
+      >
+       <Image source={require('../assets/wallet_43.png')} style={{width: 40, height: 40}} />
+       
+       <KeyboardAwareScrollView>
+            <TextInput
+              style={{
+                borderColor: 'white',
+                borderBottomColor: 'black',
+                marginLeft:20
+              }}
+              placeholder="UPI Address"
+              placeholderTextColor="black"
+            /></KeyboardAwareScrollView>
+            <Image source={require('../assets/pencil.png')} style={{width:20, height: 20}} />
+       
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          backgroundColor: 'white',
+          justifyContent: 'space-between',
+          alignItems: 'stretch',
+          marginTop:20
+        }}
+      >
+       <Image source={require('../assets/email_84.png')} style={{width:40, height: 40}} />
+       
+       <KeyboardAwareScrollView>
+            <TextInput
+              style={{
+                borderColor: 'white',
+                borderBottomColor: 'black',
+                marginLeft:20
+              }}
+              placeholder="Email ID"
+              placeholderTextColor="black"
+            /></KeyboardAwareScrollView>
+           <Image source={require('../assets/pencil.png')} style={{width:20, height: 20}} />
+       
+      </View>
+      </View>
+  
+      )}
+      renderlowerbody() {
+        return (
+          <View
+          style={{
+            flexDirection: 'row',
+            backgroundColor: 'white',
+            justifyContent: 'space-around',
+            alignItems: 'stretch',
+            marginTop:30
+          }}
+        >
+        <View style={{
+            flexDirection: 'column',
+            backgroundColor: 'white',
+            justifyContent: 'space-between',
+            alignItems: 'stretch',
+          }}
+        >
+        
+        <Image source={require('../assets/translate.png')} style={{width: 40, height: 40}} />
+        <Text style={{ color: 'black', fontSize:20,textAlign:"center" }}>Language</Text>
+        </View>
+         
+        <View style={{
+            flexDirection: 'column',
+            backgroundColor: 'white',
+            justifyContent: 'space-between',
+            alignItems: 'stretch',
+          }}
+        >
+        
+        <Image source={require('../assets/money.png')} style={{width: 40, height: 40}} />
+        <Text style={{ color: 'black', fontSize:20,textAlign:"center" }}>Currency</Text>
+        </View>
+         
+         
+        </View>
+    
+        )}   
+
+  
 
   render() {
     return (
       <View style={{flexDirection:"column",justifyContent:"space-evenly"}}>
         {this.renderTitlebar()}
-        {this.renderBody()}
-        {this.renderButton()}
-        {this.renderBottom()}
+        {this. renderupperbody()}
+        {this. renderbody()}
+        {this. renderlowerbody()}
       </View>
     );
   }
 }
 
-var styles = StyleSheet.create({
-  button: {
-    color: 'black'
-  }
-});

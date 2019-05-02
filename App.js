@@ -8,12 +8,14 @@ import { AppNavigation } from 'app/screens/Index';
 import React from 'react';
 //import { settings } from 'cluster';
 import Settings from './app/screens/Settings';
+import Selection from './app/screens/selectionscreen';
+import Getting_Started from './app/screens/Gettingstarted';
 
 export default class App extends React.Component {
   render() {
     return (
      <View>
-       <Settings/>
+       <Getting_Started/>
      </View>
     );
   }
