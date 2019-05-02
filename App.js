@@ -10,7 +10,6 @@ import React from 'react';
 import Settings from './app/screens/Settings';
 import Selection from './app/screens/selectionscreen';
 import Getting_Started from './app/screens/Gettingstarted';
-import Test from './app/screens/test';
 
 export default class App extends React.Component {
   render() {
