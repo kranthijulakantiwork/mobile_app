@@ -9,12 +9,12 @@ export default class Getting_Started extends Component {
 
   renderGroupButtonAndText() {
     return (
-      <View>
+      <View style={{ alignItems: 'center' }}>
         <TouchableOpacity
           style={{
+            width: (2 * width) / 3,
             marginTop: 30,
-            paddingHorizontal: 60,
-            paddingVertical: 8,
+            height: 44,
             borderRadius: 5.3,
             backgroundColor: '#ffffff',
             shadowOffset: { height: 1, width: 1 },
@@ -40,6 +40,7 @@ export default class Getting_Started extends Component {
             marginTop: 9.9,
             color: '#707070',
             fontFamily: 'Roboto-Regular',
+            textAlign: 'center',
             fontSize: 11.7
           }}
         >
@@ -51,11 +52,11 @@ export default class Getting_Started extends Component {
 
   renderFriendButtonAndText() {
     return (
-      <View>
+      <View style={{ alignItems: 'center' }}>
         <TouchableOpacity
           style={{
-            paddingHorizontal: 80,
-            paddingVertical: 8,
+            width: (2 * width) / 3,
+            height: 44,
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: '#1da370',
@@ -159,9 +160,11 @@ export default class Getting_Started extends Component {
     return (
       <View style={{ flex: 1 }}>
         <View style={{ flex: 1, alignItems: 'center' }}>
-          {this.renderAppIconAndAppName()}
-          {this.renderletsGetStartedText()}
-          {this.renderAddFriendAndGroupButtons()}
+          <View style={{ flex: 6, width: (2 * width) / 3 }}>
+            {this.renderAppIconAndAppName()}
+            {this.renderletsGetStartedText()}
+            {this.renderAddFriendAndGroupButtons()}
+          </View>
           <View
             style={{ flex: 1, width: width - 50, alignItems: 'flex-end', justifyContent: 'center' }}
           >
