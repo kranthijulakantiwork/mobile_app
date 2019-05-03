@@ -25,10 +25,10 @@ import { askPermissionsAndgetContacts } from 'app/helpers/Contacts';
 import { COLORS } from 'app/styles/Colors';
 import { FONT_SIZES } from 'app/config/ENV';
 import BillDetails from 'app/screens/BillDetails';
+import CreateGroup from 'app/screens/CreateGroup';
 import DrawerScreen from 'app/screens/DrawerScreen';
 import EDText from 'app/components/EDText';
 import Friends from 'app/screens/Friends';
-import CreateGroup from 'app/screens/CreateGroup';
 import Groups from 'app/screens/Groups';
 import I18n from 'app/config/i18n';
 import NewBill from 'app/screens/NewBill';
@@ -38,6 +38,7 @@ import Settings from 'app/screens/Settings';
 import SettlementDetailView from 'app/screens/SettlementDetailView';
 import SignIn from 'app/screens/SignIn';
 import Splash from 'app/screens/Splash';
+import UpiLinking from 'app/screens/UpiLinking';
 
 const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -205,6 +206,7 @@ class CustomTabs extends React.Component<Props> {
 
 const AppNavigator = createStackNavigator(
   {
+    UpiLinking: { screen: UpiLinking },
     CreateGroup: { screen: CreateGroup },
     Tabs: { screen: CustomTabs },
     NewBill: { screen: NewBill },

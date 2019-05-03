@@ -1,16 +1,17 @@
 /* @flow */
 
-import { Platform, View, SafeAreaView, StatusBar } from 'react-native';
-//import {} from 'react-native';
+import React from 'react';
+import { StatusBar } from 'react-native';
+import { AppNavigation } from 'app/screens/Index';
+import { COLORS } from 'app/styles/Colors';
 import { Provider } from 'react-redux';
 import store from 'app/helpers/Store';
-import { AppNavigation } from 'app/screens/Index';
-import React from 'react';
 
 export default class App extends React.Component {
   render() {
     return (
       <Provider store={store}>
+        <StatusBar backgroundColor={COLORS.APP_THEME_GREEN} barStyle="light-content" />
         <AppNavigation />
       </Provider>
     );

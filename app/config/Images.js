@@ -29,5 +29,8 @@ export default {
   tick: require('app/assets/tick.png'),
   to_get: require('app/assets/to_get.png'),
   to_pay: require('app/assets/to_pay.png'),
-  travel: require('app/assets/travel.png')
+  travel: require('app/assets/travel.png'),
+  upi_link: require('app/assets/upi_link.png'),
+  upi_logo: require('app/assets/upi_logo.png'),
+  wallet: require('app/assets/wallet.png')
 };
