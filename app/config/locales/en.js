@@ -20,6 +20,7 @@ const en = {
   cancel: 'Cancel',
   choose_group: 'Choose Group',
   choose_payer: 'Choose Payer',
+  confirm_upi_address: 'Re-Enter UPI Address',
   create_group: 'Create Group',
   create: 'Create',
   date: 'Date',
@@ -36,6 +37,7 @@ const en = {
   group: 'Group',
   groups_tab: 'Groups',
   holiday: 'Holiday',
+  link: 'Link',
   loan: 'Loan',
   maximum_friends_reached: 'Maximum Friends reached.',
   medicine: 'Medicine',
@@ -60,6 +62,7 @@ const en = {
   please_enter_amount: 'Please enter amount.',
   please_enter_description: 'Please enter description.',
   plus_other_balances: 'Plus {{count}} other balances',
+  receive_through: 'Receive through',
   rent: 'Rent',
   search_friends: 'Search Friends',
   select_category: 'Select Category',
@@ -68,6 +71,7 @@ const en = {
   share_s: 'share(s)',
   shares: 'SHARES',
   shopping: 'Shopping',
+  skip: 'Skip',
   the_payment_value_doesnt_addup: "The payment value doesn't add up to {{amount}}",
   to_get: 'To Get',
   to_pay: 'To Pay',
@@ -78,12 +82,15 @@ const en = {
   travel: 'Travel',
   unequally: 'UNEQUALLY',
   updated: 'updated',
+  upi_address: 'Enter UPI Address',
   you_are_owed: 'you are owed',
   you_get: 'You get',
   you_must_select_atleast_one: 'You must select at least one person to split with.',
   you_owe_: 'You owe',
   you_owe: 'you owe',
   you: 'YOU',
+  upi_link_description:
+    'Connect with UPI to directly pay and receive money to ensure easy settlement',
   the_math_for_this_expense_doesnt_add_up:
     "The math for this expense doesn't add up. Please double-check that you've entered the correct amounts for each person!"
 };
