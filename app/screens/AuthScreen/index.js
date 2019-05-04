@@ -6,6 +6,8 @@ import imgLogo from '../../assets/logo.png'
 import metrics from '../../config/metrics'
 import { login } from 'app/api/User';
 import Opening from './Opening'
+import { connect } from 'react-redux';
+import { setUser } from '../../reducers/user/Actions'
 import { realm, User } from 'app/models/schema';
 import SignupForm from './SignupForm'
 import LoginForm from './LoginForm'
@@ -43,7 +45,7 @@ if (Platform.OS === 'android') UIManager.setLayoutAnimationEnabledExperimental(t
  *   _hideAuthScreen then 1. calls the SignupForm.hideForm(), that hides the form buttons (zoomOut) and the form itself (fadeOut),
  *   2. fadeOut the logo, 3. tells the container that the login animation has completed and that the app is ready to show the next screen (HomeScreen).
  */
-export default class AuthScreen extends Component {
+class AuthScreen extends Component {
   // static propTypes = {
   //   isLoggedIn: PropTypes.bool.isRequired,
   //   isLoading: PropTypes.bool.isRequired,
@@ -86,15 +88,16 @@ export default class AuthScreen extends Component {
   }
 
   signup() {
+    //TODO update or create user as per api response
     // login(this.phone, this.formRefOtp.state.otp)
     // .then((response) => {
-    //   let current_user = realm.objects('User').filtered('user_id=$0', current_user.id.toString())[0];
+    //   let current_user = realm.objects('User').filtered('user_id=$0', response.current_user.id.toString())[0];
     //   if (current_user) {
     //     current_user.update(response.current_user);
     //   } else {
     //     current_user = User.create(response.current_user);
     //   }
-
+        // this.props.dispatch(current_user)
     // })
     // .cactch((err) => {
 
@@ -231,3 +234,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#068679'
   }
 })
+
+function mapStateToProps(state) {
+  return {};
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({setUser}, dispatch);
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AuthScreen);
