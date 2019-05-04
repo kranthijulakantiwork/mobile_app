@@ -13,8 +13,17 @@ module.exports = {
     };
 
     switch (apiParams.name) {
+      case 'login':
+        return (
+          'api/login'
+        );
+      case 'send_otp':
+        return (
+          'api/sendOTP'
+        );
       default:
         return 'unknown route';
     }
-  }
+  },
+  API_KEY: 'API_KEY'
 };
