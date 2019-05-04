@@ -29,6 +29,7 @@ import CreateGroup from 'app/screens/CreateGroup';
 import DrawerScreen from 'app/screens/DrawerScreen';
 import EDText from 'app/components/EDText';
 import Friends from 'app/screens/Friends';
+import AuthScreen from 'app/screens/AuthScreen';
 import Groups from 'app/screens/Groups';
 import I18n from 'app/config/i18n';
 import NewBill from 'app/screens/NewBill';
@@ -207,6 +208,7 @@ class CustomTabs extends React.Component<Props> {
 const AppNavigator = createStackNavigator(
   {
     UpiLinking: { screen: UpiLinking },
+    AuthScreen: { screen: AuthScreen },
     CreateGroup: { screen: CreateGroup },
     Tabs: { screen: CustomTabs },
     NewBill: { screen: NewBill },
