@@ -7,7 +7,7 @@ import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { navigateToScreen, replaceScreen } from 'app/helpers/NavigationHelper';
+import { replaceScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import Avatar from 'app/components/Avatar';
 import CalendarView from 'app/components/CalendarView';
@@ -75,20 +75,6 @@ const styles = StyleSheet.create({
   }
 });
 
-const FRIENDS_DETAILS = {
-  name: 'Harshaknkvdkkndnf',
-  mobile: '9491267523'
-};
-const FRIENDS = [];
-for (let index = 0; index < 8; index++) {
-  FRIENDS.push({
-    ...FRIENDS_DETAILS,
-    id: index,
-    mobile: '949126752' + index,
-    name: index + ' ' + FRIENDS_DETAILS.name
-  });
-}
-
 class NewBill extends Component {
   static navigationOptions = {
     header: null
@@ -111,7 +97,7 @@ class NewBill extends Component {
   getState() {
     const { state, getParam } = this.props.navigation;
     const { params = {} } = state;
-    const friendsList = getParam('friends') || FRIENDS;
+    const friendsList = getParam('friends') || [];
     const {
       bill_name = '',
       amount = '',
