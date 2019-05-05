@@ -40,6 +40,7 @@ import SettlementDetailView from 'app/screens/SettlementDetailView';
 import SignIn from 'app/screens/SignIn';
 import Splash from 'app/screens/Splash';
 import UpiLinking from 'app/screens/UpiLinking';
+import GettingStarted from 'app/screens/GettingStarted';
 
 const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -204,6 +205,7 @@ class CustomTabs extends React.Component<Props> {
 
 const AppNavigator = createStackNavigator(
   {
+    GettingStarted: { screen: GettingStarted },
     Settlement: { screen: Settlement },
     Settings: { screen: Settings },
     UpiLinking: { screen: UpiLinking },

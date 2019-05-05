@@ -7,7 +7,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "babel-preset-react-native": "^4.0.0",
     "i18n-js": "3.2.1",
     "prop-types": "15.6.2",
     "react": "16.4.1",
@@ -32,6 +31,7 @@
     "redux-thunk": "2.3.0"
   },
   "devDependencies": {
+    "babel-preset-react-native": "5.0.2",
     "babel-eslint": "^10.0.1",
     "babel-jest": "24.0.0",
     "babel-preset-flow": "^6.23.0",
