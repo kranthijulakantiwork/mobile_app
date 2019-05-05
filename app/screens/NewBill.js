@@ -89,17 +89,14 @@ for (let index = 0; index < 8; index++) {
   });
 }
 
-export default class NewBill extends Component {
-  static propTypes = {
-    navigation: PropTypes.object.isRequired
-  };
-
+class NewBill extends Component {
   static navigationOptions = {
     header: null
   };
 
   constructor(props) {
     super(props);
+    // TODO Add current user to bill automatically
     this.state = {
       ...this.getState(),
       showCategory: false,
@@ -618,3 +615,22 @@ export default class NewBill extends Component {
     );
   }
 }
+
+NewBill.propTypes = {
+  navigation: PropTypes.object
+};
+
+function mapStateToProps(state) {
+  return {
+    currentUser: state.currentUser
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({}, dispatch);
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(NewBill);

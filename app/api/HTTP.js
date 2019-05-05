@@ -5,7 +5,7 @@ import { getApiPath } from 'app/api/helper';
 import { NetInfo } from 'react-native';
 import showToast from 'app/helpers/Toast';
 import I18n from 'app/config/i18n';
-// import store from 'app/helpers/Store';
+import store from 'app/helpers/Store';
 import { enableReload, disableReload } from 'app/reducers/netInfo/Actions';
 
 type apiParams = {
@@ -16,10 +16,10 @@ type apiParams = {
 
 async function checkNetworkInfoAndprepareRequest(api_params) {
   let invalid = ['none', 'unknown'];
-  // store.dispatch(enableReload());
+  store.dispatch(enableReload());
   const connectivity = await NetInfo.getConnectionInfo();
   if (!invalid.includes(connectivity.type)) {
-    // store.dispatch(disableReload());
+    store.dispatch(disableReload());
     return prepareRequest(api_params);
   } else {
     if (!['unknown'].includes(connectivity.type)) {
@@ -37,7 +37,9 @@ async function checkNetworkInfoAndprepareRequest(api_params) {
 function getRequestHeader(requestParams: apiParams) {
   const { type, data } = requestParams;
   if (type === 'GET') {
-    return {};
+    return {
+      auth_key: data.auth_key
+    };
   }
   return {
     method: type,
@@ -45,7 +47,8 @@ function getRequestHeader(requestParams: apiParams) {
       Accept: 'application/json',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
+    auth_key: data.auth_key
   };
 }
 
@@ -56,12 +59,10 @@ function getRequestUrl(requestParams: apiParams) {
 function handleErrorResponse(serverResponse, { showServerError, hideError }) {
   if (!hideError) {
     const message =
-      showServerError && serverResponse.errors
-        ? serverResponse.errors
-        : I18n.t('api_error_message');
+      showServerError && serverResponse.error ? serverResponse.error : I18n.t('api_error_message');
     showToast({ message });
   }
-  return { success: false, error: serverResponse.errors || I18n.t('api_error_message') };
+  return { success: false, error: serverResponse.error || I18n.t('api_error_message') };
 }
 
 async function makeApiCall(
@@ -73,7 +74,7 @@ async function makeApiCall(
     const response = await fetch(requestUrl, requestHeader);
     const { status } = response;
     const serverResponse = await response.json();
-    if (serverResponse.errors || status >= 400) {
+    if (serverResponse.error || status >= 400) {
       return handleErrorResponse(serverResponse, { showServerError, hideError });
     }
     return { success: true, data: serverResponse };

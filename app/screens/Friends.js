@@ -14,11 +14,13 @@ import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
+import { getFriends } from 'app/api/Friends';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import Balances from 'app/components/Balances';
 import EDText from 'app/components/EDText';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
+import PropTypes from 'prop-types';
 import StatusCard from 'app/components/StatusCard';
 
 const { height, width } = Dimensions.get('window');
@@ -47,7 +49,7 @@ const FRIENDS_DETAILS = {
 };
 const amountToBeSettled = '300';
 
-export default class Friends extends Component {
+class Friends extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -74,6 +76,15 @@ export default class Friends extends Component {
     };
   }
 
+  componentWillMount() {
+    const { currentUser } = this.props;
+    getFriends(currentUser).then(response => {
+      if (response.success) {
+        this.setState({ friends: response.data.friends });
+      }
+    });
+  }
+
   onFriendSelection(friendDetails) {
     alert('TODO');
   }
@@ -97,13 +108,12 @@ export default class Friends extends Component {
   }
 
   renderSingleFriend(friendDetails) {
-    const { name, balance, owed, mobile } = friendDetails;
+    const { name, balance, mobile } = friendDetails;
     return (
       <StatusCard
         onPress={() => this.onFriendSelection(friendDetails)}
         name={name}
         balance={balance}
-        owed={owed}
         mobile={mobile}
         balanceType={'friends'}
       />
@@ -141,3 +151,22 @@ export default class Friends extends Component {
     );
   }
 }
+
+Friends.propTypes = {
+  navigation: PropTypes.object
+};
+
+function mapStateToProps(state) {
+  return {
+    currentUser: state.currentUser
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({}, dispatch);
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Friends);

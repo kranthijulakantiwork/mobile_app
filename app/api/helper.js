@@ -5,22 +5,26 @@ module.exports = {
     let getAuthString = params => {
       let authString = '';
       if (params.data.user_id) {
-        authString = `user[id]=${params.data.user_id}&device[id]=${
-          params.data.device_id
-        }&device[access_token]=${params.data.access_token}`;
+        authString = `user[id]=${params.data.user_id}`;
       }
       return authString;
     };
 
     switch (apiParams.name) {
+      case 'get_friends':
+        return 'listFriends?' + getAuthString(apiParams);
+      case 'get_groups':
+        return 'listGroups?' + getAuthString(apiParams);
+      case 'get_bills':
+        return 'listBills?' + getAuthString(apiParams);
+      case 'add_bill':
+        return 'addBill';
+      case 'add_group':
+        return 'addGroup';
       case 'login':
-        return (
-          'api/login'
-        );
+        return 'login';
       case 'send_otp':
-        return (
-          'api/sendOTP'
-        );
+        return 'sendOTP';
       default:
         return 'unknown route';
     }

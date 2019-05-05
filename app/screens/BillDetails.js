@@ -75,16 +75,7 @@ const styles = StyleSheet.create({
   }
 });
 
-const FRIENDS_DETAILS = {
-  name: 'Harshaknkvdkkndnf',
-  mobile: '9491267523'
-};
-const FRIENDS = [];
-for (let index = 0; index < 25; index++) {
-  FRIENDS.push({ ...FRIENDS_DETAILS, id: index });
-}
-
-export default class BillDetails extends Component {
+class BillDetails extends Component {
   static propTypes = {
     navigation: PropTypes.object.isRequired
   };
@@ -321,3 +312,22 @@ export default class BillDetails extends Component {
     );
   }
 }
+
+BillDetails.propTypes = {
+  navigation: PropTypes.object
+};
+
+function mapStateToProps(state) {
+  return {
+    currentUser: state.currentUser
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({}, dispatch);
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(BillDetails);

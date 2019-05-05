@@ -56,7 +56,6 @@ export default class StatusCard extends Component {
     details: PropTypes.array,
     balance: PropTypes.string,
     balanceType: PropTypes.string,
-    owed: PropTypes.bool,
     mobile: PropTypes.string
   };
 
@@ -68,7 +67,7 @@ export default class StatusCard extends Component {
   renderSummaryDetails(detail, i) {
     let oweText = detail.name + ' ' + I18n.t('owes_you') + ' ';
     let color = COLORS.BALANCE_GREEN;
-    if (detail.owed) {
+    if (detail.amount < 0) {
       oweText = I18n.t('you_owe') + ' ' + detail.name + ' ';
       color = COLORS.BALANCE_RED;
     }
@@ -134,14 +133,14 @@ export default class StatusCard extends Component {
 
   // TODO Change group icon and customize for only groups
   renderBalance() {
-    const { balance, balanceType, owed } = this.props;
+    const { balance, balanceType } = this.props;
     let color = COLORS.BALANCE_GREEN;
     let status = 'you_are_owed';
     if (!balance) {
       status = 'settled_up';
       color = COLORS.BALANCE_BLUE;
     }
-    if (owed) {
+    if (balance < 0) {
       color = COLORS.BALANCE_RED;
       status = 'you_owe';
     }

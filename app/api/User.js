@@ -5,7 +5,7 @@ function login(phone, otp) {
   const params = {
     phone,
     otp,
-    api_key: API_KEY
+    auth_key: API_KEY
   };
   const apiParams = {
     name: 'login',
@@ -18,7 +18,7 @@ function login(phone, otp) {
 function sendOtp(phone) {
   const params = {
     phone,
-    api_key : API_KEY
+    auth_key: API_KEY
   };
   const apiParams = {
     name: 'send_otp',
@@ -33,8 +33,7 @@ function sendOtp(phone) {
   });
 }
 
-
 module.exports = {
   login,
-  sendOtp,
+  sendOtp
 };

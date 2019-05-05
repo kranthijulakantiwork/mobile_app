@@ -91,7 +91,9 @@ DrawerScreen.propTypes = {
 };
 
 function mapStateToProps(state) {
-  return {};
+  return {
+    currentUser: state.currentUser
+  };
 }
 
 function mapDispatchToProps(dispatch) {
