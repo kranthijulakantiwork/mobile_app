@@ -137,6 +137,8 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-get-sms-android')
+    implementation project(':realm')
     implementation project(':react-native-linear-gradient')
     implementation project(':react-native-contacts')
     implementation project(':react-native-upi-payment')

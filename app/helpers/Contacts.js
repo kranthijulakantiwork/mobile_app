@@ -42,7 +42,7 @@ function createContact(contact, mobile, mobileNumbers) {
       if (realmContact) {
         if (realmContact.name !== data.name) Contact.update({ name: data.name });
       } else {
-        const x = Contact.create(data);
+        Contact.create(data);
       }
     }
   } catch (error) {}

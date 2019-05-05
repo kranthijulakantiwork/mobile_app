@@ -21,13 +21,14 @@ import {
   NavigationActions,
   StackActions
 } from 'react-navigation';
-import { askPermissionsAndgetContacts } from 'app/helpers/Contacts';
 import { COLORS } from 'app/styles/Colors';
 import { FONT_SIZES } from 'app/config/ENV';
 import BillDetails from 'app/screens/BillDetails';
+import CreateGroup from 'app/screens/CreateGroup';
 import DrawerScreen from 'app/screens/DrawerScreen';
 import EDText from 'app/components/EDText';
 import Friends from 'app/screens/Friends';
+import AuthScreen from 'app/screens/AuthScreen';
 import Groups from 'app/screens/Groups';
 import I18n from 'app/config/i18n';
 import NewBill from 'app/screens/NewBill';
@@ -38,6 +39,7 @@ import Settlement from 'app/screens/Settlement';
 import SettlementDetailView from 'app/screens/SettlementDetailView';
 import SignIn from 'app/screens/SignIn';
 import Splash from 'app/screens/Splash';
+import UpiLinking from 'app/screens/UpiLinking';
 
 const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -173,9 +175,6 @@ const Tabs = createMaterialTopTabNavigator(
 
 class CustomTabs extends React.Component<Props> {
   static router = Tabs.router;
-  componentWillMount() {
-    askPermissionsAndgetContacts();
-  }
   componentWillUpdate() {
     LayoutAnimation.easeInEaseOut();
   }
@@ -185,10 +184,7 @@ class CustomTabs extends React.Component<Props> {
     const activeRoute = routes[index];
     let bottom = (
       //   <TouchableOpacity onPress={() => navigation.navigate('Payment')} style={styles.addButton}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('SelectFriends')}
-        style={styles.addButton}
-      >
+      <TouchableOpacity onPress={() => navigation.navigate('NewBill')} style={styles.addButton}>
         <View style={styles.addButtonTextContainer}>
           <EDText style={styles.addButtonText}>+</EDText>
         </View>
@@ -210,6 +206,9 @@ const AppNavigator = createStackNavigator(
   {
     Settlement: { screen: Settlement },
     Settings: { screen: Settings },
+    UpiLinking: { screen: UpiLinking },
+    AuthScreen: { screen: AuthScreen },
+    CreateGroup: { screen: CreateGroup },
     Tabs: { screen: CustomTabs },
     NewBill: { screen: NewBill },
     BillDetails: { screen: BillDetails },

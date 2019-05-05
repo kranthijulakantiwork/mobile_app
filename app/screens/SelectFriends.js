@@ -52,7 +52,6 @@ class SelectFriends extends Component {
 
   constructor(props) {
     super(props);
-    console.log(this.props.contacts.length);
     this.state = {
       friendsList: this.props.contacts,
       selectedFriends: ['you'],
@@ -99,7 +98,6 @@ class SelectFriends extends Component {
     const { friendsList } = this.state;
     const friend = friendsList[index];
     const { onAddFriend } = this.props;
-    // return console.log(friend);
     onAddFriend && onAddFriend(friend);
   }
 
@@ -217,7 +215,11 @@ class SelectFriends extends Component {
             rightTitle={I18n.t('next')}
           /> */}
           {this.renderHeader()}
-          <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            style={styles.scrollContainer}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps={'always'}
+          >
             {this.renderFriends()}
             <View style={{ width, height: 20 }} />
           </ScrollView>

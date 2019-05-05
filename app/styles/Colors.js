@@ -2,6 +2,7 @@
 
 const COLORS = {
   APP_THEME_BLUE: '#3595D3',
+  APP_THEME_GREEN: '#1da370',
   APP_THEME_PURPLE: '#473C8C',
   BACKGROUND_GRAY: '#f9f9f9',
   BALANCE_BLUE: '#398cbf',
@@ -18,6 +19,7 @@ const COLORS = {
   TEXT_GRAY: '#505050',
   TEXT_INPUT_BACK: '#d1ecff',
   TEXT_LIGHT_BLACK: '#797979',
+  TEXT_LIGHT_GRAY: '#bbbbbb',
   WHITE: '#ffffff'
 };
 

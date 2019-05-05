@@ -1,15 +1,7 @@
 /* @flow */
 
 import React, { Component } from 'react';
-import {
-  Dimensions,
-  FlatList,
-  Image,
-  PermissionsAndroid,
-  StyleSheet,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { Dimensions, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
@@ -36,13 +28,18 @@ const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: { flex: 1 },
   subContainer: { flex: 1, width, alignItems: 'center', paddingVertical: 20 },
-  selectFriendAvatarContainer: { width: 65, alignItems: 'center', paddingVertical: 10 },
+  selectFriendAvatarContainer: {
+    width: 65,
+    alignItems: 'center',
+    paddingVertical: 10,
+    backgroundColor: COLORS.WHITE
+  },
   plusButtonView: {
     height: 45,
     width: 45,
     borderRadius: 3,
     borderWidth: 2,
-    borderColor: '#bbbbbb',
+    borderColor: COLORS.TEXT_LIGHT_GRAY,
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -84,20 +81,22 @@ const FRIENDS_DETAILS = {
 };
 const FRIENDS = [];
 for (let index = 0; index < 8; index++) {
-  FRIENDS.push({ ...FRIENDS_DETAILS, id: index, mobile: '949126752' + index });
+  FRIENDS.push({
+    ...FRIENDS_DETAILS,
+    id: index,
+    mobile: '949126752' + index,
+    name: index + ' ' + FRIENDS_DETAILS.name
+  });
 }
 
-export default class NewBill extends Component {
-  static propTypes = {
-    navigation: PropTypes.object.isRequired
-  };
-
+class NewBill extends Component {
   static navigationOptions = {
     header: null
   };
 
   constructor(props) {
     super(props);
+    // TODO Add current user to bill automatically
     this.state = {
       ...this.getState(),
       showCategory: false,
@@ -143,12 +142,14 @@ export default class NewBill extends Component {
 
   onAddFriend(friend) {
     const { friends } = this.state;
-    // TODO handle split
     this.setState({ showFriendsList: false, friends: [...friends, friend] });
   }
 
-  unSelectFriend(friend) {
-    alert('TODO');
+  unSelectFriend(index) {
+    const { friends } = this.state;
+    let tempFriends = Object.assign([], friends);
+    tempFriends.splice(index, 1);
+    this.setState({ friends: tempFriends });
   }
 
   onChangeText(stateKey, text) {
@@ -182,7 +183,6 @@ export default class NewBill extends Component {
 
   onMultiplePeoplePaid(friendsAmount) {
     dismissKeyboard();
-    console.log('friendsAmount', friendsAmount);
     this.setState({
       showPaidByOptions: false,
       paidBy: friendsAmount
@@ -487,7 +487,7 @@ export default class NewBill extends Component {
               borderWidth: 2,
               alignItems: 'center',
               justifyContent: 'center',
-              borderColor: '#bbbbbb'
+              borderColor: COLORS.TEXT_LIGHT_GRAY
             }}
           >
             <Image source={Images[categoryImage]} />
@@ -526,14 +526,26 @@ export default class NewBill extends Component {
   }
 
   renderFriendAvatar(friend, index) {
+    const { splitByFriends, friendsSplitAmount, splitType, paidBy } = this.state;
+    const mobileNumber = friend.mobile;
+    let showClose = true;
+    if (splitType === 'equally' && splitByFriends.includes(mobileNumber)) {
+      showClose = false;
+    } else if (splitType !== 'equally' && friendsSplitAmount[splitType][mobileNumber]) {
+      showClose = false;
+    } else if (paidBy[mobileNumber]) {
+      showClose = false;
+    }
     return (
       <Avatar
         name={friend['name']}
-        showClose={true}
+        showClose={showClose}
+        disabled={!showClose}
         avatarSubText={friend['name']}
         avatarSubTextStyle={{ width: 50, color: COLORS.TEXT_BLACK }}
-        onPress={() => this.unSelectFriend(friend)}
+        onPress={() => this.unSelectFriend(index)}
         buttonStyle={styles.selectFriendAvatarContainer}
+        key={index}
       />
     );
   }
@@ -541,18 +553,19 @@ export default class NewBill extends Component {
   renderFriends() {
     const { friends } = this.state;
     return (
-      <View style={{ flexDirection: 'row', marginVertical: 5 }}>
-        <FlatList
-          data={friends}
+      <View style={{ flexDirection: 'row', marginVertical: 5, backgroundColor: COLORS.WHITE }}>
+        <ScrollView
+          style={{ flexDirection: 'row' }}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item, index }) => this.renderFriendAvatar(item, index)}
-        />
+        >
+          {friends.map((friend, index) => this.renderFriendAvatar(friend, index))}
+        </ScrollView>
+
         <TouchableOpacity onPress={() => this.setState({ showFriendsList: true })}>
           <View style={styles.selectFriendAvatarContainer}>
             <View style={styles.plusButtonView}>
-              <EDText style={{ color: '#bbbbbb', fontSize: 33 }}>{'+'}</EDText>
+              <EDText style={{ color: COLORS.TEXT_LIGHT_GRAY, fontSize: 33 }}>{'+'}</EDText>
             </View>
             <EDText style={{ color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H5, paddingTop: 5 }}>
               {I18n.t('add_friend')}
@@ -602,3 +615,22 @@ export default class NewBill extends Component {
     );
   }
 }
+
+NewBill.propTypes = {
+  navigation: PropTypes.object
+};
+
+function mapStateToProps(state) {
+  return {
+    currentUser: state.currentUser
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({}, dispatch);
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(NewBill);

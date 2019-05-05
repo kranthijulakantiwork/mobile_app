@@ -15,6 +15,6 @@ const FONT_SIZES = {
 
 module.exports = {
   SERVER,
-  SERVER_URL: `${SERVER}api/v1/`,
+  SERVER_URL: `${SERVER}api/`,
   FONT_SIZES
 };
