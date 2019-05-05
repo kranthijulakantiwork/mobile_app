@@ -37,7 +37,7 @@ import NewBill from 'app/screens/NewBill';
 import Payment from 'app/screens/Payment';
 import SelectFriends from 'app/screens/SelectFriends';
 // import Settings from 'app/screens/Settings';
-// import Settlement from 'app/screens/Settlement';
+import Settlement from 'app/screens/Settlement';
 import SettlementDetailView from 'app/screens/SettlementDetailView';
 import SignIn from 'app/screens/SignIn';
 import Splash from 'app/screens/Splash';
@@ -208,7 +208,7 @@ const AppNavigator = createStackNavigator(
   {
     LanguageSelection: { screen: LanguageSelection },
     GettingStarted: { screen: GettingStarted },
-    // Settlement: { screen: Settlement },
+    Settlement: { screen: Settlement },
     UpiLinking: { screen: UpiLinking },
     AuthScreen: { screen: AuthScreen },
     CreateGroup: { screen: CreateGroup },
