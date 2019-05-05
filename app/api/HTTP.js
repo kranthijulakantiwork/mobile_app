@@ -5,7 +5,7 @@ import { getApiPath } from 'app/api/helper';
 import { NetInfo } from 'react-native';
 import showToast from 'app/helpers/Toast';
 import I18n from 'app/config/i18n';
-import store from 'app/helpers/Store';
+// import store from 'app/helpers/Store';
 import { enableReload, disableReload } from 'app/reducers/netInfo/Actions';
 
 type apiParams = {
@@ -16,10 +16,10 @@ type apiParams = {
 
 async function checkNetworkInfoAndprepareRequest(api_params) {
   let invalid = ['none', 'unknown'];
-  store.dispatch(enableReload());
+  // store.dispatch(enableReload());
   const connectivity = await NetInfo.getConnectionInfo();
   if (!invalid.includes(connectivity.type)) {
-    store.dispatch(disableReload());
+    // store.dispatch(disableReload());
     return prepareRequest(api_params);
   } else {
     if (!['unknown'].includes(connectivity.type)) {

@@ -4,7 +4,7 @@ import { PermissionsAndroid } from 'react-native';
 import Contacts from 'react-native-contacts';
 import { realm, Contact } from 'app/models/schema';
 import { setContacts } from 'app/reducers/common/Actions';
-import store from 'app/helpers/Store';
+// import store from 'app/helpers/Store';
 
 function getMobileNumber(mobile) {
   if (mobile && mobile.number) {
@@ -42,7 +42,7 @@ function createContact(contact, mobile, mobileNumbers) {
       if (realmContact) {
         if (realmContact.name !== data.name) Contact.update({ name: data.name });
       } else {
-        const x = Contact.create(data);
+        Contact.create(data);
       }
     }
   } catch (error) {}
@@ -63,7 +63,7 @@ function getContacts() {
         }
         return true;
       });
-      store.dispatch(setContacts(realm.objects('Contact').sorted('name')));
+      // store.dispatch(setContacts(realm.objects('Contact').sorted('name')));
     }
   });
 }
