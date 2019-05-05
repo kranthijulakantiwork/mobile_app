@@ -4,7 +4,7 @@ import { PermissionsAndroid } from 'react-native';
 import Contacts from 'react-native-contacts';
 import { realm, Contact } from 'app/models/schema';
 import { setContacts } from 'app/reducers/common/Actions';
-// import store from 'app/helpers/Store';
+import store from 'app/helpers/Store';
 
 function getMobileNumber(mobile) {
   if (mobile && mobile.number) {
@@ -63,7 +63,7 @@ function getContacts() {
         }
         return true;
       });
-      // store.dispatch(setContacts(realm.objects('Contact').sorted('name')));
+      store.dispatch(setContacts(realm.objects('Contact').sorted('name')));
     }
   });
 }

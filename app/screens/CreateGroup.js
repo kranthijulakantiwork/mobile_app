@@ -5,11 +5,12 @@ import {
   Dimensions,
   FlatList,
   Image,
-  ScrollView,
+  Switch,
   StyleSheet,
   TouchableOpacity,
   View
 } from 'react-native';
+import { addGroup } from 'app/api/Groups';
 import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
@@ -18,18 +19,13 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { navigateToScreen, replaceScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import Avatar from 'app/components/Avatar';
-import CalendarView from 'app/components/CalendarView';
-import Categories from 'app/components/Categories';
 import dismissKeyboard from 'dismissKeyboard';
 import EDText from 'app/components/EDText';
 import EDTextInput from 'app/components/EDTextInput';
-import GroupsList from 'app/components/GroupsList';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
-import PaidByOptions from 'app/components/PaidByOptions';
 import PropTypes from 'prop-types';
 import SelectFriends from 'app/screens/SelectFriends';
-import SplitByOptions from 'app/components/SplitByOptions';
 import ToolBar from 'app/components/ToolBar';
 
 const { height, width } = Dimensions.get('window');
@@ -76,7 +72,7 @@ const styles = StyleSheet.create({
   footerText: { marginLeft: 15, color: COLORS.TEXT_LIGHT_GRAY, fontSize: FONT_SIZES.H20 }
 });
 
-export default class CreateGroup extends Component {
+class CreateGroup extends Component {
   static propTypes = {
     navigation: PropTypes.object.isRequired
   };
@@ -87,10 +83,13 @@ export default class CreateGroup extends Component {
 
   constructor(props) {
     super(props);
+    // TODO Add current user to group automatically
     this.state = {
       group_name: '',
       friends: [],
-      showFriendsList: false
+      intelligentSettlements: false,
+      showFriendsList: false,
+      spinner: false
     };
   }
 
@@ -106,6 +105,7 @@ export default class CreateGroup extends Component {
   }
 
   onAddFriend() {
+    dismissKeyboard();
     this.setState({ showFriendsList: true });
   }
 
@@ -115,8 +115,17 @@ export default class CreateGroup extends Component {
   }
 
   onSubmit() {
-    // TODO API Integration.
-    // TODO Navigate to Group Bills screen
+    dismissKeyboard();
+    const { currentUser } = this.props;
+    const { group_name, friends, intelligentSettlements } = this.state;
+    if (!group_name) return null;
+    this.setState({ spinner: true });
+    addGroup(currentUser, group_name, friends, intelligentSettlements).then(response => {
+      if (reponse.success) {
+        // TODO Navigate to Group Bills screen
+      }
+      this.setState({ spinner: true });
+    });
   }
 
   renderFriendsList() {
@@ -184,6 +193,34 @@ export default class CreateGroup extends Component {
     );
   }
 
+  renderIntelligentSettlementToggle() {
+    const { intelligentSettlements } = this.state;
+    return (
+      <View
+        style={{
+          width: width - 40,
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          alignItems: 'center',
+          paddingVertical: 30
+        }}
+      >
+        <EDText style={{ color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H2 }}>
+          {I18n.t('intelligent_settlements')}
+        </EDText>
+        <Switch
+          onValueChange={value =>
+            this.setState({ intelligentSettlements: !intelligentSettlements })
+          }
+          thumbTintColor={COLORS.APP_THEME_GREEN}
+          onTintColor={COLORS.APP_THEME_GREEN}
+          tintColor={COLORS.BALANCE_RED}
+          value={intelligentSettlements}
+        />
+      </View>
+    );
+  }
+
   renderGroupName() {
     const { group_name } = this.state;
     return (
@@ -234,13 +271,34 @@ export default class CreateGroup extends Component {
           >
             <View style={styles.subContainer}>
               {this.renderGroupName()}
+              {this.renderIntelligentSettlementToggle()}
               {this.renderFriends()}
               {this.renderAddFriendButton()}
             </View>
           </KeyboardAwareScrollView>
         </View>
         {this.renderFriendsList()}
+        {spinner && <Spinner />}
       </View>
     );
   }
 }
+
+CreateGroup.propTypes = {
+  navigation: PropTypes.object
+};
+
+function mapStateToProps(state) {
+  return {
+    currentUser: state.currentUser
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({}, dispatch);
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CreateGroup);

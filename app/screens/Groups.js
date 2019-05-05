@@ -14,11 +14,13 @@ import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
+import { getGroups } from 'app/api/Groups';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import Balances from 'app/components/Balances';
 import EDText from 'app/components/EDText';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
+import PropTypes from 'prop-types';
 import StatusCard from 'app/components/StatusCard';
 
 const { height, width } = Dimensions.get('window');
@@ -52,7 +54,7 @@ const GROUPS_DETAILS = {
 };
 const amountToBeSettled = '300';
 
-export default class Groups extends Component {
+class Groups extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -77,6 +79,15 @@ export default class Groups extends Component {
       isOwed: false,
       spinner: false
     };
+  }
+
+  componentWillMount() {
+    const { currentUser } = this.props;
+    getGroups(currentUser).then(response => {
+      if (response.success) {
+        this.setState({ groups: response.data.friends });
+      }
+    });
   }
 
   onGroupSelection(groupDetails) {
@@ -147,3 +158,22 @@ export default class Groups extends Component {
     );
   }
 }
+
+Groups.propTypes = {
+  navigation: PropTypes.object
+};
+
+function mapStateToProps(state) {
+  return {
+    currentUser: state.currentUser
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({}, dispatch);
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Groups);

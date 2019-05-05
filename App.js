@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { StatusBar } from 'react-native';
+import store from 'app/helpers/Store';
 import { AppNavigation } from 'app/screens/Index';
 import { COLORS } from 'app/styles/Colors';
 import { Provider } from 'react-redux';
-import store from 'app/helpers/Store';
 
 export default class App extends React.Component {
   render() {

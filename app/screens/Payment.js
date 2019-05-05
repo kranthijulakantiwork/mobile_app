@@ -12,11 +12,12 @@ import EDButton from 'app/components/EDButton';
 import EDText from 'app/components/EDText';
 import EDTextInput from 'app/components/EDTextInput';
 import Images from 'app/config/Images';
+import PropTypes from 'prop-types';
 import RNUpiPayment from 'react-native-upi-payment';
 
 const { height, width } = Dimensions.get('window');
 
-export default class Payment extends Component {
+class Payment extends Component {
   static navigationOptions = {
     title: 'Payment'
     // headerLeft:
@@ -162,3 +163,22 @@ export default class Payment extends Component {
     );
   }
 }
+
+Payment.propTypes = {
+  navigation: PropTypes.object
+};
+
+function mapStateToProps(state) {
+  return {
+    currentUser: state.currentUser
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({}, dispatch);
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Payment);
