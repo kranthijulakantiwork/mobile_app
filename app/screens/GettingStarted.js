@@ -43,12 +43,13 @@ const styles = StyleSheet.create({
     height: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.APP_THEME_GREEN,
     borderRadius: 5.3,
-    shadowRadius: 6.7,
-    elevation: 1,
-    shadowColor: COLORS.APP_THEME_GREEN,
-    shadowOpacity: 0.8
+    shadowOpacity: 0.8,
+    shadowRadius: 7,
+    shadowOffset: { height: 5, width: 1 },
+    elevation: 6,
+    shadowColor: '#1da370',
+    backgroundColor: COLORS.APP_THEME_GREEN
   },
   billButtonText: {
     color: COLORS.WHITE,
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
     shadowOffset: { height: 1, width: 1 },
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 1,
+    elevation: 6,
     shadowOpacity: 0.8,
     shadowColor: '#e2e2e2'
   },
