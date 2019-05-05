@@ -75,6 +75,7 @@ const en = {
   search_friends: 'Search Friends',
   select_category: 'Select Category',
   select_friends: 'Select Friends',
+  select_your_language: 'Select Your Language',
   settle: 'Settle',
   settled_up: 'settled up',
   share_s: 'share(s)',

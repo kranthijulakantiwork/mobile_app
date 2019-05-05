@@ -12,9 +12,51 @@ const FONT_SIZES = {
   H6: 10,
   H7: 9
 };
+const LANGUAGES = [
+  {
+    name: 'English'
+  },
+  {
+    name: 'Hindi',
+    value: 'हिंदी'
+  },
+  {
+    name: 'Kannada',
+    value: 'ಕನ್ನಡ'
+  },
+  {
+    name: 'Gujrati',
+    value: 'ગુજરતી'
+  },
+  {
+    name: 'Punjabi',
+    value: 'ਪੰਜਾਬੀ'
+  },
+  {
+    name: 'Telugu',
+    value: 'తెలుగు'
+  },
+  {
+    name: 'Tamil',
+    value: 'தமிழ்'
+  },
+  {
+    name: 'Malayalam',
+    value: 'മലയാളം'
+  },
+  {
+    name: 'Marathi',
+    value: 'मराठी'
+  },
+  {
+    name: 'Bengali',
+    value: 'বাঙালি'
+  }
+];
 
 module.exports = {
   SERVER,
   SERVER_URL: `${SERVER}api/`,
-  FONT_SIZES
+  FONT_SIZES,
+  LANGUAGES
 };

@@ -23,14 +23,16 @@ import {
 } from 'react-navigation';
 import { COLORS } from 'app/styles/Colors';
 import { FONT_SIZES } from 'app/config/ENV';
+import AuthScreen from 'app/screens/AuthScreen';
 import BillDetails from 'app/screens/BillDetails';
 import CreateGroup from 'app/screens/CreateGroup';
 import DrawerScreen from 'app/screens/DrawerScreen';
 import EDText from 'app/components/EDText';
 import Friends from 'app/screens/Friends';
-import AuthScreen from 'app/screens/AuthScreen';
+import GettingStarted from 'app/screens/GettingStarted';
 import Groups from 'app/screens/Groups';
 import I18n from 'app/config/i18n';
+import LanguageSelection from 'app/screens/LanguageSelection';
 import NewBill from 'app/screens/NewBill';
 import Payment from 'app/screens/Payment';
 import SelectFriends from 'app/screens/SelectFriends';
@@ -40,7 +42,6 @@ import SettlementDetailView from 'app/screens/SettlementDetailView';
 import SignIn from 'app/screens/SignIn';
 import Splash from 'app/screens/Splash';
 import UpiLinking from 'app/screens/UpiLinking';
-import GettingStarted from 'app/screens/GettingStarted';
 
 const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -205,6 +206,7 @@ class CustomTabs extends React.Component<Props> {
 
 const AppNavigator = createStackNavigator(
   {
+    LanguageSelection: { screen: LanguageSelection },
     GettingStarted: { screen: GettingStarted },
     Settlement: { screen: Settlement },
     Settings: { screen: Settings },
