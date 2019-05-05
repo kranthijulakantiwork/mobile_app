@@ -19,7 +19,7 @@ export default class EDText extends Component {
     const { style, children, numberOfLines } = this.props;
     if (numberOfLines) {
       return (
-        <Text style={{ ...style }} numberOfLines={numberOfLines}>
+        <Text style={{ fontFamily: 'Roboto-Regular', ...style }} numberOfLines={numberOfLines}>
           {children}
         </Text>
       );

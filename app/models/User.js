@@ -1,6 +1,5 @@
 import { realm } from 'app/models/schema';
 
-
 function getCurrentUser() {
   const currentUser = realm.objects('User').filtered('access_token !=$0', null)[0];
   if (currentUser) {
