@@ -1,203 +1,160 @@
 import React, { Component } from 'react';
-import { Text, View, Button, StyleSheet, TextInput } from 'react-native';
+import { bindActionCreators } from 'redux';
+import { COLORS } from 'app/styles/Colors';
+import { connect } from 'react-redux';
+import { FONT_SIZES } from 'app/config/ENV';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import dismissKeyboard from 'dismissKeyboard';
+import EDText from 'app/components/EDText';
+import EDTextInput from 'app/components/EDTextInput';
+import I18n from 'app/config/i18n';
+import Images from 'app/config/Images';
+import { Dimensions, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 
-export default class Settings extends Component {
+
+const { height, width } = Dimensions.get('window');
+const styles = StyleSheet.create({
+  container: { flex: 1, color: COLORS.WHITE },
+  scrollViewContainer: { flex: 1, marginHorizontal: 50 },
+  imageContainer: {
+    height: height / 3.5,
+    justifyContent: 'flex-end'
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: height / 7,
+    justifyContent: 'center'
+  },
+  title: { color: '#979797', fontSize: FONT_SIZES.H2 },
+  textInputOuterContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  textInputInnerContainer: {
+    // flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderColor: COLORS.TEXT_BLACK,
+    marginLeft: 20
+  },
+  linkButton: {
+    marginHorizontal: 10,
+    height: 45,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.APP_THEME_GREEN,
+    borderRadius: 5,
+    elevation: 3,
+    shadowOffset: { height: 2, width: 2 },
+    shadowOpacity: 0.8,
+    shadowColor: COLORS.APP_THEME_GREEN
+  },
+  linkButtonText: { color: COLORS.WHITE, fontSize: FONT_SIZES.H1 },
+  linkingDescription: { color: '#979797', fontSize: FONT_SIZES.H4, paddingVertical: 15 },
+  skipButton: {
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  skipButtonText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H2 }
+});
+
+class Settings extends Component {
   static navigationOptions = {
-    header: null
+    // header: null
   };
 
-  render() {
-    return (
-      <View>
-        <View
-          style={{
-            flexDirection: 'row',
-            backgroundColor: 'grey',
-            justifyContent: 'space-between',
-            alignItems: 'stretch',
-            border: '3px solid black'
-          }}
-        >
-          <Button
-            title="back"
-            color="grey"
-            style={[styles.button, { width: 200, marginLeft: 0 }]}
-          />
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: '',
+      phone: '',
+      upi_address: '',
+      email: ''
+    }
+  }
 
-          <Button container title="settings" color="grey" />
-          <Button title="save" color="grey" />
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-start'
-          }}
-        >
-          <View
-            style={{
-              flexDirection: 'column',
-              justifyContent: 'center'
-            }}
-          >
-            <Entypo
-              name="camera"
-              size={50}
-              style={{
-                marginTop: 50,
-                marginLeft: 20,
-                borderColor: 'black',
-                alignContent: 'center',
-                flexWrap: 'wrap',
-                borderRadius: 30,
-                width: 60,
-                height: 57,
-                margin: 6,
-                borderWidth: 2
+  onChangeText(stateKey, text) {
+    this.setState({ [stateKey]: text });
+  }
+
+  onEdit() {
+    alert('edit')
+  }
+  renderEditableFiled(stateKey, icon, keyboardType = 'default') {
+    return (
+      <View style={styles.textInputOuterContainer}>
+        <Image source={Images[icon]} style={{ marginTop: '5%' }} />
+        <View style={styles.textInputInnerContainer}>
+          <View style={{ flexDirection: 'row' }}>
+            <EDTextInput
+              placeholder={I18n.t(stateKey)}
+              textInputStyle={{
+                width: width - 160,
+                borderBottomWidth: 0,
+                marginBottom: 5,
+                height: 30
               }}
+              containerStyle={{
+                marginHorizontal: 0,
+                padding: 0,
+                marginVertical: 0
+              }}
+              title={I18n.t(stateKey)}
+              value={this.state[stateKey]}
+              keyboardType={keyboardType}
+              onChangeText={text => this.onChangeText(stateKey, text)}
             />
-            <Text style={{ marginTop: 60, marginLeft: 20 }}>UPI</Text>
-            <Text style={{ marginTop: 30, marginLeft: 20 }}>Email id</Text>
+            {/* <Image source={Images.pencil}/>   */}
           </View>
-          <View
-            style={{
-              flexDirection: 'column'
-            }}
-          >
-            <TextInput
-              style={{
-                height: 40,
-                width: 200,
-                borderColor: 'white',
-                borderBottomColor: 'black',
-                color: 'white',
-                marginLeft: 10,
-                marginTop: 40
-              }}
-              placeholder="Name"
-            />
-            <TextInput
-              style={{
-                height: 40,
-                width: 200,
-                borderColor: 'white',
-                borderBottomColor: 'black',
-                marginLeft: 10
-              }}
-              placeholder="Number"
-            />
-            <TextInput
-              style={{
-                height: 40,
-                width: 200,
-                borderColor: 'white',
-                borderBottomColor: 'black',
-                marginTop: 30,
-                marginLeft: 10
-              }}
-              placeholder="UPI Address"
-            />
-            <TextInput
-              style={{
-                height: 40,
-                width: 200,
-                borderColor: 'white',
-                borderBottomColor: 'black',
-                marginTop: 10,
-                marginLeft: 10
-              }}
-              placeholder="Optional"
-            />
-          </View>
-          <View
-            style={{
-              flexDirection: 'column'
-            }}
-          >
-            <Text
-              style={{
-                color: 'blue',
-                marginTop: 165,
-                marginLeft: 10,
-                textDecorationLine: 'underline'
-              }}
-            >
-              Change
-            </Text>
-          </View>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row'
-          }}
-        >
-          <Text
-            style={{
-              marginTop: 70,
-              marginLeft: 125,
-              fontWeight: 'bold',
-              fontSize: 50,
-              borderColor: 'black',
-              borderLeftWidth: 5,
-              borderTopWidth: 3,
-              borderRightWidth: 5,
-              borderBottomWidth: 3,
-              borderStyle: 'solid'
-            }}
-          >
-            {'\u20B9'}
-          </Text>
-          <Text
-            style={{
-              marginTop: 70,
-              marginLeft: 120,
-              fontWeight: 'bold',
-              fontSize: 50,
-              borderColor: 'black',
-              borderLeftWidth: 5,
-              borderTopWidth: 3,
-              borderRightWidth: 5,
-              borderBottomWidth: 3,
-              borderStyle: 'solid'
-            }}
-          >
-            E
-          </Text>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row'
-          }}
-        >
-          <Text style={{ marginTop: 0, marginLeft: 115, fontWeight: 'bold', fontSize: 15 }}>
-            Currency
-          </Text>
-          <Text style={{ marginTop: 0, marginLeft: 90, fontWeight: 'bold', fontSize: 15 }}>
-            Language
-          </Text>
-        </View>
-        <View style={{ height: 100, width: 100, marginTop: 60, marginLeft: 170 }}>
-          <Button title="Save" color="grey" size={30} />
-        </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text
-            style={{ color: 'blue', fontSize: 20, textDecorationLine: 'underline', marginTop: 20 }}
-          >
-            Delete Account
-          </Text>
-          <Text
-            style={{ color: 'blue', fontSize: 20, textDecorationLine: 'underline', marginTop: 20 }}
-          >
-            Logout
-          </Text>
         </View>
       </View>
     );
   }
+
+  render() {
+    return (
+      <KeyboardAwareScrollView style={{ flex: 1 }}>
+        <View style={{ flex: 1, margin: 30, flexDirection: 'row', justifyContent: "space-around" }}>
+          <EDText>
+            {'Logout'}
+          </EDText>
+          <EDText>
+            {'Contact us'}
+          </EDText>
+        </View>
+        <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1, paddingBottom: '20%' }}>
+          {this.renderEditableFiled('name', 'name')}
+          {this.renderEditableFiled('phone', 'phone', 'phone-pad')}
+          {this.renderEditableFiled('upi_address', 'wallet_43')}
+          {this.renderEditableFiled('email', 'email', 'email-address')}
+        </View>
+        <View style={{
+          backgroundColor: 'white', borderRadius: 5, shadowColor: '#000', justifyContent: 'center',
+          shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 2, elevation: 5,
+          alignItems: 'center', width: '25%', height: '20%'
+        }}>
+          <TouchableOpacity style={{ justifyContent: "center", alignSelf: 'center' }}>
+            <Image source={Images.translate} style={{ alignItems: 'center' }} />
+            <EDText>{I18n.t('language')}</EDText>
+          </TouchableOpacity>
+
+        </View>
+      </KeyboardAwareScrollView>
+
+
+    );
+  }
 }
 
-var styles = StyleSheet.create({
-  button: {
-    color: 'black'
-  }
-});
+function mapStateToProps(state) {
+  return {
+    currentUser: state.currentUser
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({}, dispatch);
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Settings);

@@ -36,7 +36,7 @@ import LanguageSelection from 'app/screens/LanguageSelection';
 import NewBill from 'app/screens/NewBill';
 import Payment from 'app/screens/Payment';
 import SelectFriends from 'app/screens/SelectFriends';
-// import Settings from 'app/screens/Settings';
+import Settings from 'app/screens/Settings';
 import Settlement from 'app/screens/Settlement';
 import SettlementDetailView from 'app/screens/SettlementDetailView';
 import SignIn from 'app/screens/SignIn';
@@ -206,6 +206,7 @@ class CustomTabs extends React.Component<Props> {
 
 const AppNavigator = createStackNavigator(
   {
+    Settings: { screen: Settings },
     LanguageSelection: { screen: LanguageSelection },
     GettingStarted: { screen: GettingStarted },
     Settlement: { screen: Settlement },
@@ -220,7 +221,7 @@ const AppNavigator = createStackNavigator(
     DrawerNavigator: { screen: DrawerNavigator },
     SignIn: { screen: SignIn },
     SettlementDetails: { screen: SettlementDetailView }
-    // Settings: { screen: Settings }
+    
   },
   navigationOptions
 );
