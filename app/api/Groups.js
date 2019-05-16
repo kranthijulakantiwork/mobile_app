@@ -6,7 +6,7 @@ module.exports = {
   addGroup: async (currentUser, groupName, friends, intelligentSettlements) => {
     const params = {
       user_id: currentUser.server_id,
-      auth_key: currentUser.access_token,
+      auth_key: currentUser.auth_key,
       'Group Name': groupName,
       'Phone Numbers': friends.map(friend => friend.mobile),
       'Intelligent Settlements': intelligentSettlements
@@ -22,7 +22,7 @@ module.exports = {
   getGroups: async currentUser => {
     const params = {
       user_id: currentUser.server_id,
-      auth_key: currentUser.access_token
+      auth_key: currentUser.auth_key
     };
     const apiParams = {
       name: 'get_groups',

@@ -15,6 +15,7 @@ import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
 import { getGroups } from 'app/api/Groups';
+import { navigateToScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import Balances from 'app/components/Balances';
 import EDText from 'app/components/EDText';
@@ -95,16 +96,13 @@ class Groups extends Component {
   }
 
   onCreateGroup() {
-    alert('TODO');
-  }
-
-  onAddBill() {
-    alert('TODO');
+    const { dispatch } = this.props.navigation;
+    return navigateToScreen({ routeName: 'CreateGroup', dispatch });
   }
 
   renderFooter() {
     return (
-      <TouchableOpacity onPress={this.onCreateGroup}>
+      <TouchableOpacity onPress={() => this.onCreateGroup()}>
         <View style={styles.footerContainer}>
           <EDText style={styles.footerText}>{I18n.t('create_group')}</EDText>
         </View>

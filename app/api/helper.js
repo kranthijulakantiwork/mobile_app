@@ -12,11 +12,11 @@ module.exports = {
 
     switch (apiParams.name) {
       case 'get_friends':
-        return 'listFriends?' + getAuthString(apiParams);
+        return 'listFriends';
       case 'get_groups':
-        return 'listGroups?' + getAuthString(apiParams);
+        return 'listGroups';
       case 'get_bills':
-        return 'listBills?' + getAuthString(apiParams);
+        return 'listBills';
       case 'add_bill':
         return 'addBill';
       case 'add_group':

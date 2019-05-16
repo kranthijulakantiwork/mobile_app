@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import { Dimensions, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { addBill } from 'app/api/Bills';
 import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
@@ -90,15 +91,18 @@ class NewBill extends Component {
       showPaidByOptions: false,
       showCalendar: false,
       showSplitByOptions: false,
-      showFriendsList: false
+      showFriendsList: false,
+      spinner: false
     };
   }
 
   getState() {
+    const { currentUser } = this.props;
     const { state, getParam } = this.props.navigation;
     const { params = {} } = state;
-    const friendsList = getParam('friends') || [];
+    const friendsList = getParam('friends') || [{ ...currentUser, name: 'You  ' }];
     const {
+      id,
       bill_name = '',
       amount = '',
       group = null,
@@ -112,6 +116,7 @@ class NewBill extends Component {
       friendsSplitAmount = { shares: {}, percentages: {}, unequally: {}, adjustment: {} }
     } = params;
     return {
+      id,
       bill_name,
       amount,
       group,
@@ -122,13 +127,25 @@ class NewBill extends Component {
       splitType,
       splitByFriends,
       allocatedSplitAmount,
-      friendsSplitAmount
+      friendsSplitAmount,
+      friendsMobileNumbers: friends.map(friend => friend.mobile)
     };
   }
 
   onAddFriend(friend) {
-    const { friends } = this.state;
-    this.setState({ showFriendsList: false, friends: [...friends, friend] });
+    const { friends, friendsMobileNumbers, splitByFriends } = this.state;
+    const { currentUser } = this.props;
+    if (friendsMobileNumbers.includes(friend.mobile)) {
+      return this.setState({
+        showFriendsList: false
+      });
+    }
+    this.setState({
+      showFriendsList: false,
+      friends: [...friends, friend],
+      friendsMobileNumbers: [...friendsMobileNumbers, friend.mobile],
+      splitByFriends: [...splitByFriends, friend.mobile]
+    });
   }
 
   unSelectFriend(index) {
@@ -188,6 +205,7 @@ class NewBill extends Component {
   onSubmit() {
     dismissKeyboard();
     const {
+      id,
       bill_name,
       amount,
       group,
@@ -200,33 +218,47 @@ class NewBill extends Component {
       allocatedSplitAmount,
       friendsSplitAmount
     } = this.state;
-    if (!bill_name) alert(I18n.t('please_enter_description'));
-    if (!amount) alert(I18n.t('please_enter_amount'));
+    if (!bill_name) return alert(I18n.t('please_enter_description'));
+    if (!amount) return alert(I18n.t('please_enter_amount'));
     // TODO if paidBy is empty change it to the user himself
     //  Add added_by
     // Need to replace screen instead of navigating.
     //  TODO remove current user here
-    const current_user = { id: 1, mobile: '9866070833' };
-    const paidByFinal =
-      paidBy && Object.keys(paidBy).length ? paidBy : { [current_user.mobile]: amount };
-    const { state, dispatch } = this.props.navigation;
-    replaceScreen({
-      routeName: 'BillDetails',
-      currentScreenKey: state.key,
-      params: {
-        bill_name,
-        amount,
-        group,
-        paidBy,
-        friends,
-        added_on,
-        category,
-        splitType,
-        splitByFriends,
-        allocatedSplitAmount,
-        friendsSplitAmount
-      },
-      dispatch
+    const { currentUser } = this.props;
+    let paidByFinal = paidBy;
+    if (paidBy && Object.keys(paidBy)) {
+      if (Object.keys(paidBy).length === 0) {
+        paidByFinal = { [currentUser.mobile]: amount };
+      } else if (Object.keys(paidBy).length === 1) {
+        paidByFinal = { [Object.keys(paidBy)[0]]: amount };
+      }
+    }
+    const billDetails = {
+      billName: bill_name,
+      amount,
+      group,
+      paidBy: paidByFinal,
+      friends: friends.map(friend => friend.mobile),
+      addedOn: new Date(added_on).getTime(),
+      category,
+      splitType,
+      splitByFriends,
+      allocatedSplitAmount,
+      friendsSplitAmount
+    };
+    // TODO bill id then update
+    setSpinner(this);
+    addBill(currentUser, billDetails).then(response => {
+      if (response.success) {
+        const { state, dispatch } = this.props.navigation;
+        return replaceScreen({
+          routeName: 'BillDetails',
+          currentScreenKey: state.key,
+          params: { bill_id: response.data.bill_id, ...billDetails, bill_name, added_on, friends },
+          dispatch
+        });
+      }
+      removeSpinner(this);
     });
   }
 
@@ -513,6 +545,7 @@ class NewBill extends Component {
 
   renderFriendAvatar(friend, index) {
     const { splitByFriends, friendsSplitAmount, splitType, paidBy } = this.state;
+    const { currentUser } = this.props;
     const mobileNumber = friend.mobile;
     let showClose = true;
     if (splitType === 'equally' && splitByFriends.includes(mobileNumber)) {
@@ -521,6 +554,8 @@ class NewBill extends Component {
       showClose = false;
     } else if (paidBy[mobileNumber]) {
       showClose = false;
+    } else if (friend['mobile'] === currentUser.mobile) {
+      showClose = false;
     }
     return (
       <Avatar
@@ -528,7 +563,11 @@ class NewBill extends Component {
         showClose={showClose}
         disabled={!showClose}
         avatarSubText={friend['name']}
-        avatarSubTextStyle={{ width: 50, color: COLORS.TEXT_BLACK }}
+        avatarSubTextStyle={{
+          width: 50,
+          color: COLORS.TEXT_BLACK,
+          textAlign: 'center'
+        }}
         onPress={() => this.unSelectFriend(index)}
         buttonStyle={styles.selectFriendAvatarContainer}
         key={index}
@@ -597,6 +636,7 @@ class NewBill extends Component {
         {this.renderSplitByOptions()}
         {this.renderCalender()}
         {this.renderFriendsList()}
+        {spinner && <Spinner />}
       </View>
     );
   }
