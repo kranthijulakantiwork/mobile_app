@@ -127,7 +127,7 @@ class Settings extends Component {
     })
   }
 
-  renderEditableFiled(stateKey, icon, editable= true, keyboardType = 'default') {
+  renderEditableFiled(stateKey, icon, editable, keyboardType = 'default') {
     return (
       <View style={styles.textInputOuterContainer}>
         <Image source={Images[icon]} style={{ marginTop: '5%' }} />
@@ -165,9 +165,9 @@ class Settings extends Component {
       <KeyboardAwareScrollView style={{ flex: 1}}>
         <ToolBar title={I18n.t('settings')} leftImage="back" onLeft={() => goBack()}  rightImage="tick" onRight={() => this.onSave()}/>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20,  height: height/2, maxHeight: height/2}}>
-          {this.renderEditableFiled('name', 'name')}
+          {this.renderEditableFiled('name', 'name', true)}
           {this.renderEditableFiled('phone', 'phone', false,'phone-pad')}
-          {this.renderEditableFiled('upi_address', 'wallet_43')}
+          {this.renderEditableFiled('upi_address', 'wallet_43', true)}
           {this.renderEditableFiled('email', 'email', true,'email-address')}
         </View>
         <View style={{  height: height/2 - 100, justifyContent: 'flex-end', padding: 15 , alignItems: 'center'}}>
