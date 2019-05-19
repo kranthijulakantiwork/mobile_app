@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import { Dimensions, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { addBill } from 'app/api/Bills';
+import { addBill, updateBill } from 'app/api/Bills';
 import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
@@ -246,19 +246,42 @@ class NewBill extends Component {
       allocatedSplitAmount,
       friendsSplitAmount
     };
-    // TODO bill id then update
+    let params = {
+      ...billDetails,
+      bill_name,
+      added_on,
+      friends
+    };
     setSpinner(this);
-    addBill(currentUser, billDetails).then(response => {
-      if (response.success) {
-        const { state, dispatch } = this.props.navigation;
-        return replaceScreen({
-          routeName: 'BillDetails',
-          currentScreenKey: state.key,
-          params: { bill_id: response.data.bill_id, ...billDetails, bill_name, added_on, friends },
-          dispatch
-        });
-      }
-      removeSpinner(this);
+    const groupData = group ? { group: group.id } : {};
+    if (id) {
+      updateBill(currentUser, { ...billDetails, id, ...groupData }).then(response => {
+        if (response.success) {
+          params = { ...params, id: response.data.id };
+          const { goBack } = this.props.navigation;
+          goBack();
+          this.navigateToBillDetails(params);
+        }
+        removeSpinner(this);
+      });
+    } else {
+      addBill(currentUser, billDetails, ...groupData).then(response => {
+        if (response.success) {
+          params = { ...params, id: response.data.id };
+          this.navigateToBillDetails(params);
+        }
+        removeSpinner(this);
+      });
+    }
+  }
+
+  navigateToBillDetails(params) {
+    const { state, dispatch } = this.props.navigation;
+    return replaceScreen({
+      routeName: 'BillDetails',
+      currentScreenKey: state.key,
+      params,
+      dispatch
     });
   }
 
@@ -330,7 +353,8 @@ class NewBill extends Component {
   }
 
   renderGroups() {
-    const { groups, showGroups } = this.state;
+    const { showGroups } = this.state;
+    const { groups } = this.props;
     if (!showGroups) return null;
     return (
       <GroupsList
@@ -648,7 +672,8 @@ NewBill.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    currentUser: state.currentUser
+    currentUser: state.currentUser,
+    groups: state.groups
   };
 }
 

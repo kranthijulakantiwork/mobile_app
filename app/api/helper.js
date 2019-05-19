@@ -12,15 +12,17 @@ module.exports = {
 
     switch (apiParams.name) {
       case 'get_friends':
-        return 'listFriends';
+        return 'friends';
       case 'get_groups':
-        return 'listGroups';
-      case 'get_bills':
-        return 'listBills';
-      case 'add_bill':
-        return 'addBill';
+        return 'groups';
+      case 'bill':
+        return 'bill';
+      case 'bills_friends':
+        return 'bills/friends';
+      case 'bills_groups':
+        return 'bills/groups';
       case 'add_group':
-        return 'addGroup';
+        return 'groups';
       case 'login':
         return 'login';
       case 'send_otp':

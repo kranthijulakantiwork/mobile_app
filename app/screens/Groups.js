@@ -17,6 +17,7 @@ import { FONT_SIZES } from 'app/config/ENV';
 import { getGroups } from 'app/api/Groups';
 import { navigateToScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
+import { setGroups } from 'app/reducers/groups/Actions';
 import Balances from 'app/components/Balances';
 import EDText from 'app/components/EDText';
 import I18n from 'app/config/i18n';
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
 const GROUPS_DETAILS = {
   name: 'KranthiKranthiKranthiKranthiKranthiKranthiKranthi',
   owed: true,
-  details: [
+  friends: [
     { name: 'Ram', amount: '20', owed: true },
     { name: 'Ravi', amount: 100, owed: false },
     { name: 'Ravi', amount: 100, owed: true }
@@ -59,23 +60,7 @@ class Groups extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      groups: [
-        GROUPS_DETAILS,
-        GROUPS_DETAILS,
-        GROUPS_DETAILS,
-        GROUPS_DETAILS,
-        GROUPS_DETAILS,
-        GROUPS_DETAILS,
-        GROUPS_DETAILS,
-        GROUPS_DETAILS,
-        GROUPS_DETAILS,
-        GROUPS_DETAILS,
-        GROUPS_DETAILS,
-        GROUPS_DETAILS,
-        GROUPS_DETAILS,
-        GROUPS_DETAILS,
-        GROUPS_DETAILS
-      ],
+      groups: [],
       amountToBeSettled,
       isOwed: false,
       spinner: false
@@ -83,10 +68,16 @@ class Groups extends Component {
   }
 
   componentWillMount() {
-    const { currentUser } = this.props;
+    const { currentUser, setGroups } = this.props;
     getGroups(currentUser).then(response => {
       if (response.success) {
-        this.setState({ groups: response.data.friends });
+        const groups = response.data.groups;
+        const groupsList = [];
+        groups.forEach(group => {
+          groupsList.push({ name: group.name, id: group.id });
+        });
+        setGroups(groupsList);
+        this.setState({ groups });
       }
     });
   }
@@ -111,14 +102,13 @@ class Groups extends Component {
   }
 
   renderSingleGroup(groupDetails) {
-    const { name, balance, details, owed, mobile } = groupDetails;
+    const { name, balance, friends, mobile } = groupDetails;
     return (
       <StatusCard
         onPress={() => this.onGroupSelection(groupDetails)}
         name={name}
-        details={details}
-        balance={balance}
-        owed={owed}
+        details={friends}
+        balance={balance || 0}
         mobile={mobile}
         balanceType={'groups'}
       />
@@ -137,6 +127,7 @@ class Groups extends Component {
   }
 
   renderHeader() {
+    // TODO
     const { amountToBeSettled, isOwed } = this.state;
     return <Balances to_pay={'15.00'} to_get={'344.00'} balance={'329.00'} />;
   }
@@ -168,7 +159,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({}, dispatch);
+  return bindActionCreators({ setGroups }, dispatch);
 }
 
 export default connect(

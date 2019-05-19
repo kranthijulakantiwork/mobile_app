@@ -3,12 +3,26 @@
 import Http from 'app/api/HTTP';
 
 module.exports = {
-  getBills: async currentUser => {
+  getFriendsBills: async (currentUser, id) => {
     const params = {
-      auth_key: currentUser.auth_key
+      auth_key: currentUser.auth_key,
+      id
     };
     const apiParams = {
-      name: 'get_bills',
+      name: 'bills_friends',
+      data: params
+    };
+    const response = await Http.get(apiParams);
+    return response;
+  },
+
+  getGroupsBills: async (currentUser, id) => {
+    const params = {
+      auth_key: currentUser.auth_key,
+      id
+    };
+    const apiParams = {
+      name: 'bill_groups',
       data: params
     };
     const response = await Http.get(apiParams);
@@ -21,7 +35,20 @@ module.exports = {
       ...billDetails
     };
     const apiParams = {
-      name: 'add_bill',
+      name: 'bill',
+      data: params
+    };
+    const response = await Http.put(apiParams);
+    return response;
+  },
+
+  updateBill: async (currentUser, billDetails) => {
+    const params = {
+      auth_key: currentUser.auth_key,
+      ...billDetails
+    };
+    const apiParams = {
+      name: 'bill',
       data: params
     };
     const response = await Http.post(apiParams);
