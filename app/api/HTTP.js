@@ -45,7 +45,8 @@ function getRequestHeader(requestParams: apiParams) {
     method: type,
     headers: {
       Accept: 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      auth_key: data.auth_key
     },
     body: JSON.stringify(data),
     auth_key: data.auth_key
