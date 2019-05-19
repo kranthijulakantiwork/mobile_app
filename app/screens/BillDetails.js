@@ -16,6 +16,7 @@ import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { navigateToScreen } from 'app/helpers/NavigationHelper';
+import { realm } from 'app/models/schema';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import dismissKeyboard from 'dismissKeyboard';
 import EDText from 'app/components/EDText';
@@ -57,7 +58,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 3,
     backgroundColor: '#f6f6f6',
-    borderRadius: 8
+    borderRadius: 8,
+    marginBottom: 10
   },
   deleteButton: {
     alignSelf: 'center',
@@ -187,7 +189,11 @@ class BillDetails extends Component {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => {
             const friend = friends.filter(friend => friend.mobile == item)[0];
-            const name = friend ? friend.name : '';
+            let name = friend ? friend.name : '';
+            if (!name) {
+              const friendObject = realm.objects('User').filtered('mobile=$0', friend.mobile)[0];
+              name = friendObject ? friendObject.name : friend.name;
+            }
             return (
               <EDText style={{ fontSize: FONT_SIZES.H2, color }}>{`${name} ₹${
                 summary[item]

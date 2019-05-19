@@ -139,7 +139,7 @@ class SelectFriends extends Component {
       <FlatList
         data={friendsList}
         showsHorizontalScrollIndicator={false}
-        initialNumToRender={50}
+        initialNumToRender={30}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item, index }) => this.renderSingleFriend(item, index)}
       />

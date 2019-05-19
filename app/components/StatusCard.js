@@ -54,7 +54,7 @@ export default class StatusCard extends Component {
     onPress: PropTypes.func.isRequired,
     name: PropTypes.string.isRequired,
     details: PropTypes.array,
-    balance: PropTypes.string,
+    balance: PropTypes.number,
     balanceType: PropTypes.string,
     mobile: PropTypes.string
   };
@@ -156,12 +156,12 @@ export default class StatusCard extends Component {
   }
 
   renderName() {
-    const { name, balanceType } = this.props;
+    const { name, balanceType, mobile } = this.props;
     const containerStyle = balanceType === 'groups' ? {} : { paddingTop: 9 };
     return (
       <View style={{ ...styles.nameContainer, ...containerStyle }}>
         <EDText style={styles.name} numberOfLines={1}>
-          {name}
+          {name || mobile}
         </EDText>
         {this.renderDetails()}
       </View>
@@ -169,13 +169,13 @@ export default class StatusCard extends Component {
   }
 
   renderAvatar() {
-    const { name, balanceType } = this.props;
+    const { name, balanceType, mobile } = this.props;
     // TODO get last edited date as Apr 4
     const lastEdited =
       balanceType === 'groups'
         ? I18n.t('edited') + ' ' + 'Apr 4'
         : I18n.t('updated') + ' ' + 'Apr 4';
-    return <Avatar name={name} avatarSubText={lastEdited} />;
+    return <Avatar name={name || mobile} avatarSubText={lastEdited} />;
   }
 
   render() {

@@ -5,8 +5,7 @@ import Http from 'app/api/HTTP';
 module.exports = {
   getFriends: async currentUser => {
     const params = {
-      user_id: currentUser.server_id,
-      auth_key: currentUser.access_token
+      auth_key: currentUser.auth_key
     };
     const apiParams = {
       name: 'get_friends',

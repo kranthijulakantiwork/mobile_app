@@ -241,6 +241,9 @@ class CustomTabs extends Component<Props> {
     const { routes, index } = navigation.state;
     const activeRoute = routes[index];
     if (['Tracker', 'Alerts'].includes(activeRoute.routeName)) return alert(I18n.t('coming_soon'));
+    if (['Groups'].includes(activeRoute.routeName)) {
+      return navigation.navigate('CreateGroup');
+    }
     navigation.navigate('NewBill');
   }
 
@@ -267,6 +270,7 @@ class CustomTabs extends Component<Props> {
 
 const AppNavigator = createStackNavigator(
   {
+    Splash: { screen: Splash },
     Settings: { screen: Settings },
     AuthScreen: { screen: AuthScreen },
     Tabs: { screen: CustomTabs },
