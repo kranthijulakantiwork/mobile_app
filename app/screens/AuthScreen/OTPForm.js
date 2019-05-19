@@ -33,15 +33,15 @@ export default class SignupForm extends Component {
   }
 
   requesOtp() {
-    // sendOtp(this.formRef.state.phone)
-    // .then((response) => {
-    //   this.setState({wait_time: 30, time_for_otp: 30, otp_recieved_time: Math.floor(Date.now() / 1000)}, () =>{
-    //     this.interval = setInterval(this.otp_resend_timer.bind(this), 1000)
-    //   })
-    // })
-    // .catch((error) => {
+    sendOtp(this.props.phone)
+    .then((response) => {
+      this.setState({wait_time: 30, time_for_otp: 30, otp_recieved_time: Math.floor(Date.now() / 1000)}, () =>{
+        this.interval = setInterval(this.otp_resend_timer.bind(this), 1000)
+      })
+    })
+    .catch((error) => {
 
-    // })
+    })
   }
   otp_resend_timer() {
     var seconds = this.state.wait_time -1;

@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import { KeyboardAvoidingView, BackHandler, LayoutAnimation, Platform,  DeviceEventEmitter , StyleSheet, UIManager } from 'react-native'
 import { Image, View } from 'react-native-animatable'
-
+import { bindActionCreators } from 'redux';
 import imgLogo from '../../assets/logo.png'
 import metrics from '../../config/metrics'
 import { login } from 'app/api/User';
@@ -89,19 +89,25 @@ class AuthScreen extends Component {
 
   signup() {
     //TODO update or create user as per api response
-    // login(this.phone, this.formRefOtp.state.otp)
-    // .then((response) => {
-    //   let current_user = realm.objects('User').filtered('user_id=$0', response.current_user.id.toString())[0];
-    //   if (current_user) {
-    //     current_user.update(response.current_user);
-    //   } else {
-    //     current_user = User.create(response.current_user);
-    //   }
-        // this.props.dispatch(current_user)
-    // })
-    // .cactch((err) => {
+    login(this.phone, this.formRefOtp.state.otp)
+    .then((response) => {
+      console.log('dhasd', response)
+      response.data.mobile = response.data.phone;
+      let current_user = realm.objects('User').filtered('auth_key=$0', response.data.auth_key.toString())[0];
+      if (current_user) {
+        current_user.update(response.data);
+      } else {
+        current_user = User.create(response.data);
+      }
+        this.props.setUser(current_user)
+        let routeName = response.data.signup ? 'UpiLinking' : 'Tabs'
+        this.props.navigation.navigate({
+          routeName: routeName
+        })
+    })
+    .catch((err) => {
 
-    // })
+    })
   }
 
   componentWillUnmount = () => {
@@ -119,9 +125,9 @@ class AuthScreen extends Component {
 
   componentWillUpdate (nextProps) {
     // If the user has logged/signed up succesfully start the hide animation
-    if (!this.props.isLoggedIn && nextProps.isLoggedIn) {
-      this._hideAuthScreen()
-    }
+    // if (!this.props.isLoggedIn && nextProps.isLoggedIn) {
+    //   this._hideAuthScreen()
+    // }
   }
 
   _hideAuthScreen = async () => {
@@ -195,6 +201,7 @@ class AuthScreen extends Component {
               onLoginLinkPress={() => this._setVisibleForm('LOGIN')}
               onOTPPress={() => this.signup()}
               processType={processType}
+              phone={this.phone}
               isLoading={isLoading}
             />
           )}

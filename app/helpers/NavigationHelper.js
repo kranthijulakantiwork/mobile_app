@@ -267,12 +267,12 @@ class CustomTabs extends Component<Props> {
 
 const AppNavigator = createStackNavigator(
   {
+    AuthScreen: { screen: AuthScreen },
     Tabs: { screen: CustomTabs },
     LanguageSelection: { screen: LanguageSelection },
     GettingStarted: { screen: GettingStarted },
     Settlement: { screen: Settlement },
     UpiLinking: { screen: UpiLinking },
-    AuthScreen: { screen: AuthScreen },
     CreateGroup: { screen: CreateGroup },
     NewBill: { screen: NewBill },
     BillDetails: { screen: BillDetails },
