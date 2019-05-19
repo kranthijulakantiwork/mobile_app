@@ -84,9 +84,11 @@ class CreateGroup extends Component {
   constructor(props) {
     super(props);
     // TODO Add current user to group automatically
+    const { currentUser } = this.props;
     this.state = {
       group_name: '',
-      friends: [],
+      friends: [{ name: currentUser.name, mobile: currentUser.mobile }],
+      friendsMobileNumber: [currentUser.mobile],
       intelligentSettlements: false,
       showFriendsList: false,
       spinner: false
@@ -110,8 +112,13 @@ class CreateGroup extends Component {
   }
 
   onFriendAdded(friend) {
-    const { friends } = this.state;
-    this.setState({ showFriendsList: false, friends: [...friends, friend] });
+    const { friends, friendsMobileNumber } = this.state;
+    if (friendsMobileNumber.includes(friend.mobile)) return null;
+    this.setState({
+      showFriendsList: false,
+      friends: [...friends, friend],
+      friendsMobileNumber: [...friendsMobileNumber, friend.mobile]
+    });
   }
 
   onSubmit() {
@@ -121,10 +128,10 @@ class CreateGroup extends Component {
     if (!group_name) return null;
     this.setState({ spinner: true });
     addGroup(currentUser, group_name, friends, intelligentSettlements).then(response => {
-      if (reponse.success) {
+      if (response.success) {
         // TODO Navigate to Group Bills screen
       }
-      this.setState({ spinner: true });
+      this.setState({ spinner: false });
     });
   }
 
@@ -153,8 +160,10 @@ class CreateGroup extends Component {
   }
 
   renderSingleFriend(friend, index) {
+    const { currentUser } = this.props;
+    const disabled = friend.mobile === currentUser.mobile;
     return (
-      <TouchableOpacity onPress={() => this.onRemoveFriend(index)}>
+      <TouchableOpacity onPress={() => this.onRemoveFriend(index)} disabled={disabled}>
         <View style={styles.singleFriendContainer}>
           <View
             style={{
@@ -167,16 +176,26 @@ class CreateGroup extends Component {
               disabled={true}
               buttonStyle={styles.selectFriendAvatarContainer}
             />
-            <EDText
-              style={{ color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H1, marginLeft: 5 }}
-              numberOfLines={1}
-            >
-              {friend['name']}
-            </EDText>
+            <View>
+              <EDText
+                style={{ color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H1, marginLeft: 5 }}
+                numberOfLines={1}
+              >
+                {friend['name']}
+              </EDText>
+              <EDText
+                style={{ color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H4, marginLeft: 5 }}
+                numberOfLines={1}
+              >
+                {friend['mobile']}
+              </EDText>
+            </View>
           </View>
-          <EDText style={{ color: COLORS.BALANCE_RED, fontSize: FONT_SIZES.H22, marginLeft: 5 }}>
-            {'X'}
-          </EDText>
+          {disabled ? null : (
+            <EDText style={{ color: COLORS.BALANCE_RED, fontSize: FONT_SIZES.H22, marginLeft: 5 }}>
+              {'X'}
+            </EDText>
+          )}
         </View>
       </TouchableOpacity>
     );

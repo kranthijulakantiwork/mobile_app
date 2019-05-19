@@ -53,23 +53,7 @@ class Friends extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      friends: [
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS,
-        FRIENDS_DETAILS
-      ],
+      friends: [],
       amountToBeSettled,
       isOwed: false,
       spinner: false

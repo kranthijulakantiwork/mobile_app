@@ -13,10 +13,32 @@ import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import firebase from 'react-native-firebase';
 import SmsAndroid from 'react-native-get-sms-android';
+import { getCurrentUser } from 'app/models/User';
+import { resetAndGoToScreen } from 'app/helpers/NavigationHelper';
+import { setUser } from 'app/reducers/user/Actions';
 
 class Splash extends Component {
-  async componentWillMount() {
-    const { dispatch } = this.props.navigation;
+  static navigationOptions = {
+    header: null
+  };
+
+  componentWillMount() {
+    // this.getSMS();
+    firebase
+      .notifications()
+      .getInitialNotification()
+      .then(notificationOpen => {
+        if (notificationOpen) {
+          // Get information about the notification that was opened
+          const notif = notificationOpen.notification;
+          // TODO app closed Notifications are handled here.
+        } else {
+          this.doSplashActions();
+        }
+      });
+  }
+
+  async getSMS() {
     let granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_SMS);
     if (granted) {
       SmsAndroid.list(
@@ -37,19 +59,17 @@ class Splash extends Component {
         }
       );
     }
+  }
 
-    firebase
-      .notifications()
-      .getInitialNotification()
-      .then(notificationOpen => {
-        if (notificationOpen) {
-          // Get information about the notification that was opened
-          const notif = notificationOpen.notification;
-          // TODO app closed Notifications are handled here.
-        } else {
-          // TODO Handle navigation here
-        }
-      });
+  doSplashActions() {
+    const { setUser, navigation } = this.props;
+    const { dispatch } = navigation;
+    const response = getCurrentUser();
+    if (response.success && response.currentUser) {
+      setUser(response.currentUser);
+      return resetAndGoToScreen({ routeName: 'Tabs', dispatch });
+    }
+    return resetAndGoToScreen({ routeName: 'AuthScreen', dispatch });
   }
 
   render() {
@@ -62,7 +82,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({}, dispatch);
+  return bindActionCreators({ setUser }, dispatch);
 }
 
 export default connect(
