@@ -85,6 +85,8 @@ const en = {
   language: 'Language',
   select_your_language: 'Select Your Language',
   settle: 'Settle',
+  settings: 'Settings',
+  logout: 'Logout',
   settled_up: 'settled up',
   settlement: 'Settlement',
   share_s: 'share(s)',
