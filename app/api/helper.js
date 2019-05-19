@@ -31,5 +31,5 @@ module.exports = {
         return 'unknown route';
     }
   },
-  API_KEY: 'API_KEY'
+  API_KEY: 'eb88d166-1924-4319-acaf-8f38ff3405f7'
 };
