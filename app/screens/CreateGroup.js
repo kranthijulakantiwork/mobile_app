@@ -87,9 +87,7 @@ class CreateGroup extends Component {
     const { currentUser } = this.props;
     this.state = {
       group_name: '',
-      friends: [
-        { name: currentUser.first_name + currentUser.last_name, mobile: currentUser.mobile }
-      ],
+      friends: [{ name: currentUser.name, mobile: currentUser.mobile }],
       friendsMobileNumber: [currentUser.mobile],
       intelligentSettlements: false,
       showFriendsList: false,
