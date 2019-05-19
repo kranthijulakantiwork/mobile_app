@@ -1,6 +1,6 @@
 // @flow
 
-const SERVER = '/';
+const SERVER = 'http://192.168.10.108:5000/';
 const FONT_SIZES = {
   H22: 22,
   H20: 20,
@@ -56,7 +56,7 @@ const LANGUAGES = [
 
 module.exports = {
   SERVER,
-  SERVER_URL: `${SERVER}api/`,
+  SERVER_URL: `${SERVER}`,
   FONT_SIZES,
   LANGUAGES
 };

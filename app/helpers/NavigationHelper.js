@@ -23,6 +23,7 @@ import {
 } from 'react-navigation';
 import { COLORS } from 'app/styles/Colors';
 import { FONT_SIZES } from 'app/config/ENV';
+import Alerts from 'app/screens/Alerts';
 import AuthScreen from 'app/screens/AuthScreen';
 import BillDetails from 'app/screens/BillDetails';
 import CreateGroup from 'app/screens/CreateGroup';
@@ -32,6 +33,7 @@ import Friends from 'app/screens/Friends';
 import GettingStarted from 'app/screens/GettingStarted';
 import Groups from 'app/screens/Groups';
 import I18n from 'app/config/i18n';
+import Images from 'app/config/Images';
 import LanguageSelection from 'app/screens/LanguageSelection';
 import NewBill from 'app/screens/NewBill';
 import Payment from 'app/screens/Payment';
@@ -41,23 +43,56 @@ import Settlement from 'app/screens/Settlement';
 import SettlementDetailView from 'app/screens/SettlementDetailView';
 import SignIn from 'app/screens/SignIn';
 import Splash from 'app/screens/Splash';
+import Tracker from 'app/screens/Tracker';
 import UpiLinking from 'app/screens/UpiLinking';
 
 const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
-  addButton: { position: 'absolute', bottom: 50, right: 30 },
-  addButtonTextContainer: {
+  headerTitleContainer: {
+    flex: 1,
+    height: 56,
     backgroundColor: COLORS.WHITE,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  headerTitle: {
+    fontSize: FONT_SIZES.H20,
+    color: COLORS.TEXT_BLACK
+  },
+  headerButton: { height: 56, width: 56, alignItems: 'center', justifyContent: 'center' },
+  headerLeftTopLine: {
+    height: 4,
+    width: 25,
+    backgroundColor: COLORS.APP_THEME_GREEN,
+    borderRadius: 3,
+    marginBottom: 3
+  },
+  headerLeftBottomLine: {
+    height: 4,
+    width: 19,
+    backgroundColor: COLORS.APP_THEME_GREEN,
+    borderRadius: 3
+  },
+  tabBarLabel: {
+    color: COLORS.APP_THEME_GREEN,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    marginBottom: 0,
+    fontSize: FONT_SIZES.H7,
+    fontFamily: 'RobotoCondensed-Bold'
+  },
+  tabBarIcon: { flex: 1, alignSelf: 'center' },
+  addButton: { position: 'absolute', bottom: 75, right: 30 },
+  addButtonTextContainer: {
+    backgroundColor: COLORS.APP_THEME_GREEN,
     height: 60,
     width: 60,
     borderRadius: 30,
-    borderWidth: 1,
-    borderColor: COLORS.TEXT_BLACK,
     alignItems: 'center',
     justifyContent: 'center'
   },
   addButtonText: {
-    color: COLORS.TEXT_BLACK,
+    color: COLORS.WHITE,
     fontSize: 40,
     includeFontPadding: false
   }
@@ -87,35 +122,43 @@ const transitionConfig = () => ({
   }
 });
 
+function headerLeft(navigation) {
+  return (
+    <TouchableOpacity onPress={() => alert('TODO')} style={styles.headerButton}>
+      <View>
+        <View style={styles.headerLeftTopLine} />
+        <View style={styles.headerLeftBottomLine} />
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+function headerTitle(children) {
+  return (
+    <View style={styles.headerTitleContainer}>
+      <EDText style={styles.headerTitle}>{children}</EDText>
+    </View>
+  );
+}
+
+function headerRight(navigation) {
+  return (
+    <TouchableOpacity onPress={() => alert('TODO')} style={styles.headerButton}>
+      <Image source={Images.settings} />
+    </TouchableOpacity>
+  );
+}
+
 const navigationOptions = {
   headerMode: 'float',
-  defaultNavigationOptions: {
+  defaultNavigationOptions: ({ navigation }) => ({
     gesturesEnabled: false,
     title: I18n.t('app_name'),
+    headerLeft: () => headerLeft(navigation),
     headerBackground: <View style={{ flex: 1, backgroundColor: COLORS.WHITE }} />,
-    headerTitle: ({ children }) => {
-      return (
-        <View
-          style={{
-            flex: 1,
-            height: 56,
-            backgroundColor: COLORS.WHITE,
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          <EDText
-            style={{
-              fontSize: FONT_SIZES.H20,
-              color: COLORS.TEXT_BLACK
-            }}
-          >
-            {children}
-          </EDText>
-        </View>
-      );
-    }
-  },
+    headerTitle: ({ children }) => headerTitle(children),
+    headerRight: headerRight(navigation)
+  }),
   transitionConfig
 };
 
@@ -131,19 +174,23 @@ const DrawerNavigator = createDrawerNavigator(
 );
 
 const tabbarLabel = (focused, title) => {
-  const color = focused ? COLORS.TEXT_BLACK : COLORS.TEXT_BLACK;
+  if (!focused) return null;
   return (
     <View style={{}}>
-      <EDText style={{ color, textAlign: 'center', marginBottom: 5, fontSize: FONT_SIZES.H2 }}>
-        {I18n.t(title)}
-      </EDText>
+      <EDText style={styles.tabBarLabel}>{I18n.t(title)}</EDText>
     </View>
   );
 };
 
+const tabBarIcon = (focused, imageName) => {
+  const image = focused ? `${imageName}_active` : `${imageName}_inactive`;
+  return <Image source={Images[image]} style={styles.tabBarIcon} resizeMode={'contain'} />;
+};
+
 const tabsNavOptions = title => {
   return {
-    tabBarLabel: tab => tabbarLabel(tab.focused, title)
+    tabBarLabel: tab => tabbarLabel(tab.focused, title),
+    tabBarIcon: tab => tabBarIcon(tab.focused, title)
   };
 };
 
@@ -157,6 +204,14 @@ const Tabs = createMaterialTopTabNavigator(
     Groups: {
       screen: Groups,
       navigationOptions: tabsNavOptions('groups_tab')
+    },
+    Tracker: {
+      screen: Tracker,
+      navigationOptions: tabsNavOptions('tracker_tab')
+    },
+    Alerts: {
+      screen: Alerts,
+      navigationOptions: tabsNavOptions('alerts_tab')
     }
   },
   {
@@ -166,27 +221,33 @@ const Tabs = createMaterialTopTabNavigator(
     lazy: false,
     optimizationsEnabled: true,
     tabBarOptions: {
-      showIcon: false,
+      showIcon: true,
       // activeBackgroundColor: COLORS.WHITE,
       // inactiveBackgroundColor: COLORS.WHITE,
-      indicatorStyle: { backgroundColor: COLORS.TEXT_BLACK },
-      style: { height: 40, backgroundColor: COLORS.WHITE }
+      indicatorStyle: { backgroundColor: 'transparent' },
+      style: { backgroundColor: COLORS.WHITE }
     }
   }
 );
 
-class CustomTabs extends React.Component<Props> {
+class CustomTabs extends Component<Props> {
   static router = Tabs.router;
   componentWillUpdate() {
     LayoutAnimation.easeInEaseOut();
   }
-  render() {
+
+  onAddClick() {
     const { navigation } = this.props;
     const { routes, index } = navigation.state;
     const activeRoute = routes[index];
+    if (['Tracker', 'Alerts'].includes(activeRoute.routeName)) return alert(I18n.t('coming_soon'));
+    navigation.navigate('NewBill');
+  }
+
+  render() {
+    const { navigation } = this.props;
     let bottom = (
-      //   <TouchableOpacity onPress={() => navigation.navigate('Payment')} style={styles.addButton}>
-      <TouchableOpacity onPress={() => navigation.navigate('NewBill')} style={styles.addButton}>
+      <TouchableOpacity onPress={() => this.onAddClick()} style={styles.addButton}>
         <View style={styles.addButtonTextContainer}>
           <EDText style={styles.addButtonText}>+</EDText>
         </View>
@@ -207,13 +268,13 @@ class CustomTabs extends React.Component<Props> {
 const AppNavigator = createStackNavigator(
   {
     Settings: { screen: Settings },
+    AuthScreen: { screen: AuthScreen },
+    Tabs: { screen: CustomTabs },
     LanguageSelection: { screen: LanguageSelection },
     GettingStarted: { screen: GettingStarted },
     Settlement: { screen: Settlement },
     UpiLinking: { screen: UpiLinking },
-    AuthScreen: { screen: AuthScreen },
     CreateGroup: { screen: CreateGroup },
-    Tabs: { screen: CustomTabs },
     NewBill: { screen: NewBill },
     BillDetails: { screen: BillDetails },
     SelectFriends: { screen: SelectFriends },
