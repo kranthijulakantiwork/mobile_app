@@ -1,203 +1,198 @@
 import React, { Component } from 'react';
-import { Text, View, Button, StyleSheet, TextInput } from 'react-native';
+import { bindActionCreators } from 'redux';
+import { COLORS } from 'app/styles/Colors';
+import { connect } from 'react-redux';
+import { FONT_SIZES } from 'app/config/ENV';
+import { resetAndGoToScreen } from 'app/helpers/NavigationHelper';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import dismissKeyboard from 'dismissKeyboard';
+import EDText from 'app/components/EDText';
+import EDTextInput from 'app/components/EDTextInput';
+import I18n from 'app/config/i18n';
+import Images from 'app/config/Images';
+import { Dimensions, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
+import ToolBar from 'app/components/ToolBar';
+import { getUserInfo, logOut, updateUserInfo } from 'app/api/User';
 
-export default class Settings extends Component {
+
+const { height, width } = Dimensions.get('window');
+const styles = StyleSheet.create({
+  container: { flex: 1, color: COLORS.WHITE },
+  scrollViewContainer: { flex: 1, marginHorizontal: 50 },
+  imageContainer: {
+    height: height / 3.5,
+    justifyContent: 'flex-end'
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: height / 7,
+    justifyContent: 'center'
+  },
+  title: { color: '#979797', fontSize: FONT_SIZES.H2 },
+  textInputOuterContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  textInputInnerContainer: {
+    // flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderColor: COLORS.TEXT_BLACK,
+    marginLeft: 20
+  },
+  linkButton: {
+    marginHorizontal: 10,
+    height: 45,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.APP_THEME_GREEN,
+    borderRadius: 5,
+    elevation: 3,
+    shadowOffset: { height: 2, width: 2 },
+    shadowOpacity: 0.8,
+    shadowColor: COLORS.APP_THEME_GREEN
+  },
+  linkButtonText: { color: COLORS.WHITE, fontSize: FONT_SIZES.H1 },
+  linkingDescription: { color: '#979797', fontSize: FONT_SIZES.H4, paddingVertical: 15 },
+  skipButton: {
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  skipButtonText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H2 }
+});
+
+class Settings extends Component {
   static navigationOptions = {
     header: null
   };
 
-  render() {
-    return (
-      <View>
-        <View
-          style={{
-            flexDirection: 'row',
-            backgroundColor: 'grey',
-            justifyContent: 'space-between',
-            alignItems: 'stretch',
-            border: '3px solid black'
-          }}
-        >
-          <Button
-            title="back"
-            color="grey"
-            style={[styles.button, { width: 200, marginLeft: 0 }]}
-          />
+  constructor(props) {
+    super(props);
+    let { name , mobile, upi_address, email } = this.props.currentUser;
+    this.state = {
+      name:  name || '',
+      phone: mobile || '',
+      upi_address: upi_address || '',
+      email: email || ''
+    }
+  }
 
-          <Button container title="settings" color="grey" />
-          <Button title="save" color="grey" />
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-start'
-          }}
-        >
-          <View
-            style={{
-              flexDirection: 'column',
-              justifyContent: 'center'
-            }}
-          >
-            <Entypo
-              name="camera"
-              size={50}
-              style={{
-                marginTop: 50,
-                marginLeft: 20,
-                borderColor: 'black',
-                alignContent: 'center',
-                flexWrap: 'wrap',
-                borderRadius: 30,
-                width: 60,
-                height: 57,
-                margin: 6,
-                borderWidth: 2
+  componentWillMount() {
+    let { currentUser } = this.props;
+    getUserInfo(currentUser.auth_key)
+    .then((response) => {
+      if (response.success) {
+        response.mobile = response.phone;
+        response.upi_address = response.upi;
+        currentUser.update(response);
+        let { name , phone, upi_address, email } = response
+        this.setState({
+          name,
+          phone,
+          upi_address,
+          email
+        })
+      }
+    })
+    .catch((err) => {
+
+    })
+  }
+
+  onChangeText(stateKey, text) {
+    this.setState({ [stateKey]: text });
+  }
+
+  onSave() {
+    let { currentUser } = this.props;
+    updateUserInfo(this.state, currentUser.auth_key)
+    .then((response) => {
+      if (response.success) {
+        currentUser.update(this.state);
+      }
+    })
+    .catch((err) => {
+
+    })
+  }
+
+  logOut() {
+    let { currentUser } = this.props;
+    logOut(currentUser)
+    .then((response) => {
+      if (response.success) {
+        return resetAndGoToScreen({ routeName: 'AuthScreen', dispatch });
+      }
+    })
+    .catch((err) => {
+
+    })
+  }
+
+  renderEditableFiled(stateKey, icon, editable, keyboardType = 'default') {
+    return (
+      <View style={styles.textInputOuterContainer}>
+        <Image source={Images[icon]} style={{ marginTop: '5%' }} />
+        <View style={styles.textInputInnerContainer}>
+          <View style={{ flexDirection: 'row' }}>
+            <EDTextInput
+              placeholder={I18n.t(stateKey)}
+              textInputStyle={{
+                width: width - 160,
+                borderBottomWidth: 0,
+                marginBottom: 5,
+                height: 30
               }}
+              containerStyle={{
+                marginHorizontal: 0,
+                padding: 0,
+                marginVertical: 0
+              }}
+              title={I18n.t(stateKey)}
+              value={this.state[stateKey]}
+              editable={editable}
+              keyboardType={keyboardType}
+              onChangeText={text => this.onChangeText(stateKey, text)}
             />
-            <Text style={{ marginTop: 60, marginLeft: 20 }}>UPI</Text>
-            <Text style={{ marginTop: 30, marginLeft: 20 }}>Email id</Text>
+            {/* <Image source={Images.pencil}/>   */}
           </View>
-          <View
-            style={{
-              flexDirection: 'column'
-            }}
-          >
-            <TextInput
-              style={{
-                height: 40,
-                width: 200,
-                borderColor: 'white',
-                borderBottomColor: 'black',
-                color: 'white',
-                marginLeft: 10,
-                marginTop: 40
-              }}
-              placeholder="Name"
-            />
-            <TextInput
-              style={{
-                height: 40,
-                width: 200,
-                borderColor: 'white',
-                borderBottomColor: 'black',
-                marginLeft: 10
-              }}
-              placeholder="Number"
-            />
-            <TextInput
-              style={{
-                height: 40,
-                width: 200,
-                borderColor: 'white',
-                borderBottomColor: 'black',
-                marginTop: 30,
-                marginLeft: 10
-              }}
-              placeholder="UPI Address"
-            />
-            <TextInput
-              style={{
-                height: 40,
-                width: 200,
-                borderColor: 'white',
-                borderBottomColor: 'black',
-                marginTop: 10,
-                marginLeft: 10
-              }}
-              placeholder="Optional"
-            />
-          </View>
-          <View
-            style={{
-              flexDirection: 'column'
-            }}
-          >
-            <Text
-              style={{
-                color: 'blue',
-                marginTop: 165,
-                marginLeft: 10,
-                textDecorationLine: 'underline'
-              }}
-            >
-              Change
-            </Text>
-          </View>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row'
-          }}
-        >
-          <Text
-            style={{
-              marginTop: 70,
-              marginLeft: 125,
-              fontWeight: 'bold',
-              fontSize: 50,
-              borderColor: 'black',
-              borderLeftWidth: 5,
-              borderTopWidth: 3,
-              borderRightWidth: 5,
-              borderBottomWidth: 3,
-              borderStyle: 'solid'
-            }}
-          >
-            {'\u20B9'}
-          </Text>
-          <Text
-            style={{
-              marginTop: 70,
-              marginLeft: 120,
-              fontWeight: 'bold',
-              fontSize: 50,
-              borderColor: 'black',
-              borderLeftWidth: 5,
-              borderTopWidth: 3,
-              borderRightWidth: 5,
-              borderBottomWidth: 3,
-              borderStyle: 'solid'
-            }}
-          >
-            E
-          </Text>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row'
-          }}
-        >
-          <Text style={{ marginTop: 0, marginLeft: 115, fontWeight: 'bold', fontSize: 15 }}>
-            Currency
-          </Text>
-          <Text style={{ marginTop: 0, marginLeft: 90, fontWeight: 'bold', fontSize: 15 }}>
-            Language
-          </Text>
-        </View>
-        <View style={{ height: 100, width: 100, marginTop: 60, marginLeft: 170 }}>
-          <Button title="Save" color="grey" size={30} />
-        </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text
-            style={{ color: 'blue', fontSize: 20, textDecorationLine: 'underline', marginTop: 20 }}
-          >
-            Delete Account
-          </Text>
-          <Text
-            style={{ color: 'blue', fontSize: 20, textDecorationLine: 'underline', marginTop: 20 }}
-          >
-            Logout
-          </Text>
         </View>
       </View>
     );
   }
+
+  render() {
+    const { goBack } = this.props.navigation;
+    return (
+      <KeyboardAwareScrollView style={{ flex: 1}}>
+        <ToolBar title={I18n.t('settings')} leftImage="back" onLeft={() => goBack()}  rightImage="tick" onRight={() => this.onSave()}/>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20,  height: height/2, maxHeight: height/2}}>
+          {this.renderEditableFiled('name', 'name', true)}
+          {this.renderEditableFiled('phone', 'phone', false,'phone-pad')}
+          {this.renderEditableFiled('upi_address', 'wallet_43', true)}
+          {this.renderEditableFiled('email', 'email', true,'email-address')}
+        </View>
+        <View style={{  height: height/2 - 100, justifyContent: 'flex-end', padding: 15 , alignItems: 'center'}}>
+          <TouchableOpacity   style={{ backgroundColor: '#1da370' }} onPress={() => {this.logOut()}}>
+            <EDText style={{padding: 10, color: '#ffffff'}}>{I18n.t('logout')}</EDText>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAwareScrollView>
+
+
+    );
+  }
 }
 
-var styles = StyleSheet.create({
-  button: {
-    color: 'black'
-  }
-});
+function mapStateToProps(state) {
+  return {
+    currentUser: state.currentUser
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({}, dispatch);
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Settings);

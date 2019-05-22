@@ -38,7 +38,10 @@ function getRequestHeader(requestParams: apiParams) {
   const { type, data } = requestParams;
   if (type === 'GET') {
     return {
-      auth_key: data.auth_key
+      method: type,
+      headers: {
+        auth_key: data.auth_key
+      }
     };
   }
   return {
@@ -49,7 +52,6 @@ function getRequestHeader(requestParams: apiParams) {
       auth_key: data.auth_key
     },
     body: JSON.stringify(data),
-    auth_key: data.auth_key
   };
 }
 

@@ -17,6 +17,7 @@ export default class EDTextInput extends Component {
     title: PropTypes.string,
     keyboardType: PropTypes.string,
     secureTextEntry: PropTypes.bool,
+    editable: PropTypes.bool,
     textInputStyle: PropTypes.object,
     titleStyle: PropTypes.object
   };
@@ -40,6 +41,7 @@ export default class EDTextInput extends Component {
       this.props.containerStyle || {}
     );
     let keyboardType = this.props.keyboardType || 'default';
+    let editable = (this.props.editable === false) ?  false : true;
     let secureTextEntry = this.props.secureTextEntry || false;
     const titleStyle = Object.assign(
       { fontSize: FONT_SIZES.H3, color: COLORS.TEXT_BLACK },
@@ -52,6 +54,7 @@ export default class EDTextInput extends Component {
           style={textInputStyle}
           onChangeText={text => this.props.onChangeText(text)}
           autoCorrect={false}
+          editable={editable}
           underlineColorAndroid={'transparent'}
           value={this.props.value}
           secureTextEntry={secureTextEntry}

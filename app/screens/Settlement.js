@@ -209,6 +209,7 @@ export default class Settlement extends Component {
   }
 
   render() {
+    const { goBack } = this.props.navigation;
     return (
       <View style={styles.container}>
         <ToolBar title={I18n.t('settlement')} leftImage="back" onLeft={() => goBack()} />

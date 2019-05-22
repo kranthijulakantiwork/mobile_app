@@ -11,9 +11,7 @@ User.schema = {
     id: { type: 'string' },
     auth_key: { type: 'string', optional: true },
     mobile: { type: 'string' },
-    first_name: { type: 'string', optional: true },
-    last_name: { type: 'string', optional: true },
-    server_id: { type: 'string', optional: true },
+    name: { type: 'string', optional: true },
     upi_address: { type: 'string', optional: true }
   }
 };
@@ -60,6 +58,6 @@ Contact.schema = {
 
 const realm = new Realm({
   schema: [User, Device, UserSettings, Contact],
-  schemaVersion: 1
+  schemaVersion: 2
 });
 export { realm, User, Device, UserSettings, Contact };

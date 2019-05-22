@@ -21,6 +21,8 @@ module.exports = {
         return 'bills/friends';
       case 'bills_groups':
         return 'bills/groups';
+      case 'update_user_info':
+          return 'userInfo';
       case 'add_group':
         return 'groups';
       case 'login':
