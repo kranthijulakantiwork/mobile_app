@@ -33,6 +33,7 @@ import EDText from 'app/components/EDText';
 import Friends from 'app/screens/Friends';
 import GettingStarted from 'app/screens/GettingStarted';
 import Groups from 'app/screens/Groups';
+import GroupSettings from 'app/screens/GroupSettings';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
 import LanguageSelection from 'app/screens/LanguageSelection';
@@ -42,6 +43,7 @@ import SelectFriends from 'app/screens/SelectFriends';
 import Settings from 'app/screens/Settings';
 import Settlement from 'app/screens/Settlement';
 import SettlementDetailView from 'app/screens/SettlementDetailView';
+import SettleUpFriends from 'app/screens/SettleUpFriends';
 import SignIn from 'app/screens/SignIn';
 import Splash from 'app/screens/Splash';
 import Tracker from 'app/screens/Tracker';
@@ -283,6 +285,7 @@ const AppNavigator = createStackNavigator(
     Settlement: { screen: Settlement },
     UpiLinking: { screen: UpiLinking },
     CreateGroup: { screen: CreateGroup },
+    GroupSettings: { screen: GroupSettings },
     NewBill: { screen: NewBill },
     BillDetails: { screen: BillDetails },
     Bills: { screen: Bills },
@@ -290,7 +293,8 @@ const AppNavigator = createStackNavigator(
     Payment: { screen: Payment },
     DrawerNavigator: { screen: DrawerNavigator },
     SignIn: { screen: SignIn },
-    SettlementDetails: { screen: SettlementDetailView }
+    SettlementDetails: { screen: SettlementDetailView },
+    SettleUpFriends: { screen: SettleUpFriends }
   },
   navigationOptions
 );

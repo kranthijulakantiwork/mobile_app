@@ -45,7 +45,7 @@ export default class ToolBar extends Component {
   };
 
   renderButton({ onPress, title, image }) {
-    if (onPress) {
+    if (onPress && (image || title)) {
       return (
         <TouchableOpacity onPress={onPress} style={styles.button}>
           {title && <EDText style={styles.buttonText}>{title}</EDText>}

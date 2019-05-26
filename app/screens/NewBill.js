@@ -7,7 +7,9 @@ import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
+import { getGroupsAndFriends } from 'app/reducers/groups/Actions';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { realm } from 'app/models/schema';
 import { replaceScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import Avatar from 'app/components/Avatar';
@@ -60,13 +62,14 @@ const styles = StyleSheet.create({
     marginTop: 15,
     width: width - 40,
     marginHorizontal: 20,
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
   paidByAndSplitText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H1 },
   paidByAndSplitButton: {
     color: COLORS.TEXT_BLACK,
     fontSize: FONT_SIZES.H1,
-    maxWidth: width / 4,
+    maxWidth: width / 2,
     marginHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 5,
@@ -97,39 +100,60 @@ class NewBill extends Component {
   }
 
   getState() {
-    const { currentUser } = this.props;
-    const { state, getParam } = this.props.navigation;
+    const { currentUser, groups } = this.props;
+    const { state } = this.props.navigation;
     const { params = {} } = state;
-    const friendsList = getParam('friends') || [{ ...currentUser, name: 'You  ' }];
+    const friendsList = this.getFriends();
     const {
       id,
       bill_name = '',
       amount = '',
       group = null,
       paidBy = {},
-      friends = friendsList,
-      added_on = new Date().toDateString().substr(4),
+      added_on,
       category = 'others',
       splitType = 'equally',
       splitByFriends = friendsList.map(friend => friend.mobile),
       allocatedSplitAmount = { shares: 0, percentages: 0, unequally: 0, adjustment: 0 },
       friendsSplitAmount = { shares: {}, percentages: {}, unequally: {}, adjustment: {} }
     } = params;
+    let groupObject = typeof group === 'string' ? groups.filter(g => g.id === group)[0] : group;
     return {
       id,
       bill_name,
       amount,
-      group,
+      group: groupObject,
       paidBy,
-      friends,
-      added_on,
+      friends: friendsList,
+      added_on: added_on
+        ? new Date(added_on).toDateString().substr(4)
+        : new Date().toDateString().substr(4),
       category,
       splitType,
       splitByFriends,
       allocatedSplitAmount,
       friendsSplitAmount,
-      friendsMobileNumbers: friends.map(friend => friend.mobile)
+      friendsMobileNumbers: friendsList.map(friend => friend.mobile)
     };
+  }
+
+  getFriends() {
+    const { currentUser } = this.props;
+    const { state } = this.props.navigation;
+    const { params = {} } = state;
+    const { friends } = params;
+    if (friends) {
+      let friendsDetails = [];
+      friends.forEach(friend => {
+        const friendObject = realm.objects('Contact').filtered('mobile=$0', friend.mobile)[0];
+        friendsDetails.push({
+          name: friendObject.name,
+          mobile: friend.mobile
+        });
+      });
+      return friendsDetails;
+    }
+    return [{ ...currentUser, name: 'You  ' }];
   }
 
   onAddFriend(friend) {
@@ -220,11 +244,7 @@ class NewBill extends Component {
     } = this.state;
     if (!bill_name) return alert(I18n.t('please_enter_description'));
     if (!amount) return alert(I18n.t('please_enter_amount'));
-    // TODO if paidBy is empty change it to the user himself
-    //  Add added_by
-    // Need to replace screen instead of navigating.
-    //  TODO remove current user here
-    const { currentUser } = this.props;
+    const { currentUser, getGroupsAndFriends } = this.props;
     let paidByFinal = paidBy;
     if (paidBy && Object.keys(paidBy)) {
       if (Object.keys(paidBy).length === 0) {
@@ -253,24 +273,34 @@ class NewBill extends Component {
       friends
     };
     setSpinner(this);
-    const groupData = group ? { group: group.id } : {};
+    const billData = group ? { ...billDetails, group: group.id } : billDetails;
     if (id) {
-      updateBill(currentUser, { ...billDetails, id, ...groupData }).then(response => {
+      updateBill(currentUser, { ...billData, id }).then(response => {
         if (response.success) {
-          params = { ...params, id: response.data.id };
+          getGroupsAndFriends(currentUser);
+          params = {
+            ...params,
+            id: response.data.id,
+            added_by: currentUser.mobile,
+            group: group.id
+          };
           const { goBack } = this.props.navigation;
           goBack();
           this.navigateToBillDetails(params);
-        }
-        removeSpinner(this);
+        } else removeSpinner(this);
       });
     } else {
-      addBill(currentUser, billDetails, ...groupData).then(response => {
+      addBill(currentUser, billData).then(response => {
         if (response.success) {
-          params = { ...params, id: response.data.id };
+          getGroupsAndFriends(currentUser);
+          params = {
+            ...params,
+            id: response.data.id,
+            added_by: currentUser.mobile,
+            group: group.id
+          };
           this.navigateToBillDetails(params);
-        }
-        removeSpinner(this);
+        } else removeSpinner(this);
       });
     }
   }
@@ -475,18 +505,22 @@ class NewBill extends Component {
     let paidByButtonTitle = I18n.t('you');
     if (Object.keys(paidBy).length === 1) {
       const paidByFriend = friends.filter(friend => friend.mobile == Object.keys(paidBy)[0])[0];
-      const words = paidByFriend.name.split(' ');
+      const words = paidByFriend.name.trim().split(' ');
       paidByButtonTitle = words.length > 1 ? words[0] + ' ' + words[1] + '.' : words[0];
     } else if (Object.keys(paidBy).length > 1) {
       paidByButtonTitle = `2 + ${I18n.t('people')}`;
     }
     const splitButtonTitle = splitType === 'equally' ? I18n.t('equally') : I18n.t('unequally');
     return (
-      <View style={styles.paidByAndSplitContainer}>
-        <EDText style={styles.paidByAndSplitText}>{I18n.t('paid_by')}</EDText>
-        {this.renderPaidByAndSplitButton(paidByButtonTitle, 'showPaidByOptions')}
-        <EDText style={styles.paidByAndSplitText}>{I18n.t('and_split')}</EDText>
-        {this.renderPaidByAndSplitButton(splitButtonTitle, 'showSplitByOptions')}
+      <View>
+        <View style={styles.paidByAndSplitContainer}>
+          <EDText style={styles.paidByAndSplitText}>{I18n.t('paid_by')}</EDText>
+          {this.renderPaidByAndSplitButton(paidByButtonTitle, 'showPaidByOptions')}
+        </View>
+        <View style={styles.paidByAndSplitContainer}>
+          <EDText style={styles.paidByAndSplitText}>{I18n.t('split')}</EDText>
+          {this.renderPaidByAndSplitButton(splitButtonTitle, 'showSplitByOptions')}
+        </View>
       </View>
     );
   }
@@ -678,7 +712,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({}, dispatch);
+  return bindActionCreators({ getGroupsAndFriends }, dispatch);
 }
 
 export default connect(

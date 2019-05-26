@@ -55,6 +55,10 @@ if (Platform.OS === 'android') UIManager.setLayoutAnimationEnabledExperimental(t
  *   2. fadeOut the logo, 3. tells the container that the login animation has completed and that the app is ready to show the next screen (HomeScreen).
  */
 class AuthScreen extends Component {
+  static navigationOptions = {
+    header: null
+  };
+
   // static propTypes = {
   //   isLoggedIn: PropTypes.bool.isRequired,
   //   isLoading: PropTypes.bool.isRequired,
@@ -88,7 +92,7 @@ class AuthScreen extends Component {
       }
 
       if (invokeDefault) {
-        BackHandler.exitApp();
+        // BackHandler.exitApp();
       }
     });
 
@@ -96,7 +100,6 @@ class AuthScreen extends Component {
   }
 
   signup() {
-    //TODO update or create user as per api response
     login(this.phone, this.formRefOtp.state.otp)
       .then(response => {
         response.data.mobile = response.data.phone;

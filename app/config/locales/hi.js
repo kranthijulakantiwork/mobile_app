@@ -10,6 +10,7 @@ const hi = {
   added_by: 'ऐड करने वाला',
   adjustment: 'एडजस्टमेंट',
   alerts_tab: 'सूचना',
+  all_settled_up: 'All Settled Up.',
   amount_left: '₹{{amountLeft}} बाकी ',
   amount_per_person: '₹{{amount}} / व्यक्ति',
   amount: 'पैसे',
@@ -32,6 +33,7 @@ const hi = {
   date: 'डेट',
   delete_bill: 'बिल हटाएँ',
   drinks: 'पेय',
+  edit_group_settings: 'Edit Group Settings',
   edited: 'संपादित',
   enter_each_persons_share: 'प्रत्येक व्यक्ति का हिस्सा दर्ज करें ',
   entertainment: 'मनोरंजन',
@@ -44,6 +46,7 @@ const hi = {
   groups_tab: 'समूहों',
   holiday: 'सैर',
   intelligent_settlements: 'चतुर विभाजन',
+  is_paying_you: 'is paying you.',
   lets_get_started: 'आएँ शुरू करें',
   link: 'लिंक',
   loan: 'उधार',
@@ -77,6 +80,7 @@ const hi = {
   plus_other_balances: 'प्लस {{count}} और शेष राशि',
   receive_through: 'के माध्यम से प्राप्त करें',
   record_settlement: 'रिकॉर्ड लेनदेन ',
+  remove_group_member: 'Remove Group Member',
   rent: 'रेंट',
   search_friends: 'मित्रों को खोजें',
   select_category: 'चुनिए',
@@ -111,6 +115,8 @@ const hi = {
   you_owe: 'आपको देना है',
   you: 'आप',
   upi_link_description: 'सीधे भुगतान करने और धन प्राप्त करने के लिए UPI पता जोड़ें',
+  are_you_sure_you_want_to_remove_this_person_from_group:
+    'Are you sure you want to remove this person from this group',
   the_math_for_this_expense_doesnt_add_up:
     'इस खर्च का गणित नहीं जुड़ता है। कृपया जांचें कि आपने प्रत्येक व्यक्ति के लिए सही मात्रा में प्रवेश किया है!'
 };

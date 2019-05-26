@@ -16,12 +16,12 @@ import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
 import { navigateToScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
-import Balances from 'app/components/Balances';
 import EDText from 'app/components/EDText';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
 import PropTypes from 'prop-types';
 import StatusCard from 'app/components/StatusCard';
+import ToolBar from 'app/components/ToolBar';
 
 const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -41,7 +41,11 @@ const styles = StyleSheet.create({
   footerText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H3 }
 });
 
-class Groups extends Component {
+class SettleUpFriends extends Component {
+  static navigationOptions = {
+    header: null
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -49,89 +53,95 @@ class Groups extends Component {
     };
   }
 
-  onGroupSelection(groupDetails) {
-    const { dispatch } = this.props.navigation;
+  onFriendSelection(friendDetails) {
+    const { dispatch, state } = this.props.navigation;
+    const { balance, mobile } = friendDetails;
+    let gets = balance && balance > 0 ? true : false;
     return navigateToScreen({
-      routeName: 'Bills',
-      params: { ...groupDetails },
+      routeName: 'Settlement',
+      params: {
+        amount: balance ? Math.abs(balance).toString() : '0',
+        mobile,
+        gets,
+        key: state.key
+      },
       dispatch
     });
   }
 
-  onCreateGroup() {
-    const { dispatch } = this.props.navigation;
-    return navigateToScreen({ routeName: 'CreateGroup', dispatch });
-  }
-
-  renderFooter() {
-    return (
-      <TouchableOpacity onPress={() => this.onCreateGroup()}>
-        <View style={styles.footerContainer}>
-          <EDText style={styles.footerText}>{I18n.t('create_group')}</EDText>
-        </View>
-      </TouchableOpacity>
-    );
-  }
-
-  renderSingleGroup(groupDetails) {
-    const { name, balance, mobile, details, friends } = groupDetails;
+  renderSingleFriend(friendDetails) {
+    const { id, name, balance } = friendDetails;
     return (
       <StatusCard
-        onPress={() => this.onGroupSelection(groupDetails)}
-        name={name}
-        details={details}
-        balance={balance || 0}
-        mobile={mobile}
-        friends={friends}
-        balanceType={'groups'}
+        onPress={() => this.onFriendSelection(friendDetails)}
+        name={name || id}
+        balance={balance}
+        mobile={id}
+        balanceType={'friends'}
       />
     );
   }
 
-  renderGroups() {
-    const { groups } = this.props;
+  renderFriends(finalDetails) {
     return (
       <FlatList
-        data={groups}
+        data={finalDetails}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => this.renderSingleGroup(item)}
+        renderItem={({ item }) => this.renderSingleFriend(item)}
       />
+    );
+  }
+
+  renderSettledUp() {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <EDText
+          style={{ color: COLORS.BALANCE_BLUE, fontSize: FONT_SIZES.H22, textAlign: 'center' }}
+        >
+          {I18n.t('all_settled_up')}
+        </EDText>
+      </View>
     );
   }
 
   renderHeader() {
-    const { owed, owe } = this.props.balance;
-    const toPay = owe ? owe.toString() : '0';
-    const toGet = owed ? owed.toString() : '0';
-    const balance = (toGet - toPay).toString();
-    return <Balances to_pay={toGet} to_get={toGet} balance={balance} />;
+    return null;
+  }
+
+  renderDetails() {
+    const { details } = this.props.navigation.state.params;
+    const finalDetails = details.filter(detail => detail.balance);
+    if (finalDetails.length) {
+      return (
+        <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+          {this.renderHeader()}
+          {this.renderFriends(finalDetails)}
+          <View style={{ width, height: 100 }} />
+        </ScrollView>
+      );
+    } else return this.renderSettledUp();
   }
 
   render() {
     const { spinner } = this.state;
+    const { goBack } = this.props.navigation;
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-          {this.renderHeader()}
-          {this.renderGroups()}
-          {this.renderFooter()}
-          <View style={{ width, height: 100 }} />
-        </ScrollView>
+        <ToolBar title={I18n.t('settlement')} leftImage="back" onLeft={() => goBack()} />
+        {this.renderDetails()}
         {spinner && <Spinner />}
       </View>
     );
   }
 }
 
-Groups.propTypes = {
+SettleUpFriends.propTypes = {
   navigation: PropTypes.object
 };
 
 function mapStateToProps(state) {
   return {
-    currentUser: state.currentUser,
-    groups: state.groups.groupsData,
-    balance: state.groups.balance
+    currentUser: state.currentUser
   };
 }
 
@@ -142,4 +152,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Groups);
+)(SettleUpFriends);

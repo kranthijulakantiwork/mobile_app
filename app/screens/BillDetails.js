@@ -13,6 +13,7 @@ import {
 import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
+import { deleteBill } from 'app/api/Bills';
 import { FONT_SIZES } from 'app/config/ENV';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { navigateToScreen } from 'app/helpers/NavigationHelper';
@@ -24,6 +25,7 @@ import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
+import showToast from 'app/helpers/Toast';
 import ToolBar from 'app/components/ToolBar';
 
 const { height, width } = Dimensions.get('window');
@@ -147,8 +149,19 @@ class BillDetails extends Component {
     return splitBy;
   }
 
+  onDeleteBill() {
+    const { currentUser } = this.props;
+    const { id } = this.props.navigation.state.params;
+    const { popToTop } = this.props.navigation;
+    deleteBill(currentUser, id).then(response => {
+      if (response.success) {
+        response.data.status && showToast({ message: response.data.status });
+        popToTop();
+      }
+    });
+  }
+
   onSubmit() {
-    // TODO navigate to edit bill
     const { currentUser } = this.props;
     const { added_by } = this.props.navigation.state.params;
     if (added_by === currentUser.mobile) {
@@ -174,11 +187,16 @@ class BillDetails extends Component {
   }
 
   renderDeleteButton() {
-    return (
-      <TouchableOpacity onPress={() => alert('TODO')} style={styles.deleteButton}>
-        <EDText style={styles.deleteButtonText}>{I18n.t('delete_bill')}</EDText>
-      </TouchableOpacity>
-    );
+    const { currentUser } = this.props;
+    const { added_by } = this.props.navigation.state.params;
+    if (added_by === currentUser.mobile) {
+      return (
+        <TouchableOpacity onPress={() => this.onDeleteBill()} style={styles.deleteButton}>
+          <EDText style={styles.deleteButtonText}>{I18n.t('delete_bill')}</EDText>
+        </TouchableOpacity>
+      );
+    }
+    return null;
   }
 
   renderSummaryUnderType(title, summary) {
@@ -195,9 +213,9 @@ class BillDetails extends Component {
           renderItem={({ item }) => {
             let friend = friends.filter(friend => friend.mobile == item)[0];
             if (friend.mobile === currentUser.mobile) friend = currentUser;
-            let name = friend && friend.name ? friend.name : item;
+            let name = friend && friend.name ? friend.name : '';
             if (!name) {
-              const friendObject = realm.objects('User').filtered('mobile=$0', friend.mobile)[0];
+              const friendObject = realm.objects('Contact').filtered('mobile=$0', friend.mobile)[0];
               name = friendObject ? friendObject.name : friend.name;
             }
             return (
@@ -214,12 +232,12 @@ class BillDetails extends Component {
   renderUserStatus() {
     //  TODO get owed or paid
     const { paidBy, splitBy } = this.state;
-    //  TODO remove current user here
-    const current_user = { id: 1, mobile: '9866070833' };
-    const paidByUser = paidBy[current_user.mobile] ? Number(paidBy[current_user.mobile]) : 0;
-    const splitByUser = splitBy[current_user.mobile] ? Number(splitBy[current_user.mobile]) : 0;
-    const amount = paidByUser - splitByUser;
+    const { currentUser } = this.props;
+    const paidByUser = paidBy[currentUser.mobile] ? Number(paidBy[currentUser.mobile]) : 0;
+    const splitByUser = splitBy[currentUser.mobile] ? Number(splitBy[currentUser.mobile]) : 0;
+    let amount = paidByUser - splitByUser;
     if (!amount) return null;
+    amount = Math.round(amount * 10) / 10;
     const colors = amount < 0 ? ['#ff9966', '#ff5e62'] : ['#93f9b9', '#1d976c'];
     const text =
       amount < 0 ? `${I18n.t('you_owe_')} ₹${-1 * amount}` : `${I18n.t('you_get')} ₹${amount}`;
@@ -249,9 +267,13 @@ class BillDetails extends Component {
   }
 
   renderAddedBy() {
-    const { added_by = 'you', added_on } = this.props.navigation.state.params;
+    const { added_by, added_on } = this.props.navigation.state.params;
+    const { mobile } = this.props.currentUser;
+    const addedBy = mobile === added_by ? I18n.t('you') : added_by;
     return this.renderText({
-      text: `${I18n.t('added_by')} ${added_by} ${I18n.t('on')} ${added_on}`,
+      text: `${I18n.t('added_by')} ${addedBy} ${I18n.t('on')} ${new Date(added_on)
+        .toDateString()
+        .substr(4)}`,
       fontSize: FONT_SIZES.H2,
       fontWeight: 'normal'
     });
@@ -259,8 +281,14 @@ class BillDetails extends Component {
 
   renderGroupName() {
     const { group } = this.props.navigation.state.params;
+    const { groupsList } = this.props;
+    let groupName = '';
+    if (group) {
+      const groupObject = groupsList.filter(g => g.id === group)[0];
+      if (groupObject) groupName = groupObject.name;
+    }
     return this.renderText({
-      text: `${I18n.t('group')}: ${group ? group.name : I18n.t('none')}`,
+      text: `${I18n.t('group')}: ${groupName ? groupName : I18n.t('none')}`,
       fontSize: FONT_SIZES.H2,
       fontWeight: 'normal'
     });
@@ -331,7 +359,8 @@ BillDetails.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    currentUser: state.currentUser
+    currentUser: state.currentUser,
+    groupsList: state.groups.groupsList
   };
 }
 

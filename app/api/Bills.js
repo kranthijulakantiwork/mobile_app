@@ -53,5 +53,18 @@ module.exports = {
     };
     const response = await Http.post(apiParams);
     return response;
+  },
+
+  deleteBill: async (currentUser, id) => {
+    const params = {
+      auth_key: currentUser.auth_key,
+      id
+    };
+    const apiParams = {
+      name: 'delete_bill',
+      data: params
+    };
+    const response = await Http.delete(apiParams);
+    return response;
   }
 };
