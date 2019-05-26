@@ -14,7 +14,7 @@ import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
-import { getFriends } from 'app/api/Friends';
+import { navigateToScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import Balances from 'app/components/Balances';
 import EDText from 'app/components/EDText';
@@ -53,24 +53,19 @@ class Friends extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      friends: [],
       amountToBeSettled,
       isOwed: false,
       spinner: false
     };
   }
 
-  componentWillMount() {
-    const { currentUser } = this.props;
-    getFriends(currentUser).then(response => {
-      if (response.success) {
-        this.setState({ friends: response.data.friends });
-      }
-    });
-  }
-
   onFriendSelection(friendDetails) {
-    alert('TODO');
+    const { dispatch } = this.props.navigation;
+    return navigateToScreen({
+      routeName: 'Bills',
+      params: { ...friendDetails, isFriend: true },
+      dispatch
+    });
   }
 
   onAddMoreFriends() {
@@ -96,7 +91,7 @@ class Friends extends Component {
     return (
       <StatusCard
         onPress={() => this.onFriendSelection(friendDetails)}
-        name={name}
+        name={name || mobile}
         balance={balance}
         mobile={mobile}
         balanceType={'friends'}
@@ -105,7 +100,7 @@ class Friends extends Component {
   }
 
   renderFriends() {
-    const { friends } = this.state;
+    const { friends } = this.props;
     return (
       <FlatList
         data={friends}
@@ -116,8 +111,11 @@ class Friends extends Component {
   }
 
   renderHeader() {
-    const { amountToBeSettled, isOwed } = this.state;
-    return <Balances to_pay={'15.00'} to_get={'344.00'} balance={'329.00'} />;
+    const { owed, owe } = this.props.balance;
+    const toPay = owe ? owe.toString() : '0';
+    const toGet = owed ? owed.toString() : '0';
+    const balance = (toGet - toPay).toString();
+    return <Balances to_pay={toGet} to_get={toGet} balance={balance} />;
   }
 
   render() {
@@ -142,7 +140,9 @@ Friends.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    currentUser: state.currentUser
+    currentUser: state.currentUser,
+    friends: state.groups.friendsData,
+    balance: state.groups.balance
   };
 }
 

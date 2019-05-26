@@ -22,7 +22,7 @@ module.exports = {
       id
     };
     const apiParams = {
-      name: 'bill_groups',
+      name: 'bills_groups',
       data: params
     };
     const response = await Http.get(apiParams);

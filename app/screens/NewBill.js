@@ -673,7 +673,7 @@ NewBill.propTypes = {
 function mapStateToProps(state) {
   return {
     currentUser: state.currentUser,
-    groups: state.groups
+    groups: state.groups.groupsList
   };
 }
 

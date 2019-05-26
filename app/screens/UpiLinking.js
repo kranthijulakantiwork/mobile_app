@@ -9,6 +9,7 @@ import { FONT_SIZES } from 'app/config/ENV';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { navigateToScreen, replaceScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
+import { updateUserInfo } from 'app/api/User';
 import dismissKeyboard from 'dismissKeyboard';
 import EDText from 'app/components/EDText';
 import EDTextInput from 'app/components/EDTextInput';
@@ -79,12 +80,28 @@ class UpiLinking extends Component {
 
   onLink() {
     dismissKeyboard();
-    // TODO API integration and navigation and update realm
+    const { upi_address, confirm_upi_address } = this.state;
+    if (upi_address !== confirm_upi_address) return alert(I18n.t('upi_address_mismatch'));
+    const { currentUser } = this.props;
+    updateUserInfo({ upi: upi_address }, currentUser.auth_key)
+      .then(response => {
+        if (response.success) {
+          currentUser.update(this.state);
+          this.onSkip();
+        }
+      })
+      .catch(err => {});
   }
 
   onSkip() {
     dismissKeyboard();
-    // TODO navigation
+    const { state, dispatch } = this.props.navigation;
+    return replaceScreen({
+      routeName: 'GettingStarted',
+      currentScreenKey: state.key,
+      params,
+      dispatch
+    });
   }
 
   renderSkip() {

@@ -149,15 +149,19 @@ class BillDetails extends Component {
 
   onSubmit() {
     // TODO navigate to edit bill
-    const { dispatch } = this.props.navigation;
-    navigateToScreen({
-      routeName: 'NewBill',
-      key: 'NewBillFromBillDetails',
-      params: {
-        ...this.props.navigation.state.params
-      },
-      dispatch
-    });
+    const { currentUser } = this.props;
+    const { added_by } = this.props.navigation.state.params;
+    if (added_by === currentUser.mobile) {
+      const { dispatch } = this.props.navigation;
+      navigateToScreen({
+        routeName: 'NewBill',
+        key: 'NewBillFromBillDetails',
+        params: {
+          ...this.props.navigation.state.params
+        },
+        dispatch
+      });
+    } else alert(I18n.t('only_owner_can_edit_bill'));
   }
 
   renderText({
@@ -179,6 +183,7 @@ class BillDetails extends Component {
 
   renderSummaryUnderType(title, summary) {
     const { friends } = this.props.navigation.state.params;
+    const { currentUser } = this.props;
     const color = title === 'paid' ? COLORS.BALANCE_GREEN : COLORS.BALANCE_RED;
     return (
       <View style={styles.summaryTypeView}>
@@ -188,8 +193,9 @@ class BillDetails extends Component {
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => {
-            const friend = friends.filter(friend => friend.mobile == item)[0];
-            let name = friend ? friend.name : '';
+            let friend = friends.filter(friend => friend.mobile == item)[0];
+            if (friend.mobile === currentUser.mobile) friend = currentUser;
+            let name = friend && friend.name ? friend.name : item;
             if (!name) {
               const friendObject = realm.objects('User').filtered('mobile=$0', friend.mobile)[0];
               name = friendObject ? friendObject.name : friend.name;
