@@ -14,10 +14,8 @@ import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
-import { getGroups } from 'app/api/Groups';
 import { navigateToScreen } from 'app/helpers/NavigationHelper';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
-import { setGroups } from 'app/reducers/groups/Actions';
 import Balances from 'app/components/Balances';
 import EDText from 'app/components/EDText';
 import I18n from 'app/config/i18n';
@@ -60,30 +58,19 @@ class Groups extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      groups: [],
       amountToBeSettled,
       isOwed: false,
       spinner: false
     };
   }
 
-  componentWillMount() {
-    const { currentUser, setGroups } = this.props;
-    getGroups(currentUser).then(response => {
-      if (response.success) {
-        const groups = response.data.groups;
-        const groupsList = [];
-        groups.forEach(group => {
-          groupsList.push({ name: group.name, id: group.id });
-        });
-        setGroups(groupsList);
-        this.setState({ groups });
-      }
-    });
-  }
-
   onGroupSelection(groupDetails) {
-    alert('TODO');
+    const { dispatch } = this.props.navigation;
+    return navigateToScreen({
+      routeName: 'Bills',
+      params: { ...groupDetails },
+      dispatch
+    });
   }
 
   onCreateGroup() {
@@ -102,12 +89,12 @@ class Groups extends Component {
   }
 
   renderSingleGroup(groupDetails) {
-    const { name, balance, friends, mobile } = groupDetails;
+    const { name, balance, mobile, details } = groupDetails;
     return (
       <StatusCard
         onPress={() => this.onGroupSelection(groupDetails)}
         name={name}
-        details={friends}
+        details={details}
         balance={balance || 0}
         mobile={mobile}
         balanceType={'groups'}
@@ -116,7 +103,7 @@ class Groups extends Component {
   }
 
   renderGroups() {
-    const { groups } = this.state;
+    const { groups } = this.props;
     return (
       <FlatList
         data={groups}
@@ -127,9 +114,11 @@ class Groups extends Component {
   }
 
   renderHeader() {
-    // TODO
-    const { amountToBeSettled, isOwed } = this.state;
-    return <Balances to_pay={'15.00'} to_get={'344.00'} balance={'329.00'} />;
+    const { owed, owe } = this.props.balance;
+    const toPay = owe ? owe.toString() : '0';
+    const toGet = owed ? owed.toString() : '0';
+    const balance = (toGet - toPay).toString();
+    return <Balances to_pay={toGet} to_get={toGet} balance={balance} />;
   }
 
   render() {
@@ -154,12 +143,14 @@ Groups.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    currentUser: state.currentUser
+    currentUser: state.currentUser,
+    groups: state.groups.groupsData,
+    balance: state.groups.balance
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ setGroups }, dispatch);
+  return bindActionCreators({}, dispatch);
 }
 
 export default connect(

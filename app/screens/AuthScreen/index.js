@@ -1,21 +1,30 @@
-import React, { Component, PropTypes } from 'react'
-import { KeyboardAvoidingView, BackHandler, LayoutAnimation, Platform,  DeviceEventEmitter , StyleSheet, UIManager } from 'react-native'
-import { Image, View } from 'react-native-animatable'
+import React, { Component, PropTypes } from 'react';
+import {
+  KeyboardAvoidingView,
+  BackHandler,
+  LayoutAnimation,
+  Platform,
+  DeviceEventEmitter,
+  StyleSheet,
+  UIManager
+} from 'react-native';
 import { bindActionCreators } from 'redux';
-import imgLogo from '../../assets/logo.png'
-import metrics from '../../config/metrics'
-import { login } from 'app/api/User';
-import Opening from './Opening'
 import { connect } from 'react-redux';
-import { setUser } from '../../reducers/user/Actions'
+import { getGroupsAndFriends } from 'app/reducers/groups/Actions';
+import { Image, View } from 'react-native-animatable';
+import { login } from 'app/api/User';
 import { realm, User } from 'app/models/schema';
-import SignupForm from './SignupForm'
-import LoginForm from './LoginForm'
-import OTPForm from './OTPForm'
+import { setUser } from '../../reducers/user/Actions';
+import imgLogo from '../../assets/logo.png';
+import LoginForm from './LoginForm';
+import metrics from '../../config/metrics';
+import Opening from './Opening';
+import OTPForm from './OTPForm';
+import SignupForm from './SignupForm';
 
-const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.8
+const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.8;
 
-if (Platform.OS === 'android') UIManager.setLayoutAnimationEnabledExperimental(true)
+if (Platform.OS === 'android') UIManager.setLayoutAnimationEnabledExperimental(true);
 
 /**
  * The authentication screen.
@@ -56,74 +65,73 @@ class AuthScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      visibleForm: null,// Can be: null | SIGNUP | LOGIN | OTP
-      processType: 'SIGNUP' // Can be: SIGNUP | LOGIN 
+      visibleForm: null, // Can be: null | SIGNUP | LOGIN | OTP
+      processType: 'SIGNUP' // Can be: SIGNUP | LOGIN
     };
     this.backPressSubscriptions = new Set();
-    this.phone = ''
+    this.phone = '';
   }
 
-
   componentDidMount() {
-    DeviceEventEmitter.removeAllListeners('hardwareBackPress')
+    DeviceEventEmitter.removeAllListeners('hardwareBackPress');
     DeviceEventEmitter.addListener('hardwareBackPress', () => {
-      let invokeDefault = true
-      const subscriptions = []
+      let invokeDefault = true;
+      const subscriptions = [];
 
-      this.backPressSubscriptions.forEach(sub => subscriptions.push(sub))
+      this.backPressSubscriptions.forEach(sub => subscriptions.push(sub));
 
       for (let i = 0; i < subscriptions.reverse().length; i += 1) {
         if (subscriptions[i]()) {
-          invokeDefault = false
-          break
+          invokeDefault = false;
+          break;
         }
       }
 
       if (invokeDefault) {
-        BackHandler.exitApp()
+        BackHandler.exitApp();
       }
-    })
+    });
 
-    this.backPressSubscriptions.add(this.handleHardwareBack)
+    this.backPressSubscriptions.add(this.handleHardwareBack);
   }
 
   signup() {
     //TODO update or create user as per api response
     login(this.phone, this.formRefOtp.state.otp)
-    .then((response) => {
-      console.log('dhasd', response)
-      response.data.mobile = response.data.phone;
-      let current_user = realm.objects('User').filtered('auth_key=$0', response.data.auth_key.toString())[0];
-      if (current_user) {
-        current_user.update(response.data);
-      } else {
-        current_user = User.create(response.data);
-      }
-        this.props.setUser(current_user)
-        let routeName = response.data.signup ? 'UpiLinking' : 'Tabs'
+      .then(response => {
+        response.data.mobile = response.data.phone;
+        let current_user = realm
+          .objects('User')
+          .filtered('auth_key=$0', response.data.auth_key.toString())[0];
+        if (current_user) {
+          current_user.update(response.data);
+        } else {
+          current_user = User.create(response.data);
+        }
+        this.props.setUser(current_user);
+        this.props.getGroupsAndFriends(current_user);
+        let routeName = response.data.signup ? 'UpiLinking' : 'Tabs';
         this.props.navigation.navigate({
           routeName: routeName
-        })
-    })
-    .catch((err) => {
-
-    })
+        });
+      })
+      .catch(err => {});
   }
 
   componentWillUnmount = () => {
-    DeviceEventEmitter.removeAllListeners('hardwareBackPress')
-    this.backPressSubscriptions.clear()
-  }
+    DeviceEventEmitter.removeAllListeners('hardwareBackPress');
+    this.backPressSubscriptions.clear();
+  };
 
   handleHardwareBack = () => {
-    if (this.state.visibleForm === 'OTP' ) {
-      this.setState({visibleForm: this.state.processType})
-      return true
+    if (this.state.visibleForm === 'OTP') {
+      this.setState({ visibleForm: this.state.processType });
+      return true;
     }
     return false;
-  }
+  };
 
-  componentWillUpdate (nextProps) {
+  componentWillUpdate(nextProps) {
     // If the user has logged/signed up succesfully start the hide animation
     // if (!this.props.isLoggedIn && nextProps.isLoggedIn) {
     //   this._hideAuthScreen()
@@ -132,50 +140,48 @@ class AuthScreen extends Component {
 
   _hideAuthScreen = async () => {
     // 1. Slide out the form container
-    await this._setVisibleForm(null)
+    await this._setVisibleForm(null);
     // 2. Fade out the logo
-    await this.logoImgRef.fadeOut(800)
+    await this.logoImgRef.fadeOut(800);
     // 3. Tell the container (app.js) that the animation has completed
-    this.props.onLoginAnimationCompleted()
-  }
+    this.props.onLoginAnimationCompleted();
+  };
 
-  _setVisibleForm = async (visibleForm) => {
-    let  processType = this.state.visibleForm;
+  _setVisibleForm = async visibleForm => {
+    let processType = this.state.visibleForm;
     // 1. Hide the current form (if any)
     if (this.state.visibleForm && this.formRef && this.formRef.hideForm) {
       if (this.state.visibleForm === 'OTP') {
         await this.formRefOtp.hideForm();
-        
       } else {
-        await this.formRef.hideForm()
+        await this.formRef.hideForm();
       }
-      
     }
     // 2. Configure a spring animation for the next step
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring)
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
     // 3. Set the new visible form
     if (this.formRef) {
-      this.phone = this.formRef.state.phone;  
+      this.phone = this.formRef.state.phone;
     }
-    this.setState({ visibleForm, processType})
-  }
+    this.setState({ visibleForm, processType });
+  };
 
-  render () {
-    const { isLoggedIn, isLoading, signup, login } = this.props
-    const { visibleForm, processType } = this.state
+  render() {
+    const { isLoggedIn, isLoading, signup, login } = this.props;
+    const { visibleForm, processType } = this.state;
     // The following style is responsible of the "bounce-up from bottom" animation of the form
-    const formStyle = (!visibleForm) ? { height: 0 } : { marginTop: 40 }
+    const formStyle = !visibleForm ? { height: 0 } : { marginTop: 40 };
     return (
       <View style={styles.container}>
         <Image
           animation={'bounceIn'}
           duration={1200}
           delay={200}
-          ref={(ref) => this.logoImgRef = ref}
+          ref={ref => (this.logoImgRef = ref)}
           style={styles.logoImg}
           source={imgLogo}
         />
-        {(!visibleForm && !isLoggedIn) && (
+        {!visibleForm && !isLoggedIn && (
           <Opening
             // onCreateAccountPress={() => this._setVisibleForm('SIGNUP')}
             onSignInPress={() => this._setVisibleForm('LOGIN')}
@@ -186,18 +192,18 @@ class AuthScreen extends Component {
           behavior={'padding'}
           style={[formStyle, styles.bottom]}
         >
-          {(visibleForm === 'SIGNUP') && (
+          {visibleForm === 'SIGNUP' && (
             <SignupForm
-              ref={(ref) => this.formRef = ref}
+              ref={ref => (this.formRef = ref)}
               onLoginLinkPress={() => this._setVisibleForm('LOGIN')}
               phone={this.phone}
               onSignupPress={() => this._setVisibleForm('OTP')}
               isLoading={isLoading}
             />
           )}
-          {(visibleForm === 'OTP') && (
+          {visibleForm === 'OTP' && (
             <OTPForm
-              ref={(ref) => this.formRefOtp = ref}
+              ref={ref => (this.formRefOtp = ref)}
               onLoginLinkPress={() => this._setVisibleForm('LOGIN')}
               onOTPPress={() => this.signup()}
               processType={processType}
@@ -205,9 +211,9 @@ class AuthScreen extends Component {
               isLoading={isLoading}
             />
           )}
-          {(visibleForm === 'LOGIN') && (
+          {visibleForm === 'LOGIN' && (
             <LoginForm
-              ref={(ref) => this.formRef = ref}
+              ref={ref => (this.formRef = ref)}
               onSignupLinkPress={() => this._setVisibleForm('SIGNUP')}
               onLoginPress={() => this._setVisibleForm('OTP')}
               phone={this.phone}
@@ -216,7 +222,7 @@ class AuthScreen extends Component {
           )}
         </KeyboardAvoidingView>
       </View>
-    )
+    );
   }
 }
 
@@ -240,14 +246,14 @@ const styles = StyleSheet.create({
   bottom: {
     backgroundColor: '#068679'
   }
-})
+});
 
 function mapStateToProps(state) {
   return {};
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setUser}, dispatch);
+  return bindActionCreators({ getGroupsAndFriends, setUser }, dispatch);
 }
 
 export default connect(

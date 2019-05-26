@@ -2,19 +2,18 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
+import { Dimensions, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { FONT_SIZES } from 'app/config/ENV';
-import { resetAndGoToScreen } from 'app/helpers/NavigationHelper';
+import { getUserInfo, logOut, updateUserInfo } from 'app/api/User';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { resetAndGoToScreen } from 'app/helpers/NavigationHelper';
 import dismissKeyboard from 'dismissKeyboard';
 import EDText from 'app/components/EDText';
 import EDTextInput from 'app/components/EDTextInput';
+import Entypo from 'react-native-vector-icons/Entypo';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
-import { Dimensions, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
-import Entypo from 'react-native-vector-icons/Entypo';
 import ToolBar from 'app/components/ToolBar';
-import { getUserInfo, logOut, updateUserInfo } from 'app/api/User';
-
 
 const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -66,35 +65,33 @@ class Settings extends Component {
 
   constructor(props) {
     super(props);
-    let { name , mobile, upi_address, email } = this.props.currentUser;
+    let { name, mobile, upi_address, email } = this.props.currentUser;
     this.state = {
-      name:  name || '',
+      name: name || '',
       phone: mobile || '',
       upi_address: upi_address || '',
       email: email || ''
-    }
+    };
   }
 
   componentWillMount() {
     let { currentUser } = this.props;
     getUserInfo(currentUser.auth_key)
-    .then((response) => {
-      if (response.success) {
-        response.mobile = response.phone;
-        response.upi_address = response.upi;
-        currentUser.update(response);
-        let { name , phone, upi_address, email } = response
-        this.setState({
-          name,
-          phone,
-          upi_address,
-          email
-        })
-      }
-    })
-    .catch((err) => {
-
-    })
+      .then(response => {
+        if (response.success) {
+          response.mobile = response.phone;
+          response.upi_address = response.upi;
+          currentUser.update(response);
+          let { name, phone, upi_address, email } = response;
+          this.setState({
+            name,
+            phone,
+            upi_address,
+            email
+          });
+        }
+      })
+      .catch(err => {});
   }
 
   onChangeText(stateKey, text) {
@@ -104,27 +101,23 @@ class Settings extends Component {
   onSave() {
     let { currentUser } = this.props;
     updateUserInfo(this.state, currentUser.auth_key)
-    .then((response) => {
-      if (response.success) {
-        currentUser.update(this.state);
-      }
-    })
-    .catch((err) => {
-
-    })
+      .then(response => {
+        if (response.success) {
+          currentUser.update(this.state);
+        }
+      })
+      .catch(err => {});
   }
 
   logOut() {
     let { currentUser } = this.props;
     logOut(currentUser)
-    .then((response) => {
-      if (response.success) {
-        return resetAndGoToScreen({ routeName: 'AuthScreen', dispatch });
-      }
-    })
-    .catch((err) => {
-
-    })
+      .then(response => {
+        if (response.success) {
+          return resetAndGoToScreen({ routeName: 'AuthScreen', dispatch });
+        }
+      })
+      .catch(err => {});
   }
 
   renderEditableFiled(stateKey, icon, editable, keyboardType = 'default') {
@@ -162,22 +155,47 @@ class Settings extends Component {
   render() {
     const { goBack } = this.props.navigation;
     return (
-      <KeyboardAwareScrollView style={{ flex: 1}}>
-        <ToolBar title={I18n.t('settings')} leftImage="back" onLeft={() => goBack()}  rightImage="tick" onRight={() => this.onSave()}/>
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20,  height: height/2, maxHeight: height/2}}>
+      <KeyboardAwareScrollView style={{ flex: 1 }}>
+        <ToolBar
+          title={I18n.t('settings')}
+          leftImage="back"
+          onLeft={() => goBack()}
+          rightImage="tick"
+          onRight={() => this.onSave()}
+        />
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: 20,
+            height: height / 2,
+            maxHeight: height / 2
+          }}
+        >
           {this.renderEditableFiled('name', 'name', true)}
-          {this.renderEditableFiled('phone', 'phone', false,'phone-pad')}
+          {this.renderEditableFiled('phone', 'phone', false, 'phone-pad')}
           {this.renderEditableFiled('upi_address', 'wallet_43', true)}
-          {this.renderEditableFiled('email', 'email', true,'email-address')}
+          {this.renderEditableFiled('email', 'email', true, 'email-address')}
         </View>
-        <View style={{  height: height/2 - 100, justifyContent: 'flex-end', padding: 15 , alignItems: 'center'}}>
-          <TouchableOpacity   style={{ backgroundColor: '#1da370' }} onPress={() => {this.logOut()}}>
-            <EDText style={{padding: 10, color: '#ffffff'}}>{I18n.t('logout')}</EDText>
+        <View
+          style={{
+            height: height / 2 - 100,
+            justifyContent: 'flex-end',
+            padding: 15,
+            alignItems: 'center'
+          }}
+        >
+          <TouchableOpacity
+            style={{ backgroundColor: '#1da370' }}
+            onPress={() => {
+              this.logOut();
+            }}
+          >
+            <EDText style={{ padding: 10, color: '#ffffff' }}>{I18n.t('logout')}</EDText>
           </TouchableOpacity>
         </View>
       </KeyboardAwareScrollView>
-
-
     );
   }
 }

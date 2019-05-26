@@ -65,16 +65,16 @@ export default class StatusCard extends Component {
   }
 
   renderSummaryDetails(detail, i) {
-    let oweText = detail.name + ' ' + I18n.t('owes_you') + ' ';
+    let oweText = detail.id + ' ' + I18n.t('owes_you') + ' ';
     let color = COLORS.BALANCE_GREEN;
-    if (detail.amount < 0) {
-      oweText = I18n.t('you_owe') + ' ' + detail.name + ' ';
+    if (detail.balance < 0) {
+      oweText = I18n.t('you_owe') + ' ' + detail.id + ' ';
       color = COLORS.BALANCE_RED;
     }
     return (
       <EDText style={styles.details} key={i}>
         {oweText}
-        <EDText style={{ ...styles.details, color }}>{'₹' + detail.amount}</EDText>
+        <EDText style={{ ...styles.details, color }}>{'₹' + detail.balance}</EDText>
       </EDText>
     );
   }
@@ -83,14 +83,15 @@ export default class StatusCard extends Component {
     const { details, balance } = this.props;
     if (!balance || !details || !details.length) return null;
     let count = 0;
+    const finalDetails = details.filter(detail => detail.balance);
     return (
       <View>
-        {details.map((detail, i) => {
+        {finalDetails.map((detail, i) => {
           count += 1;
           if (count === 3)
             return (
               <EDText style={styles.details} key={i}>
-                {I18n.t('plus_other_balances', { count: details.length - 2 })}
+                {I18n.t('plus_other_balances', { count: finalDetails.length - 2 })}
               </EDText>
             );
           if (count > 3) return null;

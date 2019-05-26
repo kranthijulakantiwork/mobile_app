@@ -1,7 +1,10 @@
 // @flow
 
 const Types = {
-  SET_GROUPS: 'SET_GROUPS'
+  SET_GROUPS: 'SET_GROUPS',
+  SET_GROUPS_DATA: 'SET_GROUPS_DATA',
+  SET_FRIENDS_DATA: 'SET_FRIENDS_DATA',
+  SET_USER_BALANCE: 'SET_USER_BALANCE'
 };
 
 export default Types;

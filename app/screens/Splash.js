@@ -11,11 +11,12 @@ import {
 import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
-import firebase from 'react-native-firebase';
-import SmsAndroid from 'react-native-get-sms-android';
 import { getCurrentUser } from 'app/models/User';
+import { getGroupsAndFriends } from 'app/reducers/groups/Actions';
 import { resetAndGoToScreen } from 'app/helpers/NavigationHelper';
 import { setUser } from 'app/reducers/user/Actions';
+import firebase from 'react-native-firebase';
+import SmsAndroid from 'react-native-get-sms-android';
 
 class Splash extends Component {
   static navigationOptions = {
@@ -62,11 +63,12 @@ class Splash extends Component {
   }
 
   doSplashActions() {
-    const { setUser, navigation } = this.props;
+    const { setUser, navigation, getGroupsAndFriends } = this.props;
     const { dispatch } = navigation;
     const response = getCurrentUser();
     if (response.success && response.currentUser) {
       setUser(response.currentUser);
+      getGroupsAndFriends(response.currentUser);
       return resetAndGoToScreen({ routeName: 'Tabs', dispatch });
     }
     return resetAndGoToScreen({ routeName: 'AuthScreen', dispatch });
@@ -78,11 +80,13 @@ class Splash extends Component {
 }
 
 function mapStateToProps(state) {
-  return {};
+  return {
+    currentUser: state.currentUser
+  };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ setUser }, dispatch);
+  return bindActionCreators({ setUser, getGroupsAndFriends }, dispatch);
 }
 
 export default connect(

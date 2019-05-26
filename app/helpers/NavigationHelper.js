@@ -26,6 +26,7 @@ import { FONT_SIZES } from 'app/config/ENV';
 import Alerts from 'app/screens/Alerts';
 import AuthScreen from 'app/screens/AuthScreen';
 import BillDetails from 'app/screens/BillDetails';
+import Bills from 'app/screens/Bills';
 import CreateGroup from 'app/screens/CreateGroup';
 import DrawerScreen from 'app/screens/DrawerScreen';
 import EDText from 'app/components/EDText';
@@ -143,7 +144,10 @@ function headerTitle(children) {
 
 function headerRight(navigation) {
   return (
-    <TouchableOpacity onPress={() => alert('TODO')} style={styles.headerButton}>
+    <TouchableOpacity
+      onPress={() => navigateToScreen({ routeName: 'Settings', dispatch: navigation.dispatch })}
+      style={styles.headerButton}
+    >
       <Image source={Images.settings} />
     </TouchableOpacity>
   );
@@ -281,12 +285,12 @@ const AppNavigator = createStackNavigator(
     CreateGroup: { screen: CreateGroup },
     NewBill: { screen: NewBill },
     BillDetails: { screen: BillDetails },
+    Bills: { screen: Bills },
     SelectFriends: { screen: SelectFriends },
     Payment: { screen: Payment },
     DrawerNavigator: { screen: DrawerNavigator },
     SignIn: { screen: SignIn },
     SettlementDetails: { screen: SettlementDetailView }
-    
   },
   navigationOptions
 );
