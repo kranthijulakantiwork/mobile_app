@@ -27,7 +27,44 @@ import { getFriendsBills, getGroupsBills } from 'app/api/Bills';
 
 const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
-  container: { flex: 1 }
+  container: { flex: 1 },
+  billButton: {
+    width: (2 * width) / 3,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    marginHorizontal: 10,
+    borderRadius: 15,
+    backgroundColor: COLORS.WHITE
+  },
+  billName: { color: COLORS.BILL_DETAILS_BLACK, fontSize: 12, marginTop: 10 },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.SEPARATOR_WHITE
+  },
+  settleButton: { backgroundColor: '#13b4f0', borderRadius: 25, marginVertical: 10 },
+  settleButtonText: {
+    color: COLORS.WHITE,
+    fontSize: FONT_SIZES.H1,
+    textAlign: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 10
+  },
+  addButton: { position: 'absolute', bottom: 75, right: 30 },
+  addButtonTextContainer: {
+    backgroundColor: COLORS.APP_THEME_GREEN,
+    height: 60,
+    width: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  addButtonText: {
+    color: COLORS.WHITE,
+    fontSize: 40,
+    includeFontPadding: false
+  }
 });
 
 class Bills extends Component {
@@ -42,24 +79,40 @@ class Bills extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      bills: []
+      bills: [],
+      spinner: false
     };
   }
 
   componentWillMount() {
     const { isFriend, id } = this.props.navigation.state.params;
     const { currentUser } = this.props;
+    setSpinner(this);
     if (isFriend) {
       getFriendsBills(currentUser, id).then(response => {
+        removeSpinner(this);
         if (response.success) {
           this.setState({ bills: response.data });
         }
       });
     } else {
       getGroupsBills(currentUser, id).then(response => {
+        removeSpinner(this);
         if (response.success) {
           this.setState({ bills: response.data });
         }
+      });
+    }
+  }
+
+  onGroupSettingsClick() {
+    const { isFriend } = this.props.navigation.state.params;
+    const { dispatch } = this.props.navigation;
+    if (!isFriend) {
+      return navigateToScreen({
+        routeName: 'GroupSettings',
+        params: this.props.navigation.state.params,
+        dispatch
       });
     }
   }
@@ -76,37 +129,61 @@ class Bills extends Component {
         ...billDetails,
         bill_name: billDetails.name,
         added_on: billDetails.addedOn,
+        added_by: billDetails.created_by,
         friends
       },
       dispatch
     });
   }
 
+  onSettle() {
+    const { dispatch } = this.props.navigation;
+    const { isFriend, balance, mobile } = this.props.navigation.state.params;
+    if (isFriend) {
+      let gets = balance && balance > 0 ? true : false;
+      return navigateToScreen({
+        routeName: 'Settlement',
+        params: {
+          amount: balance ? Math.abs(balance).toString() : '0',
+          mobile,
+          gets
+        },
+        dispatch
+      });
+    } else {
+      return navigateToScreen({
+        routeName: 'SettleUpFriends',
+        params: this.props.navigation.state.params,
+        dispatch
+      });
+    }
+  }
+
+  onAddBill() {
+    const { dispatch } = this.props.navigation;
+    const { id } = this.props.navigation.state.params;
+    return navigateToScreen({
+      routeName: 'NewBill',
+      params: { group: id },
+      dispatch
+    });
+  }
+
+  renderAddButton() {
+    return (
+      <TouchableOpacity onPress={() => this.onAddBill()} style={styles.addButton}>
+        <View style={styles.addButtonTextContainer}>
+          <EDText style={styles.addButtonText}>+</EDText>
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
   renderFooter() {
     return (
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: COLORS.SEPARATOR_WHITE
-        }}
-      >
-        <TouchableOpacity
-          onPress={() => alert('TODO')}
-          style={{ backgroundColor: '#13b4f0', borderRadius: 25, marginVertical: 10 }}
-        >
-          <EDText
-            style={{
-              color: COLORS.WHITE,
-              fontSize: FONT_SIZES.H1,
-              textAlign: 'center',
-              paddingHorizontal: 15,
-              paddingVertical: 10
-            }}
-          >
-            {'SETTLE UP'}
-          </EDText>
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={() => this.onSettle()} style={styles.settleButton}>
+          <EDText style={styles.settleButtonText}>{I18n.t('settle')}</EDText>
         </TouchableOpacity>
       </View>
     );
@@ -177,19 +254,12 @@ class Bills extends Component {
       <TouchableOpacity onPress={() => this.goToBillDetails(billDetails)}>
         <View
           style={{
-            width: (2 * width) / 3,
-            alignSelf: created_by === currentUser.mobile ? 'flex-end' : 'flex-start',
-            paddingHorizontal: 15,
-            paddingVertical: 10,
-            marginHorizontal: 10,
-            borderRadius: 15,
-            backgroundColor: COLORS.WHITE
+            ...styles.billButton,
+            alignSelf: created_by === currentUser.mobile ? 'flex-end' : 'flex-start'
           }}
         >
           <EDText style={{ fontSize: 22, color }}>{text}</EDText>
-          <EDText style={{ color: COLORS.BILL_DETAILS_BLACK, fontSize: 12, marginTop: 10 }}>
-            {'Bill Name : ' + name}
-          </EDText>
+          <EDText style={styles.billName}>{'Bill Name : ' + name}</EDText>
         </View>
       </TouchableOpacity>
     );
@@ -214,12 +284,22 @@ class Bills extends Component {
 
   render() {
     const { goBack, state } = this.props.navigation;
-    const { name, mobile } = state.params;
+    const { name, mobile, isFriend } = state.params;
+    const rightImage = isFriend ? '' : 'settings';
+    const { spinner } = this.state;
     return (
       <View style={styles.container}>
-        <ToolBar title={name || mobile} leftImage="back" onLeft={() => goBack()} />
+        <ToolBar
+          title={name || mobile}
+          leftImage="back"
+          onLeft={() => goBack()}
+          rightImage={rightImage}
+          onRight={() => this.onGroupSettingsClick()}
+        />
         {this.renderBills()}
         {this.renderFooter()}
+        {this.renderAddButton()}
+        {spinner && <Spinner />}
       </View>
     );
   }

@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import {
+  Alert,
   Dimensions,
   FlatList,
   Image,
@@ -10,15 +11,15 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { addGroup } from 'app/api/Groups';
 import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
 import { getGroupsAndFriends } from 'app/reducers/groups/Actions';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { navigateToScreen, replaceScreen } from 'app/helpers/NavigationHelper';
+import { realm } from 'app/models/schema';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
+import { updateGroup } from 'app/api/Groups';
 import Avatar from 'app/components/Avatar';
 import dismissKeyboard from 'dismissKeyboard';
 import EDText from 'app/components/EDText';
@@ -27,6 +28,7 @@ import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
 import PropTypes from 'prop-types';
 import SelectFriends from 'app/screens/SelectFriends';
+import showToast from 'app/helpers/Toast';
 import ToolBar from 'app/components/ToolBar';
 
 const { height, width } = Dimensions.get('window');
@@ -73,7 +75,7 @@ const styles = StyleSheet.create({
   footerText: { marginLeft: 15, color: COLORS.TEXT_LIGHT_GRAY, fontSize: FONT_SIZES.H20 }
 });
 
-class CreateGroup extends Component {
+class GroupSettings extends Component {
   static propTypes = {
     navigation: PropTypes.object.isRequired
   };
@@ -86,18 +88,41 @@ class CreateGroup extends Component {
     super(props);
     // TODO Add current user to group automatically
     const { currentUser } = this.props;
+    const { name, friends, intelligentSettlements } = this.props.navigation.state.params;
     this.state = {
-      group_name: '',
-      friends: [{ name: currentUser.name, mobile: currentUser.mobile }],
-      friendsMobileNumber: [currentUser.mobile],
-      intelligentSettlements: false,
+      group_name: name,
+      friends: this.getFriends(),
+      friendsMobileNumber: friends.map(friend => friend.id),
+      intelligentSettlements,
       showFriendsList: false,
       spinner: false
     };
   }
 
+  getFriends() {
+    const { friends } = this.props.navigation.state.params;
+    let friendsDetails = [];
+    friends.forEach(friend => {
+      const friendObject = realm.objects('Contact').filtered('mobile=$0', friend.id)[0];
+      friendsDetails.push({ name: friendObject.name, mobile: friend.id, balance: friend.balance });
+    });
+    return friendsDetails;
+  }
+
   onChangeText(stateKey, text) {
     this.setState({ [stateKey]: text });
+  }
+
+  onFriendClick(index) {
+    Alert.alert(
+      I18n.t('remove_group_member'),
+      I18n.t('are_you_sure_you_want_to_remove_this_person_from_group'),
+      [
+        { text: I18n.t('cancel'), onPress: () => {} },
+        { text: I18n.t('ok'), onPress: () => this.onRemoveFriend(index) }
+      ],
+      { cancelable: true }
+    );
   }
 
   onRemoveFriend(index) {
@@ -126,13 +151,13 @@ class CreateGroup extends Component {
     dismissKeyboard();
     const { currentUser, getGroupsAndFriends } = this.props;
     const { group_name, friends, intelligentSettlements } = this.state;
+    const { id } = this.props.navigation.state.params;
     if (!group_name) return null;
     this.setState({ spinner: true });
-    addGroup(currentUser, group_name, friends, intelligentSettlements).then(response => {
+    updateGroup(currentUser, group_name, friends, intelligentSettlements, id).then(response => {
       if (response.success) {
-        // TODO Navigate to Group Bills screen
-        getGroupsAndFriends();
-        this.props.navigation.goBack();
+        getGroupsAndFriends(currentUser);
+        showToast({ message: response.data.status });
       }
       this.setState({ spinner: false });
     });
@@ -162,11 +187,24 @@ class CreateGroup extends Component {
     );
   }
 
+  renderBalance(balance) {
+    const color = balance < 0 ? COLORS.BALANCE_RED : COLORS.BALANCE_GREEN;
+    const balanceText = balance < 0 ? I18n.t('owes') : I18n.t('gets_back');
+    if (balance) {
+      return (
+        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+          <EDText style={{ color, fontSize: FONT_SIZES.H4 }}>{balanceText}</EDText>
+          <EDText style={{ color, fontSize: FONT_SIZES.H2 }}>{Math.abs(balance)}</EDText>
+        </View>
+      );
+    }
+    return null;
+  }
+
   renderSingleFriend(friend, index) {
-    const { currentUser } = this.props;
-    const disabled = friend.mobile === currentUser.mobile;
+    const disabled = friend.balance ? true : false;
     return (
-      <TouchableOpacity onPress={() => this.onRemoveFriend(index)} disabled={disabled}>
+      <TouchableOpacity onPress={() => this.onFriendClick(index)} disabled={disabled}>
         <View style={styles.singleFriendContainer}>
           <View
             style={{
@@ -194,6 +232,7 @@ class CreateGroup extends Component {
               </EDText>
             </View>
           </View>
+          {this.renderBalance(friend['balance'])}
           {disabled ? null : (
             <EDText style={{ color: COLORS.BALANCE_RED, fontSize: FONT_SIZES.H22, marginLeft: 5 }}>
               {'X'}
@@ -275,10 +314,11 @@ class CreateGroup extends Component {
   render() {
     const { spinner } = this.state;
     const { goBack } = this.props.navigation;
+    const { name } = this.props.navigation.state.params;
     return (
       <View style={styles.container}>
         <ToolBar
-          title={I18n.t('new_group')}
+          title={I18n.t('edit_group_settings')}
           leftImage="back"
           onLeft={() => goBack()}
           onRight={() => this.onSubmit()}
@@ -306,7 +346,7 @@ class CreateGroup extends Component {
   }
 }
 
-CreateGroup.propTypes = {
+GroupSettings.propTypes = {
   navigation: PropTypes.object
 };
 
@@ -323,4 +363,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(CreateGroup);
+)(GroupSettings);

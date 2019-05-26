@@ -11,10 +11,26 @@ module.exports = {
       intelligentSettlements
     };
     const apiParams = {
-      name: 'add_group',
+      name: 'groups',
       data: params
     };
     const response = await Http.put(apiParams);
+    return response;
+  },
+
+  updateGroup: async (currentUser, groupName, friends, intelligentSettlements, id) => {
+    const params = {
+      auth_key: currentUser.auth_key,
+      name: groupName,
+      friends: friends.map(friend => friend.mobile),
+      intelligentSettlements,
+      id
+    };
+    const apiParams = {
+      name: 'groups',
+      data: params
+    };
+    const response = await Http.post(apiParams);
     return response;
   },
 
@@ -23,7 +39,7 @@ module.exports = {
       auth_key: currentUser.auth_key
     };
     const apiParams = {
-      name: 'get_groups',
+      name: 'groups',
       data: params
     };
     const response = await Http.get(apiParams);

@@ -106,7 +106,7 @@ class UpiLinking extends Component {
 
   renderSkip() {
     return (
-      <TouchableOpacity onPress={() => alert('TODO')} style={styles.skipButton}>
+      <TouchableOpacity onPress={() => this.onSkip()} style={styles.skipButton}>
         <EDText style={styles.skipButtonText}>{I18n.t('skip')}</EDText>
       </TouchableOpacity>
     );
@@ -118,7 +118,7 @@ class UpiLinking extends Component {
 
   renderLinkButton() {
     return (
-      <TouchableOpacity onPress={() => alert('TODO')} style={styles.linkButton}>
+      <TouchableOpacity onPress={() => this.onLink()} style={styles.linkButton}>
         <EDText style={styles.linkButtonText}>{I18n.t('link')}</EDText>
       </TouchableOpacity>
     );

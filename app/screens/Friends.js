@@ -41,20 +41,10 @@ const styles = StyleSheet.create({
   footerText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H3 }
 });
 
-const FRIENDS_DETAILS = {
-  name: 'Kranthi',
-  owed: true,
-  balance: '200',
-  mobile: '9491267523'
-};
-const amountToBeSettled = '300';
-
 class Friends extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      amountToBeSettled,
-      isOwed: false,
       spinner: false
     };
   }
@@ -125,7 +115,7 @@ class Friends extends Component {
         <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
           {this.renderHeader()}
           {this.renderFriends()}
-          {this.renderFooter()}
+          {/* {this.renderFooter()} */}
           <View style={{ width, height: 100 }} />
         </ScrollView>
         {spinner && <Spinner />}

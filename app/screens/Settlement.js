@@ -1,14 +1,20 @@
 import React, { Component } from 'react';
 import { Dimensions, View, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { FONT_SIZES } from 'app/config/ENV';
+import { getGroupsAndFriends } from 'app/reducers/groups/Actions';
+import { getUPIAddress } from 'app/api/Friends';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { recordSettlement } from 'app/api/Settlement';
 import { resetAndGoToScreen } from 'app/helpers/NavigationHelper';
 import dismissKeyboard from 'dismissKeyboard';
 import EDText from 'app/components/EDText';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
 import RNUpiPayment from 'react-native-upi-payment';
+import showToast from 'app/helpers/Toast';
 import ToolBar from 'app/components/ToolBar';
 
 const { height, width } = Dimensions.get('window');
@@ -70,46 +76,88 @@ const styles = StyleSheet.create({
   }
 });
 
-export default class Settlement extends Component {
+class Settlement extends Component {
   static navigationOptions = {
     header: null
   };
 
   constructor(props) {
     super(props);
+    const { amount, mobile } = this.props.navigation.state.params;
     this.state = {
-      amount: '500'
+      amount,
+      upiId: '',
+      name: mobile,
+      transactionNote: 'Settlemint'
     };
+  }
+
+  componentWillMount() {
+    const { currentUser } = this.props;
+    const { mobile } = this.props.navigation.state.params;
+    getUPIAddress(currentUser, mobile).then(response => {
+      if (response.success) {
+        this.setState({ upiId: response.data.upi });
+      }
+    });
   }
 
   onChangeText(stateKey, text) {
     this.setState({ [stateKey]: text });
   }
 
+  onDone(e) {
+    if (e['Status'] === 'SUCCESS' && e['responseCode'] === '00') {
+      const { txnRef, txnId } = e;
+      const { amount } = this.state;
+      const { mobile, gets, key } = this.props.navigation.state.params;
+      const { currentUser, getGroupsAndFriends } = this.props;
+      const paidBy = gets ? mobile : currentUser.mobile;
+      const paidTo = gets ? currentUser.mobile : mobile;
+      recordSettlement(currentUser, { paidBy, paidTo, amount, txnRef, txnId }).then(response => {
+        if (response.success) {
+          getGroupsAndFriends();
+          showToast({ message: response.data.status });
+          this.props.navigation.pop(key);
+        }
+      });
+    }
+  }
+
   onPayThroughUPI() {
-    // TODO Take to UPI apps using react-native-upi-payment and api integration
-    alert('TODO');
     dismissKeyboard();
-    // const { upiId, name, transactionNote, amount } = this.state;
-    // if (!upiId) return alert('Please enter UPI ID.');
-    // if (!amount) return alert('Please enter Amount.');
-    // RNUpiPayment.initializePayment(
-    //   {
-    //     vpa: upiId,
-    //     payeeName: name,
-    //     amount,
-    //     transactionNote,
-    //     transactionRef: 'aasf-332-aoei-fn'
-    //   },
-    //   e => this.onDone(e),
-    //   e => this.onDone(e)
-    // );
+    const { upiId, name, transactionNote, amount } = this.state;
+    if (!upiId) return alert('Please enter UPI ID.');
+    if (!amount) return alert('Please enter Amount.');
+    RNUpiPayment.initializePayment(
+      {
+        vpa: upiId,
+        payeeName: name,
+        amount,
+        transactionNote,
+        transactionRef: ''
+      },
+      e => this.onDone(e),
+      e => this.onDone(e)
+    );
   }
 
   onRecordSettlement() {
     // TODO API integration
-    alert('TODO');
     dismissKeyboard();
+    const { amount } = this.state;
+    if (!amount) return null;
+    const { mobile, gets, key } = this.props.navigation.state.params;
+    const { currentUser, getGroupsAndFriends } = this.props;
+    const paidBy = gets ? mobile : currentUser.mobile;
+    const paidTo = gets ? currentUser.mobile : mobile;
+    recordSettlement(currentUser, { paidBy, paidTo, amount }).then(response => {
+      if (response.success) {
+        getGroupsAndFriends();
+        showToast({ message: response.data.status });
+        this.props.navigation.pop(key);
+      }
+    });
   }
 
   renderPayThroughUPIButton() {
@@ -132,10 +180,13 @@ export default class Settlement extends Component {
   }
 
   renderAddBillAndrecordSettlementButtons() {
+    const { gets } = this.props.navigation.state.params;
+    const { upiId } = this.state;
+    const showUPI = !gets && upiId ? true : false;
     return (
       <View style={styles.buttonsContainer}>
         {this.renderRecordSettlementButton()}
-        {this.renderPayThroughUPIButton()}
+        {showUPI && this.renderPayThroughUPIButton()}
       </View>
     );
   }
@@ -180,12 +231,13 @@ export default class Settlement extends Component {
   }
 
   renderPayingText() {
-    // TODO
-    // const { paidTo } = this.props.navigation.state.params;
-    const paidTo = 'Jana Guzman';
+    const { mobile, gets } = this.props.navigation.state.params;
+    const text = gets
+      ? `${mobile} ${I18n.t('is_paying_you')}`
+      : I18n.t('you_are_paying', { payeeName: mobile });
     return (
       <EDText style={{ color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H4, marginVertical: 10 }}>
-        {I18n.t('you_are_paying', { payeeName: paidTo })}
+        {text}
       </EDText>
     );
   }
@@ -236,3 +288,18 @@ export default class Settlement extends Component {
     );
   }
 }
+
+function mapStateToProps(state) {
+  return {
+    currentUser: state.currentUser
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ getGroupsAndFriends }, dispatch);
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Settlement);

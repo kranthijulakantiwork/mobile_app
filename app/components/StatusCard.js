@@ -37,11 +37,6 @@ const styles = StyleSheet.create({
   balanceContainer: { flex: 1 },
   balanceText: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H4, textAlign: 'right' },
   balanceValue: { color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H20, textAlign: 'right' },
-  memberCountOuterContainer: {
-    flex: 1,
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end'
-  },
   memberCountInnerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -56,7 +51,8 @@ export default class StatusCard extends Component {
     details: PropTypes.array,
     balance: PropTypes.number,
     balanceType: PropTypes.string,
-    mobile: PropTypes.string
+    mobile: PropTypes.string,
+    friends: PropTypes.array
   };
 
   constructor(props) {
@@ -116,23 +112,20 @@ export default class StatusCard extends Component {
   }
 
   renderMemberCount() {
-    const { balanceType, details } = this.props;
+    const { balanceType, friends } = this.props;
     if (balanceType === 'groups') {
       return (
-        <View style={styles.memberCountOuterContainer}>
-          <View style={styles.memberCountInnerContainer}>
-            <Image source={Images.member} />
-            <EDText style={{ fontSize: FONT_SIZES.H6, color: COLORS.GRAY, marginLeft: 5 }}>
-              {details.length}
-            </EDText>
-          </View>
+        <View style={styles.memberCountInnerContainer}>
+          <Image source={Images.member} />
+          <EDText style={{ fontSize: FONT_SIZES.H6, color: COLORS.GRAY, marginLeft: 5 }}>
+            {friends.length}
+          </EDText>
         </View>
       );
     }
     return null;
   }
 
-  // TODO Change group icon and customize for only groups
   renderBalance() {
     const { balance, balanceType } = this.props;
     let color = COLORS.BALANCE_GREEN;
@@ -172,11 +165,12 @@ export default class StatusCard extends Component {
   renderAvatar() {
     const { name, balanceType, mobile } = this.props;
     // TODO get last edited date as Apr 4
-    const lastEdited =
-      balanceType === 'groups'
-        ? I18n.t('edited') + ' ' + 'Apr 4'
-        : I18n.t('updated') + ' ' + 'Apr 4';
-    return <Avatar name={name || mobile} avatarSubText={lastEdited} />;
+    // const lastEdited =
+    // balanceType === 'groups'
+    //   ? I18n.t('edited') + ' ' + 'Apr 4'
+    //   : I18n.t('updated') + ' ' + 'Apr 4';
+    // avatarSubText={lastEdited}
+    return <Avatar name={name || mobile} />;
   }
 
   render() {
