@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   createAccountButton: {
-    backgroundColor: "#068E3C"
+    backgroundColor: "#1da370"
   },
   createAccountButtonText: {
     color: "white"

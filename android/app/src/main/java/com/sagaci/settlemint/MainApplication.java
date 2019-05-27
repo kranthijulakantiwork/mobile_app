@@ -1,8 +1,9 @@
-package com.lostking.docsam;
+package com.sagaci.settlemint;
 
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.centaurwarchief.smslistener.SmsListenerPackage;
 import com.github.yamill.orientation.OrientationPackage;
 import com.react.SmsPackage;
@@ -34,7 +35,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new SmsListenerPackage(),
+          new SmsListenerPackage(),
+          new SplashScreenReactPackage(),
           new OrientationPackage(),
           new SmsPackage(),
           new RealmReactPackage(),
