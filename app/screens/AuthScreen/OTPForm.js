@@ -1,10 +1,11 @@
-import React, { Component, PropTypes } from 'react'
-import { StyleSheet, AppState } from 'react-native'
-import { Text, View } from 'react-native-animatable'
+import React, { Component, PropTypes } from 'react';
+import { StyleSheet, AppState } from 'react-native';
+import { Text, View } from 'react-native-animatable';
 import { sendOtp } from 'app/api/User';
-import CustomButton from '../../components/auth/CustomButton'
-import CustomTextInput from '../../components/auth/CustomTextInput'
-import metrics from '../../config/metrics'
+import CustomButton from '../../components/auth/CustomButton';
+import CustomTextInput from '../../components/auth/CustomTextInput';
+import metrics from '../../config/metrics';
+import { otpListner } from './OtpRetriever';
 
 export default class SignupForm extends Component {
   // static propTypes = {
@@ -22,56 +23,63 @@ export default class SignupForm extends Component {
       time_for_otp: '',
       otp_recieved_time: 0,
       appState: AppState.currentState,
-      wait_time: 0,
-    }
+      wait_time: 0
+    };
+    this.subscribe = () => {};
   }
-  
-  componentDidMount() {
+
+  async componentDidMount() {
+    let granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_SMS);
+    if (granted) {
+      await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECEIVE_SMS)
+      let regex = '(|^)\\d{6}';
+      this.subscribe = otpListner.bind(this)('otp', regex);
+    }
+    
+
     AppState.addEventListener('change', this._handleAppStateChange);
     this.requesOtp();
-    
   }
 
   requesOtp() {
     sendOtp(this.props.phone)
-    .then((response) => {
-      this.setState({wait_time: 30, time_for_otp: 30, otp_recieved_time: Math.floor(Date.now() / 1000)}, () =>{
-        this.interval = setInterval(this.otp_resend_timer.bind(this), 1000)
+      .then(response => {
+        this.setState(
+          { wait_time: 30, time_for_otp: 30, otp_recieved_time: Math.floor(Date.now() / 1000) },
+          () => {
+            this.interval = setInterval(this.otp_resend_timer.bind(this), 1000);
+          }
+        );
       })
-    })
-    .catch((error) => {
-
-    })
+      .catch(error => {});
   }
   otp_resend_timer() {
-    var seconds = this.state.wait_time -1;
-    this.setState({wait_time: seconds});
+    var seconds = this.state.wait_time - 1;
+    this.setState({ wait_time: seconds });
     if (seconds <= 0) {
       clearInterval(this.interval);
     }
   }
 
-  componentWillUnMount(){
+  componentWillUnMount() {
     clearInterval(this.interval);
+    this.subscribe.remove()
     AppState.removeEventListener('change', this._handleAppStateChange);
   }
 
-  presentTime(){
-    return(
-      this.state.time_for_otp - (Math.floor(Date.now() / 1000) - this.state.otp_recieved_time)
-    )
+  presentTime() {
+    return this.state.time_for_otp - (Math.floor(Date.now() / 1000) - this.state.otp_recieved_time);
   }
 
-
-  _handleAppStateChange = (nextAppState) => {
+  _handleAppStateChange = nextAppState => {
     if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-      this.setState({wait_time: this.presentTime() <=0 ? 0 : this.presentTime()})
+      this.setState({ wait_time: this.presentTime() <= 0 ? 0 : this.presentTime() });
       if (this.state.wait_time <= 0) {
         clearInterval(this.interval);
       }
     }
-    this.setState({appState: nextAppState});
-  }
+    this.setState({ appState: nextAppState });
+  };
 
   hideForm = async () => {
     if (this.buttonRef && this.formRef && this.linkRef) {
@@ -79,30 +87,34 @@ export default class SignupForm extends Component {
         this.buttonRef.zoomOut(200),
         this.formRef.fadeOut(300),
         this.linkRef.fadeOut(300)
-      ])
+      ]);
     }
-  }
+  };
 
   resendOtp() {
     this.requesOtp();
   }
 
   renderMinutes(time) {
-    var minutes = Math.floor(time / 60)
-    var seconds = time - (minutes * 60)
-    if (minutes < 10) { minutes = "0" + minutes; }
-    if (seconds < 10) { seconds = "0" + seconds; }
-    return minutes + ':' + seconds
+    var minutes = Math.floor(time / 60);
+    var seconds = time - minutes * 60;
+    if (minutes < 10) {
+      minutes = '0' + minutes;
+    }
+    if (seconds < 10) {
+      seconds = '0' + seconds;
+    }
+    return minutes + ':' + seconds;
   }
 
-  render () {
-    const { otp } = this.state
-    const { isLoading, processType, onLoginLinkPress, onOTPPress } = this.props
-    const isValid = otp !== ''
-    const customButtonText = (processType === 'LOGIN') ? 'LOGIN' : 'Create Account'
+  render() {
+    const { otp } = this.state;
+    const { isLoading, processType, onLoginLinkPress, onOTPPress } = this.props;
+    const isValid = otp !== '';
+    const customButtonText = processType === 'LOGIN' ? 'LOGIN' : 'Create Account';
     return (
       <View style={styles.container}>
-        <View style={styles.form} ref={(ref) => this.formRef = ref}>
+        <View style={styles.form} ref={ref => (this.formRef = ref)}>
           {/*
           <CustomTextInput
             ref={(ref) => this.mobileInputRef = ref}
@@ -139,38 +151,46 @@ export default class SignupForm extends Component {
           />
         */}
           <CustomTextInput
-            ref={(ref) => this.phoneInputRef = ref}
+            ref={ref => (this.phoneInputRef = ref)}
             placeholder={'Enter 6 digit OTP'}
             editable={!isLoading}
             returnKeyType={'done'}
             secureTextEntry={true}
             withRef={true}
-            onChangeText={(value) => this.setState({ otp: value })}
+            onChangeText={value => this.setState({ otp: value })}
             isEnabled={!isLoading}
           />
         </View>
         <View style={styles.footer}>
-          
-          {(this.state.wait_time) ? <Text
-            // ref={(ref) => this.linkRef = ref}
-            style={styles.loginLink}
-            // onPress={() => this.resendOtp()}
-            animation={'fadeIn'}
+          {this.state.wait_time ? (
+            <Text
+              // ref={(ref) => this.linkRef = ref}
+              style={styles.loginLink}
+              // onPress={() => this.resendOtp()}
+              animation={'fadeIn'}
+              duration={600}
+              delay={400}
+            >
+              {this.renderMinutes(this.state.wait_time)}
+            </Text>
+          ) : (
+            <Text
+              // ref={(ref) => this.linkRef = ref}
+              style={styles.loginLink}
+              onPress={() => this.resendOtp()}
+              animation={'fadeIn'}
+              duration={600}
+              delay={400}
+            >
+              {'Resend'}
+            </Text>
+          )}
+          <View
+            ref={ref => (this.buttonRef = ref)}
+            animation={'bounceIn'}
             duration={600}
             delay={400}
           >
-            {this.renderMinutes(this.state.wait_time)}
-          </Text>:  <Text
-            // ref={(ref) => this.linkRef = ref}
-            style={styles.loginLink}
-            onPress={() => this.resendOtp()}
-            animation={'fadeIn'}
-            duration={600}
-            delay={400}
-          >
-            {'Resend'}
-          </Text>}
-          <View ref={(ref) => this.buttonRef = ref} animation={'bounceIn'} duration={600} delay={400}>
             <CustomButton
               onPress={() => onOTPPress(otp)}
               isEnabled={isValid}
@@ -192,7 +212,7 @@ export default class SignupForm extends Component {
           </Text> */}
         </View>
       </View>
-    )
+    );
   }
 }
 
@@ -225,6 +245,6 @@ const styles = StyleSheet.create({
   },
   waitTime: {
     color: 'rgba(255,255,255,0.6)',
-    alignSelf: 'center',
+    alignSelf: 'center'
   }
-})
+});
