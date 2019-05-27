@@ -88,7 +88,7 @@ class Settlement extends Component {
       amount,
       upiId: '',
       name: mobile,
-      transactionNote: 'Settlemint'
+      transactionNote: 'SettleMint'
     };
   }
 

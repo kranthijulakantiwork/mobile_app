@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { StyleSheet, AppState } from 'react-native';
+import { StyleSheet, AppState, PermissionsAndroid } from 'react-native';
 import { Text, View } from 'react-native-animatable';
 import { sendOtp } from 'app/api/User';
 import CustomButton from '../../components/auth/CustomButton';
@@ -35,7 +35,6 @@ export default class SignupForm extends Component {
       let regex = '(|^)\\d{6}';
       this.subscribe = otpListner.bind(this)('otp', regex);
     }
-    
 
     AppState.addEventListener('change', this._handleAppStateChange);
     this.requesOtp();
@@ -232,7 +231,7 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   createAccountButtonText: {
-    color: '#3E464D',
+    color: '#5d5d5d',
     fontWeight: 'bold'
   },
   loginLink: {

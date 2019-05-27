@@ -9,12 +9,14 @@ import {
   UIManager
 } from 'react-native';
 import { bindActionCreators } from 'redux';
+import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { getGroupsAndFriends } from 'app/reducers/groups/Actions';
-import { Image, View } from 'react-native-animatable';
+import { Image, View, Text } from 'react-native-animatable';
 import { login } from 'app/api/User';
 import { realm, User } from 'app/models/schema';
 import { setUser } from '../../reducers/user/Actions';
+import I18n from 'app/config/i18n';
 import imgLogo from '../../assets/logo.png';
 import LoginForm from './LoginForm';
 import metrics from '../../config/metrics';
@@ -176,6 +178,7 @@ class AuthScreen extends Component {
     const formStyle = !visibleForm ? { height: 0 } : { marginTop: 40 };
     return (
       <View style={styles.container}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Image
           animation={'bounceIn'}
           duration={1200}
@@ -184,6 +187,13 @@ class AuthScreen extends Component {
           style={styles.logoImg}
           source={imgLogo}
         />
+        <Text style={styles.appNameText1} animation={'bounceIn'}
+          duration={1200}
+          delay={200}>
+          {I18n.t('settle')}
+          <Text style={styles.appNameText2}>{I18n.t('mint')}</Text>
+        </Text>
+        </View>
         {!visibleForm && !isLoggedIn && (
           <Opening
             // onCreateAccountPress={() => this._setVisibleForm('SIGNUP')}
@@ -236,18 +246,27 @@ const styles = StyleSheet.create({
     width: metrics.DEVICE_WIDTH,
     height: metrics.DEVICE_HEIGHT,
     paddingTop: 24,
-    backgroundColor: '#D2DCDB' // #0D4946
+    backgroundColor: COLORS.WHITE
   },
   logoImg: {
-    flex: 1,
-    height: null,
-    width: IMAGE_WIDTH,
+    // flex: 1,
+    // height: null,
+    // width: IMAGE_WIDTH,
+    // alignSelf: 'center',
+    // resizeMode: 'contain',
     alignSelf: 'center',
-    resizeMode: 'contain',
     marginVertical: 30
   },
+  appNameText1: {
+    fontSize: 26.3,
+    color: '#1da370'
+  },
+  appNameText2: {
+    fontFamily: 'Roboto-Bold',
+    color: '#268959'
+  },
   bottom: {
-    backgroundColor: '#068679'
+    backgroundColor: COLORS.APP_THEME_GREEN
   }
 });
 

@@ -16,7 +16,9 @@ import { getGroupsAndFriends } from 'app/reducers/groups/Actions';
 import { resetAndGoToScreen } from 'app/helpers/NavigationHelper';
 import { setUser } from 'app/reducers/user/Actions';
 import firebase from 'react-native-firebase';
+import Notifications from 'app/helpers/Notifications';
 import SmsAndroid from 'react-native-get-sms-android';
+import SplashScreen from 'react-native-splash-screen'
 
 class Splash extends Component {
   static navigationOptions = {
@@ -25,6 +27,7 @@ class Splash extends Component {
 
   componentWillMount() {
     // this.getSMS();
+    const { dispatch } = this.props.navigation;
     firebase
       .notifications()
       .getInitialNotification()
@@ -33,10 +36,15 @@ class Splash extends Component {
           // Get information about the notification that was opened
           const notif = notificationOpen.notification;
           // TODO app closed Notifications are handled here.
+          return Notifications.onNotificationOpen(notif, dispatch);
         } else {
           this.doSplashActions();
         }
       });
+  }
+
+  componentWillUnmount() {
+    SplashScreen.hide();
   }
 
   async getSMS() {

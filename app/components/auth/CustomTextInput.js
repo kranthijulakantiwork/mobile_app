@@ -28,7 +28,8 @@ export default class AuthTextInput extends Component {
             autoCapitalize={'none'}
             autoCorrect={false}
             style={[styles.textInput, { color }]}
-            maxLength={32}
+            maxLength={10}
+            keyboardType={'numeric'}
             underlineColorAndroid={'transparent'}
             placeholderTextColor={'rgba(255,255,255,0.4)'}
             selectionColor={'white'}

@@ -1,52 +1,45 @@
 {
   "project_info": {
-    "project_number": "722649675626",
-    "firebase_url": "https://docsam-5bde6.firebaseio.com",
-    "project_id": "docsam-5bde6",
-    "storage_bucket": "docsam-5bde6.appspot.com"
+    "project_number": "23778487403",
+    "firebase_url": "https://settlemint-ec0dc.firebaseio.com",
+    "project_id": "settlemint-ec0dc",
+    "storage_bucket": "settlemint-ec0dc.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:722649675626:android:07c0a1bd9c16703e",
+        "mobilesdk_app_id": "1:23778487403:android:038b87520455cd91",
         "android_client_info": {
-          "package_name": "com.lostking.docsam"
+          "package_name": "com.sagaci.settlemint"
         }
       },
       "oauth_client": [
         {
-          "client_id": "722649675626-mrhqvie43mvihcv472c89u0s9ga4l3u6.apps.googleusercontent.com",
+          "client_id": "23778487403-io9m0muu2skiupu95psinrlorf916tqp.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.lostking.docsam",
+            "package_name": "com.sagaci.settlemint",
             "certificate_hash": "9caf97c06967168195fc3550d8a7e6bc0be96a75"
           }
         },
         {
-          "client_id": "722649675626-rvgus3smac7ti3a3h9q76vohn9ofb3gu.apps.googleusercontent.com",
+          "client_id": "23778487403-7h83dpd16hd5c2vddjspphmrg5k307g4.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCPbvUNdAQxyNZahUMc96NINPFpwCNwcwA"
+          "current_key": "AIzaSyABVzRZiSsBa4d-d_tut_6LXBCnY5NmgDw"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "722649675626-rvgus3smac7ti3a3h9q76vohn9ofb3gu.apps.googleusercontent.com",
+              "client_id": "23778487403-7h83dpd16hd5c2vddjspphmrg5k307g4.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     }
