@@ -1,6 +1,6 @@
 // @flow
 
-const SERVER = 'http://192.168.1.109:5000/';
+const SERVER = 'http://ec2-18-234-227-66.compute-1.amazonaws.com:5000/';
 const FONT_SIZES = {
   H22: 22,
   H20: 20,
@@ -14,44 +14,47 @@ const FONT_SIZES = {
 };
 const LANGUAGES = [
   {
-    name: 'English'
+    name: 'English',
+    key: 'en'
   },
   {
     name: 'Hindi',
-    value: 'हिंदी'
-  },
-  {
-    name: 'Kannada',
-    value: 'ಕನ್ನಡ'
-  },
-  {
-    name: 'Gujrati',
-    value: 'ગુજરતી'
-  },
-  {
-    name: 'Punjabi',
-    value: 'ਪੰਜਾਬੀ'
+    value: 'हिंदी',
+    key: 'hi'
   },
   {
     name: 'Telugu',
-    value: 'తెలుగు'
-  },
-  {
-    name: 'Tamil',
-    value: 'தமிழ்'
-  },
-  {
-    name: 'Malayalam',
-    value: 'മലയാളം'
-  },
-  {
-    name: 'Marathi',
-    value: 'मराठी'
-  },
-  {
-    name: 'Bengali',
-    value: 'বাঙালি'
+    value: 'తెలుగు',
+    key: 'te'
   }
+  // {
+  //   name: 'Kannada',
+  //   value: 'ಕನ್ನಡ'
+  // },
+  // {
+  //   name: 'Gujrati',
+  //   value: 'ગુજરતી'
+  // },
+  // {
+  //   name: 'Punjabi',
+  //   value: 'ਪੰਜਾਬੀ'
+  // },
+  // {
+  //   name: 'Tamil',
+  //   value: 'தமிழ்'
+  // },
+  // {
+  //   name: 'Malayalam',
+  //   value: 'മലയാളം'
+  // },
+  // {
+  //   name: 'Marathi',
+  //   value: 'मराठी'
+  // },
+  // {
+  //   name: 'Bengali',
+  //   value: 'বাঙালি'
+  // }
 ];
 
 module.exports = {
