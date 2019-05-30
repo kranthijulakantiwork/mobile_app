@@ -83,8 +83,10 @@ class UpiLinking extends Component {
     const { upi_address, confirm_upi_address } = this.state;
     if (upi_address !== confirm_upi_address) return alert(I18n.t('upi_address_mismatch'));
     const { currentUser } = this.props;
+    setSpinner(this);
     updateUserInfo({ upi: upi_address }, currentUser.auth_key)
       .then(response => {
+        removeSpinner(this);
         if (response.success) {
           currentUser.update(this.state);
           this.onSkip();
@@ -99,7 +101,6 @@ class UpiLinking extends Component {
     return replaceScreen({
       routeName: 'GettingStarted',
       currentScreenKey: state.key,
-      params,
       dispatch
     });
   }

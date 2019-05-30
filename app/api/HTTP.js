@@ -51,7 +51,7 @@ function getRequestHeader(requestParams: apiParams) {
       'Content-Type': 'application/json',
       auth_key: data.auth_key
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(data)
   };
 }
 

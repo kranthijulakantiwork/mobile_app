@@ -160,13 +160,27 @@ class Bills extends Component {
   }
 
   onAddBill() {
+    const { currentUser } = this.props;
     const { dispatch } = this.props.navigation;
-    const { id } = this.props.navigation.state.params;
-    return navigateToScreen({
-      routeName: 'NewBill',
-      params: { group: id },
-      dispatch
-    });
+    const { id, isFriend, balance, mobile } = this.props.navigation.state.params;
+    if (isFriend) {
+      return navigateToScreen({
+        routeName: 'NewBill',
+        params: { friends: [{ mobile: currentUser.mobile }, { mobile }] },
+        dispatch
+      });
+    } else {
+      const { friends } = this.props.navigation.state.params;
+      let friendsList = [];
+      friends.forEach(friend => {
+        friendsList.push({ mobile: friend.id });
+      });
+      return navigateToScreen({
+        routeName: 'NewBill',
+        params: { group: id, friends: friendsList },
+        dispatch
+      });
+    }
   }
 
   renderAddButton() {
@@ -204,11 +218,13 @@ class Bills extends Component {
       created_by,
       friends
     } = billDetails;
-    const paidByUser = paidBy && paidBy[currentUser.mobile] ? paidBy[currentUser.mobile] : 0;
+    const paidByUser =
+      paidBy && paidBy[currentUser.mobile] ? Number(paidBy[currentUser.mobile]) : 0;
+    const totalAmount = amount ? Number(amount) : 0;
     let splitByUser = 0;
     if (splitType === 'equally') {
       if (splitByFriends.includes(currentUser.mobile)) {
-        splitByUser = amount / splitByFriends.length;
+        splitByUser = totalAmount / splitByFriends.length;
       }
     } else {
       switch (splitType) {
@@ -223,14 +239,14 @@ class Bills extends Component {
             friendsSplitAmount[splitType] && friendsSplitAmount[splitType][currentUser.mobile]
               ? friendsSplitAmount[splitType][currentUser.mobile]
               : 0;
-          splitByUser = amount * (userShares / allocatedSplitAmount[splitType]);
+          splitByUser = totalAmount * (Number(userShares) / allocatedSplitAmount[splitType]);
           break;
         case 'percentages':
           const userPercentage =
             friendsSplitAmount[splitType] && friendsSplitAmount[splitType][currentUser.mobile]
               ? friendsSplitAmount[splitType][currentUser.mobile]
               : 0;
-          splitByUser = (amount * userPercentage) / 100;
+          splitByUser = (totalAmount * Number(userPercentage)) / 100;
           break;
         case 'adjustment':
           const userAdjustment =
@@ -238,13 +254,14 @@ class Bills extends Component {
               ? friendsSplitAmount[splitType][currentUser.mobile]
               : 0;
           splitByUser =
-            (amount - allocatedSplitAmount[splitType]) / friends.length + userAdjustment;
+            (totalAmount - allocatedSplitAmount[splitType]) / friends.length +
+            Number(userAdjustment);
         default:
           break;
       }
     }
     splitByUser = Math.round(splitByUser * 10) / 10;
-    const userPaidAmount = paidByUser - splitByUser;
+    const userPaidAmount = Math.round((paidByUser - splitByUser) * 10) / 10;
     const text =
       userPaidAmount > 0
         ? '₹' + userPaidAmount + ' Paid'

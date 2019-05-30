@@ -91,7 +91,6 @@ module.exports = {
         .messaging()
         .getToken()
         .then(token => {
-          console.log('fcm', token);
           // TODO send fcm token to server
         });
 

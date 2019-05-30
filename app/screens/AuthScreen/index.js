@@ -14,6 +14,7 @@ import { connect } from 'react-redux';
 import { getGroupsAndFriends } from 'app/reducers/groups/Actions';
 import { Image, View, Text } from 'react-native-animatable';
 import { login } from 'app/api/User';
+import { NavigationActions } from 'react-navigation';
 import { realm, User } from 'app/models/schema';
 import { setUser } from '../../reducers/user/Actions';
 import I18n from 'app/config/i18n';
@@ -93,9 +94,12 @@ class AuthScreen extends Component {
         }
       }
 
-      if (invokeDefault) {
-        // BackHandler.exitApp();
-      }
+      // if (invokeDefault) {
+      const { dispatch } = this.props.navigation;
+      dispatch(NavigationActions.back());
+      return true;
+      // BackHandler.exitApp();
+      // }
     });
 
     this.backPressSubscriptions.add(this.handleHardwareBack);
@@ -179,20 +183,18 @@ class AuthScreen extends Component {
     return (
       <View style={styles.container}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Image
-          animation={'bounceIn'}
-          duration={1200}
-          delay={200}
-          ref={ref => (this.logoImgRef = ref)}
-          style={styles.logoImg}
-          source={imgLogo}
-        />
-        <Text style={styles.appNameText1} animation={'bounceIn'}
-          duration={1200}
-          delay={200}>
-          {I18n.t('settle')}
-          <Text style={styles.appNameText2}>{I18n.t('mint')}</Text>
-        </Text>
+          <Image
+            animation={'bounceIn'}
+            duration={1200}
+            delay={200}
+            ref={ref => (this.logoImgRef = ref)}
+            style={styles.logoImg}
+            source={imgLogo}
+          />
+          <Text style={styles.appNameText1} animation={'bounceIn'} duration={1200} delay={200}>
+            {I18n.t('settle')}
+            <Text style={styles.appNameText2}>{I18n.t('mint')}</Text>
+          </Text>
         </View>
         {!visibleForm && !isLoggedIn && (
           <Opening
