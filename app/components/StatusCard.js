@@ -60,6 +60,12 @@ export default class StatusCard extends Component {
     this.state = {};
   }
 
+  getBalanceText(balance) {
+    let amount = Math.abs(balance);
+    amount = Math.round(amount * 10) / 10;
+    return amount;
+  }
+
   renderSummaryDetails(detail, i) {
     let oweText = detail.id + ' ' + I18n.t('owes_you') + ' ';
     let color = COLORS.BALANCE_GREEN;
@@ -70,7 +76,9 @@ export default class StatusCard extends Component {
     return (
       <EDText style={styles.details} key={i}>
         {oweText}
-        <EDText style={{ ...styles.details, color }}>{'₹' + detail.balance}</EDText>
+        <EDText style={{ ...styles.details, color }}>
+          {'₹' + this.getBalanceText(detail.balance)}
+        </EDText>
       </EDText>
     );
   }
@@ -141,7 +149,7 @@ export default class StatusCard extends Component {
     return (
       <View style={styles.balanceContainer}>
         <EDText style={{ ...styles.balanceValue, color }}>
-          {'₹ ' + balance ? balance : '0.00'}
+          {'₹ ' + balance ? this.getBalanceText(balance) : '0.00'}
         </EDText>
         <EDText style={{ ...styles.balanceText, color }}>{I18n.t(status)}</EDText>
         {this.renderMemberCount()}

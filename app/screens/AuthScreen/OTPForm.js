@@ -152,6 +152,7 @@ export default class SignupForm extends Component {
           <CustomTextInput
             ref={ref => (this.phoneInputRef = ref)}
             placeholder={'Enter 6 digit OTP'}
+            value={otp}
             editable={!isLoading}
             returnKeyType={'done'}
             secureTextEntry={true}

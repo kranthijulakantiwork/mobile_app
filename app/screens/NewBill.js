@@ -147,7 +147,7 @@ class NewBill extends Component {
       friends.forEach(friend => {
         const friendObject = realm.objects('Contact').filtered('mobile=$0', friend.mobile)[0];
         friendsDetails.push({
-          name: friendObject.name,
+          name: friendObject && friendObject.name ? friendObject.name : friend.mobile,
           mobile: friend.mobile
         });
       });
@@ -272,6 +272,7 @@ class NewBill extends Component {
       added_on,
       friends
     };
+    params = group ? { ...params, group: group.id } : params;
     setSpinner(this);
     const billData = group ? { ...billDetails, group: group.id } : billDetails;
     if (id) {
@@ -281,8 +282,7 @@ class NewBill extends Component {
           params = {
             ...params,
             id: response.data.id,
-            added_by: currentUser.mobile,
-            group: group.id
+            added_by: currentUser.mobile
           };
           const { goBack } = this.props.navigation;
           goBack();
@@ -296,8 +296,7 @@ class NewBill extends Component {
           params = {
             ...params,
             id: response.data.id,
-            added_by: currentUser.mobile,
-            group: group.id
+            added_by: currentUser.mobile
           };
           this.navigateToBillDetails(params);
         } else removeSpinner(this);

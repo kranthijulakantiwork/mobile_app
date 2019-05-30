@@ -101,10 +101,10 @@ class Groups extends Component {
 
   renderHeader() {
     const { owed, owe } = this.props.balance;
-    const toPay = owe ? owe.toString() : '0';
-    const toGet = owed ? owed.toString() : '0';
+    const toPay = owe ? (Math.round(owe * 10) / 10).toString() : '0';
+    const toGet = owed ? (Math.round(owed * 10) / 10).toString() : '0';
     const balance = (toGet - toPay).toString();
-    return <Balances to_pay={toGet} to_get={toGet} balance={balance} />;
+    return <Balances to_pay={toPay} to_get={toGet} balance={balance} />;
   }
 
   render() {

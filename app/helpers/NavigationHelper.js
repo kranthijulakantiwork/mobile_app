@@ -127,7 +127,7 @@ const transitionConfig = () => ({
 
 function headerLeft(navigation) {
   return (
-    <TouchableOpacity onPress={() => alert('TODO')} style={styles.headerButton}>
+    <TouchableOpacity onPress={() => alert('TODO')} style={styles.headerButton} disabled={true}>
       <View>
         <View style={styles.headerLeftTopLine} />
         <View style={styles.headerLeftBottomLine} />

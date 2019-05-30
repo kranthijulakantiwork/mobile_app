@@ -131,7 +131,7 @@ class CreateGroup extends Component {
     addGroup(currentUser, group_name, friends, intelligentSettlements).then(response => {
       if (response.success) {
         // TODO Navigate to Group Bills screen
-        getGroupsAndFriends();
+        getGroupsAndFriends(currentUser);
         this.props.navigation.goBack();
       }
       this.setState({ spinner: false });
@@ -175,7 +175,7 @@ class CreateGroup extends Component {
             }}
           >
             <Avatar
-              name={friend['name']}
+              name={friend['name'] || friend['mobile']}
               disabled={true}
               buttonStyle={styles.selectFriendAvatarContainer}
             />
