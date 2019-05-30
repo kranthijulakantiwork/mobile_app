@@ -41,3 +41,14 @@ ext {
     supportLibVersion = "27.1.1"
     googlePlayServicesAuthVersion = "16.0.1"
 }
+
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion 27        // version of compile sdk used for project
+                buildToolsVersion '27.0.3'    // version of build tool used for project
+            }
+        }
+    }
+}
