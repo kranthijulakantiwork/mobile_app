@@ -52,8 +52,9 @@ class SelectFriends extends Component {
 
   constructor(props) {
     super(props);
+    const { friends } = this.props;
     this.state = {
-      friendsList: this.props.contacts,
+      friendsList: friends,
       selectedFriends: ['you'],
       spinner: false,
       searchName: ''
@@ -66,9 +67,11 @@ class SelectFriends extends Component {
   }
 
   onChangeText(text) {
+    const { friends } = this.props;
     this.setState({
       searchName: text,
-      friendsList: realm.objects('Contact').filtered('name CONTAINS[c] $0', text)
+      // friendsList: realm.objects('Contact').filtered('name CONTAINS[c] $0', text)
+      friendsList: friends.filter(friend => friend.name.includes(text))
     });
   }
 
@@ -139,6 +142,7 @@ class SelectFriends extends Component {
       <FlatList
         data={friendsList}
         showsHorizontalScrollIndicator={false}
+        keyboardShouldPersistTaps={'always'}
         initialNumToRender={30}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item, index }) => this.renderSingleFriend(item, index)}

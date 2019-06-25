@@ -103,7 +103,8 @@ class Groups extends Component {
     const { owed, owe } = this.props.balance;
     const toPay = owe ? (Math.round(owe * 10) / 10).toString() : '0';
     const toGet = owed ? (Math.round(owed * 10) / 10).toString() : '0';
-    const balance = (toGet - toPay).toString();
+    let balance = Math.abs(toGet) - Math.abs(toPay);
+    balance = balance ? (Math.round(balance * 10) / 10).toString() : '0';
     return <Balances to_pay={toPay} to_get={toGet} balance={balance} />;
   }
 

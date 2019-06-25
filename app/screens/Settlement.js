@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
 import { Dimensions, View, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
+import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
 import { getGroupsAndFriends } from 'app/reducers/groups/Actions';
 import { getUPIAddress } from 'app/api/Friends';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { recordSettlement } from 'app/api/Settlement';
 import { resetAndGoToScreen } from 'app/helpers/NavigationHelper';
+import AbsoluteView from 'app/components/AbsoluteView';
 import dismissKeyboard from 'dismissKeyboard';
 import EDText from 'app/components/EDText';
+import EDTextInput from 'app/components/EDTextInput';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
 import RNUpiPayment from 'react-native-upi-payment';
@@ -84,11 +86,15 @@ class Settlement extends Component {
   constructor(props) {
     super(props);
     const { amount, mobile } = this.props.navigation.state.params;
+    const { contacts } = this.props;
+    const friendObject = contacts.filter(contact => contact.mobile == mobile)[0];
+    name = friendObject && friendObject.name ? friendObject.name : mobile;
     this.state = {
       amount,
       upiId: '',
-      name: mobile,
-      transactionNote: 'SettleMint'
+      name,
+      transactionNote: 'SettleMint',
+      showInput: false
     };
   }
 
@@ -97,7 +103,7 @@ class Settlement extends Component {
     const { mobile } = this.props.navigation.state.params;
     getUPIAddress(currentUser, mobile).then(response => {
       if (response.success) {
-        this.setState({ upiId: response.data.upi });
+        this.setState({ upiId: response.data.upi || '' });
       }
     });
   }
@@ -126,20 +132,26 @@ class Settlement extends Component {
 
   onPayThroughUPI() {
     dismissKeyboard();
-    const { upiId, name, transactionNote, amount } = this.state;
-    if (!upiId) return alert('Please enter UPI ID.');
-    if (!amount) return alert('Please enter Amount.');
-    RNUpiPayment.initializePayment(
-      {
-        vpa: upiId,
-        payeeName: name,
-        amount,
-        transactionNote,
-        transactionRef: ''
-      },
-      e => this.onDone(e),
-      e => this.onDone(e)
-    );
+    const { upiId } = this.state;
+    if (upiId) {
+      this.setState({ showInput: false });
+      const { name, transactionNote, amount } = this.state;
+      if (!upiId) return alert('Please enter UPI ID.');
+      if (!amount) return alert('Please enter Amount.');
+      RNUpiPayment.initializePayment(
+        {
+          vpa: upiId,
+          payeeName: name,
+          amount,
+          transactionNote,
+          transactionRef: 'Settle Up with ' + name
+        },
+        e => this.onDone(e),
+        e => this.onDone(e)
+      );
+    } else {
+      this.setState({ showInput: true });
+    }
   }
 
   onRecordSettlement() {
@@ -158,6 +170,53 @@ class Settlement extends Component {
         this.props.navigation.pop(key);
       }
     });
+  }
+
+  onDialogClose() {
+    this.setState({ showInput: false });
+  }
+
+  renderUPIIdInput() {
+    const { showInput } = this.state;
+    if (showInput) {
+      return (
+        <AbsoluteView
+          onDialogClose={() => this.onDialogClose()}
+          outerContainerStyle={{ alignItems: 'center', justifyContent: 'center' }}
+        >
+          <View
+            style={{
+              backgroundColor: COLORS.WHITE,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginHorizontal: 50,
+              paddingHorizontal: 30,
+              paddingVertical: 15,
+              marginBottom: 70
+            }}
+          >
+            <EDTextInput
+              placeholder={I18n.t('upi_address')}
+              textInputStyle={{
+                alignSelf: 'center',
+                width: width - 160,
+                borderBottomWidth: 0,
+                marginBottom: 0
+              }}
+              containerStyle={{
+                marginHorizontal: 0,
+                padding: 0,
+                marginVertical: 0
+              }}
+              value={this.state['upiId']}
+              onChangeText={text => this.onChangeText('upiId', text)}
+            />
+            {this.renderPayThroughUPIButton()}
+          </View>
+        </AbsoluteView>
+      );
+    }
+    return null;
   }
 
   renderPayThroughUPIButton() {
@@ -181,8 +240,7 @@ class Settlement extends Component {
 
   renderAddBillAndrecordSettlementButtons() {
     const { gets } = this.props.navigation.state.params;
-    const { upiId } = this.state;
-    const showUPI = !gets && upiId ? true : false;
+    const showUPI = !gets ? true : false;
     return (
       <View style={styles.buttonsContainer}>
         {this.renderRecordSettlementButton()}
@@ -231,10 +289,11 @@ class Settlement extends Component {
   }
 
   renderPayingText() {
-    const { mobile, gets } = this.props.navigation.state.params;
+    const { gets } = this.props.navigation.state.params;
+    const { name } = this.state;
     const text = gets
-      ? `${mobile} ${I18n.t('is_paying_you')}`
-      : I18n.t('you_are_paying', { payeeName: mobile });
+      ? `${name} ${I18n.t('is_paying_you')}`
+      : I18n.t('you_are_paying', { payeeName: name });
     return (
       <EDText style={{ color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H4, marginVertical: 10 }}>
         {text}
@@ -284,6 +343,7 @@ class Settlement extends Component {
           <View style={{ height: height / 10 }} />
           {this.renderAddBillAndrecordSettlementButtons()}
         </KeyboardAwareScrollView>
+        {this.renderUPIIdInput()}
       </View>
     );
   }
@@ -291,7 +351,8 @@ class Settlement extends Component {
 
 function mapStateToProps(state) {
   return {
-    currentUser: state.currentUser
+    currentUser: state.currentUser,
+    contacts: state.common.contacts
   };
 }
 

@@ -101,9 +101,10 @@ class GroupSettings extends Component {
 
   getFriends() {
     const { friends } = this.props.navigation.state.params;
+    const { contacts } = this.props;
     let friendsDetails = [];
     friends.forEach(friend => {
-      const friendObject = realm.objects('Contact').filtered('mobile=$0', friend.id)[0];
+      const friendObject = contacts.filter(contact => contact.mobile == friend.id)[0];
       friendsDetails.push({ name: friendObject.name, mobile: friend.id, balance: friend.balance });
     });
     return friendsDetails;
@@ -165,9 +166,11 @@ class GroupSettings extends Component {
 
   renderFriendsList() {
     const { showFriendsList } = this.state;
+    const { contacts } = this.props;
     if (!showFriendsList) return null;
     return (
       <SelectFriends
+        friends={contacts}
         onDialogClose={() => this.setState({ showFriendsList: false })}
         onAddFriend={friend => this.onFriendAdded(friend)}
       />
@@ -256,6 +259,7 @@ class GroupSettings extends Component {
 
   renderIntelligentSettlementToggle() {
     const { intelligentSettlements } = this.state;
+    const status = intelligentSettlements ? I18n.t('on') : I18n.t('off');
     return (
       <View
         style={{
@@ -269,15 +273,20 @@ class GroupSettings extends Component {
         <EDText style={{ color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H2 }}>
           {I18n.t('intelligent_settlements')}
         </EDText>
-        <Switch
-          onValueChange={value =>
-            this.setState({ intelligentSettlements: !intelligentSettlements })
-          }
-          thumbTintColor={COLORS.APP_THEME_GREEN}
-          onTintColor={COLORS.APP_THEME_GREEN}
-          tintColor={COLORS.BALANCE_RED}
-          value={intelligentSettlements}
-        />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Switch
+            onValueChange={value =>
+              this.setState({ intelligentSettlements: !intelligentSettlements })
+            }
+            thumbTintColor={COLORS.APP_THEME_GREEN}
+            onTintColor={COLORS.APP_THEME_GREEN}
+            tintColor={COLORS.BALANCE_RED}
+            value={intelligentSettlements}
+          />
+          <EDText style={{ color: COLORS.TEXT_BLACK, fontSize: FONT_SIZES.H4 }}>
+            {status.toUpperCase()}
+          </EDText>
+        </View>
       </View>
     );
   }
@@ -352,7 +361,8 @@ GroupSettings.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    currentUser: state.currentUser
+    currentUser: state.currentUser,
+    contacts: state.common.contacts
   };
 }
 

@@ -18,6 +18,7 @@ import { FONT_SIZES } from 'app/config/ENV';
 import { getGroupsAndFriends } from 'app/reducers/groups/Actions';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { navigateToScreen, replaceScreen } from 'app/helpers/NavigationHelper';
+import { realm } from 'app/models/schema';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import Avatar from 'app/components/Avatar';
 import dismissKeyboard from 'dismissKeyboard';
@@ -140,9 +141,11 @@ class CreateGroup extends Component {
 
   renderFriendsList() {
     const { showFriendsList } = this.state;
+    const { contacts } = this.props;
     if (!showFriendsList) return null;
     return (
       <SelectFriends
+        friends={contacts}
         onDialogClose={() => this.setState({ showFriendsList: false })}
         onAddFriend={friend => this.onFriendAdded(friend)}
       />
@@ -312,7 +315,8 @@ CreateGroup.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    currentUser: state.currentUser
+    currentUser: state.currentUser,
+    contacts: state.common.contacts
   };
 }
 

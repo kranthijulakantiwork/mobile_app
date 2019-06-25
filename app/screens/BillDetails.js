@@ -15,11 +15,8 @@ import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { deleteBill } from 'app/api/Bills';
 import { FONT_SIZES } from 'app/config/ENV';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { navigateToScreen } from 'app/helpers/NavigationHelper';
-import { realm } from 'app/models/schema';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
-import dismissKeyboard from 'dismissKeyboard';
 import EDText from 'app/components/EDText';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
@@ -201,7 +198,7 @@ class BillDetails extends Component {
 
   renderSummaryUnderType(title, summary) {
     const { friends } = this.props.navigation.state.params;
-    const { currentUser } = this.props;
+    const { currentUser, contacts } = this.props;
     const color = title === 'paid' ? COLORS.BALANCE_GREEN : COLORS.BALANCE_RED;
     return (
       <View style={styles.summaryTypeView}>
@@ -215,7 +212,7 @@ class BillDetails extends Component {
             if (friend.mobile === currentUser.mobile) friend = currentUser;
             let name = friend && friend.name ? friend.name : '';
             if (!name) {
-              const friendObject = realm.objects('Contact').filtered('mobile=$0', friend.mobile)[0];
+              const friendObject = contacts.filter(contact => contact.mobile == friend.mobile)[0];
               name = friendObject ? friendObject.name : friend.name;
             }
             return (
@@ -360,7 +357,8 @@ BillDetails.propTypes = {
 function mapStateToProps(state) {
   return {
     currentUser: state.currentUser,
-    groupsList: state.groups.groupsList
+    groupsList: state.groups.groupsList,
+    contacts: state.common.contacts
   };
 }
 
