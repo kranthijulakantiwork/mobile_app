@@ -135,7 +135,7 @@ class UpiLinking extends Component {
             textInputStyle={{
               width: width - 160,
               borderBottomWidth: 0,
-              marginBottom: 15
+              marginBottom: 0
             }}
             containerStyle={{
               marginHorizontal: 0,

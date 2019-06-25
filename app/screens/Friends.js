@@ -15,6 +15,7 @@ import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
 import { navigateToScreen } from 'app/helpers/NavigationHelper';
+import { realm } from 'app/models/schema';
 import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import Balances from 'app/components/Balances';
 import EDText from 'app/components/EDText';
@@ -62,10 +63,6 @@ class Friends extends Component {
     alert('TODO');
   }
 
-  onAddBill() {
-    alert('TODO');
-  }
-
   renderFooter() {
     return (
       <TouchableOpacity onPress={this.onAddMoreFriends}>
@@ -77,11 +74,17 @@ class Friends extends Component {
   }
 
   renderSingleFriend(friendDetails) {
-    const { name, balance, mobile } = friendDetails;
+    const { balance, mobile } = friendDetails;
+    const { contacts } = this.props;
+    let name = friendDetails.name;
+    if (!name) {
+      const friendObject = contacts.filter(contact => contact.mobile == mobile)[0];
+      name = friendObject && friendObject.name ? friendObject.name : mobile;
+    }
     return (
       <StatusCard
         onPress={() => this.onFriendSelection(friendDetails)}
-        name={name || mobile}
+        name={name}
         balance={balance}
         mobile={mobile}
         balanceType={'friends'}
@@ -104,7 +107,8 @@ class Friends extends Component {
     const { owed, owe } = this.props.balance;
     const toPay = owe ? (Math.round(owe * 10) / 10).toString() : '0';
     const toGet = owed ? (Math.round(owed * 10) / 10).toString() : '0';
-    const balance = (toGet - toPay).toString();
+    let balance = Math.abs(toGet) - Math.abs(toPay);
+    balance = balance ? (Math.round(balance * 10) / 10).toString() : '0';
     return <Balances to_pay={toPay} to_get={toGet} balance={balance} />;
   }
 
@@ -132,7 +136,8 @@ function mapStateToProps(state) {
   return {
     currentUser: state.currentUser,
     friends: state.groups.friendsData,
-    balance: state.groups.balance
+    balance: state.groups.balance,
+    contacts: state.common.contacts
   };
 }
 

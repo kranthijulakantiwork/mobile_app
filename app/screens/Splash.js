@@ -18,7 +18,7 @@ import { setUser } from 'app/reducers/user/Actions';
 import firebase from 'react-native-firebase';
 import Notifications from 'app/helpers/Notifications';
 import SmsAndroid from 'react-native-get-sms-android';
-import SplashScreen from 'react-native-splash-screen'
+import SplashScreen from 'react-native-splash-screen';
 
 class Splash extends Component {
   static navigationOptions = {

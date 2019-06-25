@@ -138,14 +138,14 @@ class NewBill extends Component {
   }
 
   getFriends() {
-    const { currentUser } = this.props;
+    const { currentUser, contacts } = this.props;
     const { state } = this.props.navigation;
     const { params = {} } = state;
     const { friends } = params;
     if (friends) {
       let friendsDetails = [];
       friends.forEach(friend => {
-        const friendObject = realm.objects('Contact').filtered('mobile=$0', friend.mobile)[0];
+        const friendObject = contacts.filter(contact => contact.mobile == friend.mobile)[0];
         friendsDetails.push({
           name: friendObject && friendObject.name ? friendObject.name : friend.mobile,
           mobile: friend.mobile
@@ -317,8 +317,10 @@ class NewBill extends Component {
   renderFriendsList() {
     const { showFriendsList } = this.state;
     if (!showFriendsList) return null;
+    const { contacts } = this.props;
     return (
       <SelectFriends
+        friends={contacts}
         onDialogClose={() => this.setState({ showFriendsList: false })}
         onAddFriend={friend => this.onAddFriend(friend)}
       />
@@ -706,7 +708,8 @@ NewBill.propTypes = {
 function mapStateToProps(state) {
   return {
     currentUser: state.currentUser,
-    groups: state.groups.groupsList
+    groups: state.groups.groupsList,
+    contacts: state.common.contacts
   };
 }
 

@@ -1,6 +1,6 @@
 // @flow
 
-const SERVER = 'http://192.168.1.109:5000/';
+const SERVER = 'http://ec2-18-234-227-66.compute-1.amazonaws.com:5000/';
 const FONT_SIZES = {
   H22: 22,
   H20: 20,

@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import { COLORS } from 'app/styles/Colors';
 import { connect } from 'react-redux';
 import { FONT_SIZES } from 'app/config/ENV';
+import { realm } from 'app/models/schema';
 import Avatar from 'app/components/Avatar';
 import EDText from 'app/components/EDText';
 import I18n from 'app/config/i18n';
@@ -44,7 +45,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export default class StatusCard extends Component {
+class StatusCard extends Component {
   static propTypes = {
     onPress: PropTypes.func.isRequired,
     name: PropTypes.string.isRequired,
@@ -67,10 +68,16 @@ export default class StatusCard extends Component {
   }
 
   renderSummaryDetails(detail, i) {
-    let oweText = detail.id + ' ' + I18n.t('owes_you') + ' ';
+    let friendName = detail.id;
+    if (!friendName) {
+      const { contacts } = this.props;
+      const friendObject = contacts.filter(contact => contact.mobile == detail.id)[0];
+      friendName = friendObject && friendObject.name ? friendObject.name : detail.id;
+    }
+    let oweText = friendName + ' ' + I18n.t('owes_you') + ' ';
     let color = COLORS.BALANCE_GREEN;
     if (detail.balance < 0) {
-      oweText = I18n.t('you_owe') + ' ' + detail.id + ' ';
+      oweText = I18n.t('you_owe') + ' ' + friendName + ' ';
       color = COLORS.BALANCE_RED;
     }
     return (
@@ -199,3 +206,18 @@ export default class StatusCard extends Component {
     );
   }
 }
+
+function mapStateToProps(state) {
+  return {
+    contacts: state.common.contacts
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({}, dispatch);
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(StatusCard);

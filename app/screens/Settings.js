@@ -7,10 +7,10 @@ import { FONT_SIZES } from 'app/config/ENV';
 import { getUserInfo, logOut, updateUserInfo } from 'app/api/User';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { resetAndGoToScreen } from 'app/helpers/NavigationHelper';
+import { Spinner, removeSpinner, setSpinner } from 'app/components/Spinner';
 import dismissKeyboard from 'dismissKeyboard';
 import EDText from 'app/components/EDText';
 import EDTextInput from 'app/components/EDTextInput';
-import Entypo from 'react-native-vector-icons/Entypo';
 import I18n from 'app/config/i18n';
 import Images from 'app/config/Images';
 import ToolBar from 'app/components/ToolBar';
@@ -70,7 +70,8 @@ class Settings extends Component {
       name: name || '',
       phone: mobile || '',
       upi_address: upi_address || '',
-      email: email || ''
+      email: email || '',
+      spinner: true
     };
   }
 
@@ -90,8 +91,11 @@ class Settings extends Component {
             email
           });
         }
+        this.setState({ spinner: false });
       })
-      .catch(err => {});
+      .catch(err => {
+        this.setState({ spinner: false });
+      });
   }
 
   onChangeText(stateKey, text) {
@@ -99,17 +103,23 @@ class Settings extends Component {
   }
 
   onSave() {
+    dismissKeyboard();
     let { currentUser } = this.props;
-    updateUserInfo(this.state, currentUser.auth_key)
+    this.setState({ spinner: true });
+    updateUserInfo({ ...this.state, upi: this.state.upi_address }, currentUser.auth_key)
       .then(response => {
         if (response.success) {
           currentUser.update(this.state);
         }
+        this.setState({ spinner: false });
       })
-      .catch(err => {});
+      .catch(err => {
+        this.setState({ spinner: false });
+      });
   }
 
   logOut() {
+    dismissKeyboard();
     let { currentUser } = this.props;
     logOut(currentUser)
       .then(response => {
@@ -140,7 +150,7 @@ class Settings extends Component {
                 marginVertical: 0
               }}
               title={I18n.t(stateKey)}
-              value={this.state[stateKey]}
+              value={this.state[stateKey] || ''}
               editable={editable}
               keyboardType={keyboardType}
               onChangeText={text => this.onChangeText(stateKey, text)}
@@ -154,48 +164,52 @@ class Settings extends Component {
 
   render() {
     const { goBack } = this.props.navigation;
+    const { spinner } = this.state;
     return (
-      <KeyboardAwareScrollView style={{ flex: 1 }}>
-        <ToolBar
-          title={I18n.t('settings')}
-          leftImage="back"
-          onLeft={() => goBack()}
-          rightImage="tick"
-          onRight={() => this.onSave()}
-        />
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: 20,
-            height: height / 2,
-            maxHeight: height / 2
-          }}
-        >
-          {this.renderEditableFiled('name', 'name', true)}
-          {this.renderEditableFiled('phone', 'phone', false, 'phone-pad')}
-          {this.renderEditableFiled('upi_address', 'wallet_43', true)}
-          {this.renderEditableFiled('email', 'email', true, 'email-address')}
-        </View>
-        <View
-          style={{
-            height: height / 2 - 100,
-            justifyContent: 'flex-end',
-            padding: 15,
-            alignItems: 'center'
-          }}
-        >
-          <TouchableOpacity
-            style={{ backgroundColor: '#1da370' }}
-            onPress={() => {
-              this.logOut();
+      <View style={{ flex: 1 }}>
+        <KeyboardAwareScrollView style={{ flex: 1 }} keyboardShouldPersistTaps={'always'}>
+          <ToolBar
+            title={I18n.t('settings')}
+            leftImage="back"
+            onLeft={() => goBack()}
+            rightImage="tick"
+            onRight={() => this.onSave()}
+          />
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 20,
+              height: height / 2,
+              maxHeight: height / 2
             }}
           >
-            <EDText style={{ padding: 10, color: '#ffffff' }}>{I18n.t('logout')}</EDText>
-          </TouchableOpacity>
-        </View>
-      </KeyboardAwareScrollView>
+            {this.renderEditableFiled('name', 'name', true)}
+            {this.renderEditableFiled('phone', 'phone', false, 'phone-pad')}
+            {this.renderEditableFiled('upi_address', 'wallet_43', true)}
+            {this.renderEditableFiled('email', 'email', true, 'email-address')}
+          </View>
+          <View
+            style={{
+              height: height / 2 - 100,
+              justifyContent: 'flex-end',
+              padding: 15,
+              alignItems: 'center'
+            }}
+          >
+            <TouchableOpacity
+              style={{ backgroundColor: '#1da370' }}
+              onPress={() => {
+                this.logOut();
+              }}
+            >
+              <EDText style={{ padding: 10, color: '#ffffff' }}>{I18n.t('logout')}</EDText>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAwareScrollView>
+        {spinner && <Spinner />}
+      </View>
     );
   }
 }
